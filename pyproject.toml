@@ -1,0 +1,48 @@
+# Pacote instalável do TCC. As versões das dependências diretas ficam fixadas aqui;
+# o requirements.txt guarda o ambiente completo (inclusive dependências transitivas).
+# Instalação: uv pip install --python .venv/Scripts/python.exe -e ".[dev]"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fraud-qml"
+version = "0.1.0"
+description = "TCC: ML clássico x Quantum-Enhanced ML na detecção de fraude em cartão de crédito"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    # Núcleo numérico e tabular
+    "numpy==2.5.3",
+    "pandas==3.0.6",
+    "scipy==1.18.1",
+    # Machine Learning clássico e balanceamento
+    "scikit-learn==1.9.1",
+    "imbalanced-learn==0.14.2",
+    "joblib==1.6.0",
+    # Computação quântica (simulação)
+    "qiskit==2.5.2",
+    "qiskit-aer==0.17.2",
+    "qiskit-machine-learning==0.9.1",
+    # Medição de custo computacional (memória nativa, que o tracemalloc não enxerga)
+    "psutil==7.2.2",
+    # Visualização
+    "matplotlib==3.11.2",
+    "seaborn==0.13.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "jupyter==1.1.1",
+    "ipykernel==7.3.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Raiz no path para importar as ferramentas de desenvolvimento (tools/) e os hooks nos testes
+pythonpath = ["."]
+addopts = "-q"

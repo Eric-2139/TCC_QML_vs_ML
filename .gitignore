@@ -1,0 +1,26 @@
+# Ambiente
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Dataset público (66 MB): baixar do Kaggle, não versionar
+creditcard.csv
+*.zip
+
+# Arquivos locais de trabalho, fora do repositório público
+# - configuração do assistente de IA usado no desenvolvimento, e o teste que verifica os scripts dela
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+tests/test_hooks.py
+# - caderno de estudo pessoal e rascunho do texto do TCC
+study_notes.md
+metodologia.MD
+# - configuração do editor
+.vscode/
+
+# Artefatos regeneráveis pelo notebook; só os resultados resumidos entram no git
+artifacts/cache/
+artifacts/models/
