@@ -4,12 +4,23 @@ O kernel de fidelidade mede a semelhança entre duas linhas como |⟨ψ(x)|ψ(x'
 estados idênticos, 0 para estados ortogonais. É a matriz que o SVM usa no lugar do RBF.
 """
 
+from typing import Final, Self
+
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 from qiskit import QuantumCircuit
 from qiskit_machine_learning.kernels import FidelityStatevectorKernel
+from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.svm import SVC
+from sklearn.utils.multiclass import unique_labels
+from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
+
+from fraud_qml.quantum.encodings import features_to_states
 
 _UNIT_NORM_TOLERANCE = 1e-8
+
+# Linhas por lote na predição do QSVM: limita a matriz de kernel em memória a (lote × treino)
+PREDICTION_BATCH_ROWS: Final[int] = 4_096
 
 
 def angle_kernel_matrix(
@@ -57,6 +68,75 @@ def amplitude_kernel_matrix(
         if not np.allclose(np.linalg.norm(matrix, axis=1), 1.0, atol=_UNIT_NORM_TOLERANCE):
             raise ValueError("as linhas precisam ter norma 1 (use o AmplitudeEncodingPreparer)")
     return np.abs(left @ right.T) ** 2
+
+
+def fidelity_kernel_matrix(
+    states: NDArray[np.complex128], other_states: NDArray[np.complex128] | None = None
+) -> NDArray[np.float64]:
+    """Kernel de fidelidade |⟨ψ(x)|ψ(x')⟩|² entre estados já simulados.
+
+    Com um estado por linha, a matriz inteira sai de um produto matricial: o custo da simulação é
+    O(n) (um circuito por linha), e não O(n²) (um circuito por par).
+
+    Args:
+        states: Estados (n, 2ⁿ_qubits), um por linha.
+        other_states: Segundo conjunto (m, 2ⁿ_qubits); se ausente, calcula a matriz de Gram de ``states``.
+
+    Returns:
+        Matriz (n, m) de similaridades em [0, 1].
+    """
+    right = states if other_states is None else other_states
+    return np.abs(states @ right.conj().T) ** 2
+
+
+class QuantumKernelSVC(ClassifierMixin, BaseEstimator):
+    """SVM com kernel quântico de fidelidade (QSVM).
+
+    É o mesmo SVM do scikit-learn; a única diferença para o SVM clássico é a matriz de
+    similaridades: em vez do RBF, a fidelidade entre os estados quânticos de cada par de linhas.
+    Recebe os estados já codificados (saída do ``StatevectorEncoder``), então a codificação é
+    escolhida numa etapa do pipeline, e não aqui.
+
+    Args:
+        C: Penalidade por erro de classificação no treino, como no ``SVC``.
+    """
+
+    def __init__(self, C: float = 1.0) -> None:  # noqa: N803  (mesmo nome do parâmetro no scikit-learn)
+        self.C = C
+
+    def fit(self, features: ArrayLike, labels: ArrayLike) -> Self:
+        """Ajusta o SVM sobre a matriz de Gram dos estados de treino.
+
+        Args:
+            features: Estados de treino, no formato de ``states_to_features``.
+            labels: Rótulos.
+
+        Returns:
+            O próprio estimador.
+        """
+        array, targets = check_X_y(features, labels)
+        self.classes_ = unique_labels(targets)
+        self.n_features_in_ = array.shape[1]
+        # Os estados de treino ficam guardados: prever é medir a similaridade de cada linha nova com eles
+        self.train_states_ = features_to_states(array)
+        self.svc_ = SVC(kernel="precomputed", C=self.C).fit(fidelity_kernel_matrix(self.train_states_), targets)
+        return self
+
+    def decision_function(self, features: ArrayLike) -> NDArray[np.float64]:
+        """Distância com sinal à fronteira de decisão (positiva = classe ``classes_[1]``)."""
+        check_is_fitted(self, "svc_")
+        states = features_to_states(check_array(features))
+        decisions = np.empty(states.shape[0])
+        # Em lotes: a matriz (linhas novas × treino) inteira ocuparia centenas de MiB na validação, um custo
+        # de memória que seria só desta implementação, e não do modelo
+        for start in range(0, states.shape[0], PREDICTION_BATCH_ROWS):
+            batch = slice(start, start + PREDICTION_BATCH_ROWS)
+            decisions[batch] = self.svc_.decision_function(fidelity_kernel_matrix(states[batch], self.train_states_))
+        return decisions
+
+    def predict(self, features: ArrayLike) -> NDArray[np.int_]:
+        """Classe prevista para cada linha."""
+        return self.classes_[(self.decision_function(features) > 0).astype(int)]
 
 
 def off_diagonal_values(kernel_matrix: NDArray[np.float64]) -> NDArray[np.float64]:

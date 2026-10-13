@@ -70,6 +70,27 @@ def test_exploration_has_no_hand_picked_columns() -> None:
     assert offenders == [], f"células da Seção 4 com coluna escolhida a dedo: {offenders}"
 
 
+# Células da Seção 5 que definem opção do grid ou se declaram "só treino": cada uma identificada por um trecho
+# único do código. A 5.4 e a 5.5 avaliam na validação de propósito e ficam de fora.
+TRAIN_ONLY_TRAINING_CELLS: Final[dict[str, str]] = {
+    "WEAK_LEARNER_CURVE_ITERATIONS: int": "5.2, curva de custo do classificador fraco",
+    "ENCODING_CONFIGURATIONS: dict[str, EncodingConfiguration]": "5.3, fase × rotação em Y",
+    "WIDTH_SWEEP_SCALERS: dict[ScalerName, str]": "5.3.1, largura e scaler",
+    "MECHANISM_ENCODINGS: tuple[str, ...]": "5.3.2, mecanismo",
+    "INNER_HOLDOUT_FRACTION: float": "5.4.1, variação entre sorteios",
+    "BOOSTER_SEEDS: tuple[int, ...]": "5.5.1, parada do boosting",
+}
+
+
+@pytest.mark.parametrize("marker", list(TRAIN_ONLY_TRAINING_CELLS))
+def test_train_only_cells_of_the_training_section_do_not_read_validation_or_test(marker: str) -> None:
+    # As decisões e os diagnósticos da Seção 5 que dizem usar só o treino não podem tocar em validação ou teste
+    notebook = nbt.load()
+    source = notebook.cells[nbt.find_cell_index(notebook, marker)].source
+    used = [name for name in FORBIDDEN_NAMES if re.search(rf"\b{re.escape(name)}\b", source)]
+    assert used == [], f"{TRAIN_ONLY_TRAINING_CELLS[marker]} usa {used}"
+
+
 def test_every_declared_exception_still_exists() -> None:
     # Uma exceção que não corresponde a nenhuma célula é uma porta aberta sem dono
     sources = _exploration_code_cells()

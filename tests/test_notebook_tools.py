@@ -41,6 +41,14 @@ def test_find_cell_requires_unique_marker(notebook_path: Path) -> None:
         nbt.find_cell_index(notebook, "inexistente")
 
 
+def test_delete_cell_removes_only_the_marked_cell(notebook_path: Path) -> None:
+    removed = nbt.delete_cell("## Seção A", notebook_path)
+    assert removed.source == "## Seção A"
+    assert [cell.source for cell in nbt.load(notebook_path).cells] == ["x = 1\nprint(x)", "## Seção B", "plot()"]
+    with pytest.raises(nbt.CellNotFoundError):
+        nbt.delete_cell("marcador inexistente", notebook_path)
+
+
 def test_truncate_from_removes_the_marked_cell_and_everything_after(notebook_path: Path) -> None:
     removed = nbt.truncate_from("## Seção B", notebook_path)
     remaining = nbt.load(notebook_path).cells

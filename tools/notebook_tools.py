@@ -95,6 +95,18 @@ def insert_after(marker: str, cells: list[NotebookNode], path: Path = DEFAULT_NO
     save(notebook, path)
 
 
+def delete_cell(marker: str, path: Path = DEFAULT_NOTEBOOK) -> NotebookNode:
+    """Remove a célula identificada por ``marker`` e a devolve.
+
+    Raises:
+        CellNotFoundError: Se o marcador for ambíguo ou ausente.
+    """
+    notebook = load(path)
+    removed = notebook.cells.pop(find_cell_index(notebook, marker))
+    save(notebook, path)
+    return removed
+
+
 def truncate_from(marker: str, path: Path = DEFAULT_NOTEBOOK) -> list[NotebookNode]:
     """Remove a célula identificada por ``marker`` e todas as seguintes; devolve as células removidas.
 

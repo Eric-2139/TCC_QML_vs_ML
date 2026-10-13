@@ -1,7 +1,7 @@
-"""Varreduras de diagnóstico dos kernels: concentração e alinhamento kernel-alvo (KTA).
+"""Varreduras de diagnóstico: concentração e alinhamento dos kernels (KTA) e codificação no classificador fraco.
 
 Existem como funções do pacote, e não como laços no notebook, para que o procedimento que
-delimita as opções do grid (Seção 4 do notebook, só no treino) seja testado e rode em paralelo.
+delimita as opções do grid (Seções 4 e 5 do notebook, só no treino) seja testado e rode em paralelo.
 """
 
 from collections.abc import Mapping, Sequence
@@ -11,7 +11,9 @@ import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 from numpy.typing import NDArray
+from sklearn.model_selection import StratifiedKFold, cross_validate
 
+from fraud_qml.models import build_weak_quantum_classifier_pipeline, quantum_encoding_steps
 from fraud_qml.preprocessing import (
     ReducerName,
     ScalerName,
@@ -42,6 +44,23 @@ AMPLITUDE_SWEEP_COLUMNS: Final[tuple[str, ...]] = (
     "subsample",
     "mean_similarity",
     "alignment",
+)
+
+# (feature map, repetições do feature map)
+EncodingConfiguration = tuple[AngleFeatureMapName, int]
+
+WEAK_CLASSIFIER_SWEEP_COLUMNS: Final[tuple[str, ...]] = (
+    "configuration",
+    "reducer",
+    "scaler",
+    "range_width",
+    "ansatz_reps",
+    "subsample",
+    "initialization_seed",
+    "fold",
+    "roc_auc",
+    "accuracy",
+    "train_accuracy",
 )
 
 
@@ -133,3 +152,95 @@ def amplitude_alignment_sweep(
                 amplitudes = build_amplitude_preprocessor(scaler, n_qubits, padding_value).fit_transform(features)
                 rows.append((scaler, padding_value, seed, *_kernel_scores(amplitude_kernel_matrix(amplitudes), labels)))
     return pd.DataFrame(rows, columns=list(AMPLITUDE_SWEEP_COLUMNS))
+
+
+def _weak_classifier_fold_scores(
+    subsample: KernelSubsample,
+    configuration: EncodingConfiguration,
+    reducer: ReducerName,
+    scaler: ScalerName,
+    range_width: float,
+    ansatz_reps: int,
+    initialization_seed: int,
+    max_iterations: int,
+    n_splits: int,
+    random_state: int,
+) -> list[tuple[float, float, float]]:
+    features, labels = subsample
+    feature_map, feature_map_reps = configuration
+    steps = quantum_encoding_steps(
+        "angle",
+        scaler=scaler,
+        reducer=reducer,
+        angle_range=(0.0, range_width),
+        feature_map=feature_map,
+        feature_map_reps=feature_map_reps,
+        random_state=random_state,
+    )
+    pipeline = build_weak_quantum_classifier_pipeline(steps, ansatz_reps, max_iterations, initialization_seed)
+    # Os mesmos folds para todas as combinações: as diferenças entre elas não vêm do sorteio dos folds
+    folds = StratifiedKFold(n_splits, shuffle=True, random_state=random_state)
+    scores = cross_validate(pipeline, features, labels, cv=folds, scoring=("roc_auc", "accuracy"), return_train_score=True)
+    return list(zip(scores["test_roc_auc"], scores["test_accuracy"], scores["train_accuracy"], strict=True))
+
+
+def weak_classifier_encoding_sweep(
+    subsamples: Mapping[int, KernelSubsample],
+    configurations: Mapping[str, EncodingConfiguration],
+    reducers: Sequence[ReducerName],
+    scalers: Sequence[ScalerName],
+    range_widths: Sequence[float],
+    ansatz_reps_options: Sequence[int],
+    initialization_seeds: Sequence[int],
+    max_iterations: int,
+    n_splits: int,
+    random_state: int,
+    n_jobs: int = 1,
+) -> pd.DataFrame:
+    """Compara codificações de rotação num classificador variacional sozinho, por validação cruzada.
+
+    Para cada combinação, o pipeline inteiro (scaler, redutor, faixa de ângulos, codificação e
+    classificador) é reajustado em cada fold, dentro da subamostra balanceada. Mede duas coisas
+    diferentes: a ROC-AUC (o classificador **ordena** bem as linhas?) e a acurácia com o corte fixo
+    em P(1) = 0,5 (ele consegue **posicionar** o corte?). É a segunda que o AdaBoost usa: o erro
+    ponderado de cada rodada é calculado sobre as classes previstas, não sobre a ordem.
+
+    Args:
+        subsamples: Subamostras balanceadas (features, rótulos), identificadas pela semente que as gerou.
+        configurations: Nome de exibição → (feature map, repetições do feature map).
+        reducers: Redutores de dimensionalidade a comparar.
+        scalers: Scalers de entrada a comparar.
+        range_widths: Larguras da faixa de ângulos a comparar; a faixa é [0, largura].
+        ansatz_reps_options: Repetições do ansatz a comparar.
+        initialization_seeds: Sementes dos pesos iniciais do classificador.
+        max_iterations: Avaliações da função de custo por ajuste (COBYLA).
+        n_splits: Número de folds.
+        random_state: Semente dos folds e do redutor.
+        n_jobs: Processos paralelos; o resultado não depende deste valor.
+
+    Returns:
+        Uma linha por combinação e fold, com as colunas de ``WEAK_CLASSIFIER_SWEEP_COLUMNS``.
+    """
+    tasks = [
+        (name, reducer, scaler, range_width, ansatz_reps, subsample_seed, initialization_seed)
+        for name in configurations
+        for reducer in reducers
+        for scaler in scalers
+        for range_width in range_widths
+        for ansatz_reps in ansatz_reps_options
+        for subsample_seed in subsamples
+        for initialization_seed in initialization_seeds
+    ]
+    fold_scores = Parallel(n_jobs=n_jobs)(
+        delayed(_weak_classifier_fold_scores)(
+            subsamples[subsample_seed], configurations[name], reducer, scaler, range_width, ansatz_reps,
+            initialization_seed, max_iterations, n_splits, random_state,
+        )
+        for name, reducer, scaler, range_width, ansatz_reps, subsample_seed, initialization_seed in tasks
+    )
+    rows = [
+        (*task, fold, *scores)
+        for task, task_scores in zip(tasks, fold_scores, strict=True)
+        for fold, scores in enumerate(task_scores)
+    ]
+    return pd.DataFrame(rows, columns=list(WEAK_CLASSIFIER_SWEEP_COLUMNS))

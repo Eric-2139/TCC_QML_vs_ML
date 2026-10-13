@@ -65,16 +65,31 @@
 
 1. **Tudo que aprende com os dados fica dentro de um `imblearn.pipeline.Pipeline`:** `RandomUnderSampler`, scaler, PCA/seleção, MinMax e modelo. A cada fold, cada etapa é reajustada só no treino, então não há vazamento por construção (padrão Strategy/Composite do sklearn).
 2. **Modelos quânticos como estimadores sklearn** (`BaseEstimator` + `ClassifierMixin`). Assim `GridSearchCV`, `learning_curve`, `clone` e o `AdaBoostClassifier` funcionam sem código especial.
-   - **QSVM:** `SVC(kernel=callable)` sobre um kernel de fidelidade por statevector. O Qiskit calcula um statevector por amostra e o kernel vira um produto matricial, O(N) simulações, então ele roda no teste inteiro (56 mil linhas).
+   - **A codificação é uma etapa do pipeline** (`StatevectorEncoder`, etapa `encoder`; implementado na Fase 4). Ela
+     simula o estado de cada linha uma vez, em lote no Aer, e entrega os estados ao modelo. Serve ao kernel do QSVM e
+     a todos os classificadores fracos do Quantum AdaBoost, e deixa as decisões de codificação com o mesmo nome de
+     parâmetro nos dois (`encoder__encoding`, `encoder__feature_map_reps`, `encoder__entanglement`).
+   - **QSVM:** `QuantumKernelSVC`, um `SVC(kernel="precomputed")` sobre o kernel de fidelidade dos estados
+     codificados. Um statevector por amostra e o kernel vira um produto matricial, O(N) simulações, então ele roda
+     no teste inteiro (56 mil linhas). O desenho original era `SVC(kernel=callable)`; um teste garante que as
+     decisões são as mesmas.
    - **Quantum AdaBoost:** `AdaBoostClassifier(estimator=VariationalQuantumClassifier(...))`.
      - O `VariationalQuantumClassifier` implementa `fit(X, y, sample_weight)` com cross-entropy ponderada.
-     - Circuito: feature map + ansatz `RealAmplitudes`; mede-se ⟨Z⟩.
-     - **Pendência da Fase 4 (CC14):** os mapas Z/ZZ são codificação de **fase**; num modelo que mede o estado,
-       fase e rotação em Y não são equivalentes. A Seção 5 traz um diagnóstico barato (fase × RY no
-       classificador fraco de 5 qubits, sem boosting). RY só entra no grid da Fase 5 se a diferença aparecer e
-       o custo permitir.
+     - Circuito: feature map + ansatz `RealAmplitudes`; mede-se ⟨Z⟩ no qubit 0.
+     - **Simulação (mudou na Fase 4):** o estado codificado não depende dos pesos, então o ansatz é aplicado como
+       uma matriz 32 × 32 calculada pelo Qiskit (`Operator`), e avaliar o circuito para todas as linhas é um produto
+       matricial. O plano previa o `EstimatorV2` do Aer; um teste compara os dois caminhos (diferença < 10⁻⁹). O
+       circuito completo continua disponível para a simulação ruidosa da Fase 9, que precisa do Aer.
+     - **CC14, resolvido na Fase 4:** os mapas Z/ZZ são codificação de **fase**; num modelo que mede o estado,
+       fase e rotação em Y não são equivalentes. O diagnóstico da Seção 5.3 (classificador fraco de 5 qubits, sem
+       boosting, validação cruzada no treino balanceado) mostrou a diferença na acurácia com o corte em 0,5: com PCA e
+       ansatz de 1 repetição, 0,654 ± 0,001 na fase pura contra 0,874 ± 0,003 na rotação em Y; a ROC-AUC quase não
+       muda (0,919 contra 0,940). Com informação mútua e ansatz de 2 repetições a diferença cai para 0,026. **Vale na
+       faixa padrão [0, π/2] com StandardScaler:** em 1 rad a fase pura empata com a RY (0,878 e 0,863), e em 0,25 e
+       0,5 rad o mapa ZZ com 2 repetições empata com ela (Seção 5.3.1). A RY é a mais estável (0,817 a 0,875 nas 8
+       combinações de largura e scaler). **RY entra no grid do Quantum AdaBoost na Fase 5** (o custo permite: um
+       ajuste leva segundos; o grid passa de 6 para 7 opções de codificação).
      - Otimizador COBYLA, como no El Alami.
-     - Predição vetorizada com o `EstimatorV2` do Aer (um circuito, matriz de parâmetros).
 3. **Busca de hiperparâmetros dentro do treino balanceado:**
    - `GridSearchCV` com `StratifiedKFold(5)` sobre o treino subamostrado (~568 linhas).
    - **Scoring = ROC-AUC**, porque é invariante à proporção de classes e continua válido em folds 50/50. A PR-AUC também é registrada.
@@ -115,7 +130,7 @@
    | Repetições do feature map | 1 / 2 | — | ✔ (A) | — | ① |
    | Emaranhamento do ZZ | linear / full | — | ✔ (A) | — | ① |
    | Constante da amplitude | 1 / 3 / 5 | — | ✔ (B) | — | ① |
-   | Fase × rotação em Y (CC14) | condicional ao diagnóstico da Fase 4 | — | — (kernel idêntico) | — | condicional |
+   | Fase × rotação em Y (CC14) | RY como terceira opção de mapa (decidido na Fase 4, Seção 5.3) | — | — (kernel idêntico ao do Z com 1 repetição) | — | ✔ |
    | **Modelo: par SVM × QSVM** | | | | | |
    | C (penalidade do SVM) | a definir | ✔ | ✔ | — | — |
    | γ do kernel RBF | a definir | ✔ | — (a faixa dos ângulos e a constante fazem esse papel) | — | — |
@@ -123,10 +138,12 @@
    | Número de classificadores fracos (`n_estimators`) | a definir | — | — | ✔ | ✔ |
    | Taxa de aprendizado (`learning_rate`) | a definir | — | — | ✔ | ✔ |
    | Repetições do ansatz | a definir | — | — | — | ✔ |
-   | Iterações do COBYLA | fixo e baixo (o classificador precisa ser fraco); a definir | — | — | — | fixo |
+   | Iterações do COBYLA | fixo e baixo (o classificador precisa ser fraco); 60 desde a Fase 4 (no treino, a curva de custo já achatou nesse ponto na variação B e em 2 dos 3 sorteios da A, Seção 5.2) | — | — | — | fixo |
 
-   **Dois pontos que a matriz deixou à vista, a decidir na Fase 5:**
-   - **① Entrada e codificação do Quantum AdaBoost.** O plano diz que o grid dele é pequeno (`n_estimators`,
+   **Pontos que a matriz e a Fase 4 deixaram à vista, a decidir na Fase 5:**
+   - **① Entrada e codificação do Quantum AdaBoost.** *(Fase 4: no classificador fraco, a melhor codificação muda
+     com a largura da faixa e com o scaler, Seção 5.3.1. Herdar a configuração do QSVM não serve; largura e
+     codificação precisam ser buscadas juntas.)* O plano diz que o grid dele é pequeno (`n_estimators`,
      `learning_rate`, repetições do ansatz) e também que as variações A e B valem para ele, mas não diz **com qual**
      scaler, redutor, faixa e mapa. Opções: herdar a melhor configuração do QSVM, ter um grid reduzido próprio ou usar
      valores fixos. Herdar é o mais barato, mas escolheria a codificação por um critério de kernel, que é justamente
@@ -157,6 +174,26 @@
      Os tempos contam a simulação das linhas de treino (454) e de validação de cada fold no QSVM, a 4,28 ms por
      statevector (benchmark da Seção 1: 2.568 statevectors em 10,99 s). Não contam o Quantum AdaBoost, que é mais
      caro (levantado em 2026-10-07; tempos corrigidos no mesmo dia, ver NC9).
+
+   - **⑤ O boosting quântico para antes das rodadas pedidas** (achado da Fase 4, Seções 5.5 e 5.5.1; CC17). O
+     scikit-learn interrompe o boosting quando o classificador de uma rodada tem erro ponderado ≥ 0,5 e o descarta.
+     Nas 12 execuções da 5.5.1 (só treino) ficaram de 7 a 44 classificadores, nunca os 50 pedidos, e o número
+     depende da semente do boosting (padrão A: 13, 44 e 24). Mais orçamento não resolve (300 avaliações: 17, 29 e
+     13), nem um classificador fraco melhor (com RY: 13, 7 e 10). `n_estimators` é um **teto**. A Seção 6 precisa
+     registrar quantos foram mantidos em cada combinação e decidir o que fazer com a parada:
+     - aceitar (é o comportamento do `AdaBoostClassifier`, igual nos dois lados do par);
+     - reduzir `learning_rate` (os pesos mudam mais devagar); não testado;
+     - dar ao classificador fraco um corte ajustável (na variação A ele tem acurácia de 0,660 com o corte fixo em
+       0,5 e de 0,843 com o melhor corte): **mudança de protocolo, a aprovar**;
+     - adotar a regra do artigo (Wang et al. ficam com a iteração de menor erro e exigem ε < ½): **mudança de
+       protocolo, a aprovar**.
+   - **⑥ O grid do Quantum AdaBoost não precisa mais ser pequeno** (Fase 4). Com os estados simulados em lote e o
+     ansatz como matriz, um ajuste leva cerca de 2,5 s e uma avaliação do custo, cerca de 3 ms (a Seção 1 estimava
+     175 ms). A restrição "só os vencedores vão para a validação" também caiu: pontuar a validação leva menos de
+     20 s. O que limita o grid agora é o método (quantas comparações a validação cruzada sustenta), e não o tempo.
+   - **⑦ A linha de base quântica parte de um ponto fraco** (CC16): os padrões da Fase 4 são as opções de menor KTA
+     da Seção 4 (constante 1; faixa π/2). O ganho do ajuste nos quânticos precisa ser reportado com essa ressalva.
+     A constante 1 é a suspeita do mau desempenho do Quantum AdaBoost B.
 
    **Nota para a Seção 6 do notebook (Fase 5): deixar claro o que é decisão de pré-processamento e o que é decisão
    do algoritmo** (pedido do Eric em 2026-10-07, para não repetir a confusão entre codificação de ângulo e de fase).
@@ -211,14 +248,14 @@ ML-x-QML/
 │  ├─ data.py          # load_dataset, validate_contract, remove_duplicates, engineer_features (log1p, hora sin/cos)
 │  ├─ splitting.py     # stratified_three_way_split, validate_split, quase-duplicatas entre partes
 │  ├─ preprocessing.py # build_feature_pipeline(scaler, reducer, k, angle_range); AmplitudePadder
-│  ├─ quantum/encodings.py    # feature maps de ângulo (Z, ZZ) e amplitude
-│  ├─ quantum/kernels.py      # QuantumKernelSVC, métricas de concentração/alinhamento
-│  ├─ quantum/diagnostics.py  # varreduras de KTA (ângulo e amplitude), usadas na Seção 4
+│  ├─ quantum/encodings.py    # feature maps (Z, ZZ, RY), simulação em lote e StatevectorEncoder (etapa do pipeline)
+│  ├─ quantum/kernels.py      # QuantumKernelSVC, kernel de fidelidade, métricas de concentração/alinhamento
+│  ├─ quantum/diagnostics.py  # varreduras de KTA (Seção 4) e de codificação no classificador fraco (Seção 5)
 │  ├─ quantum/variational.py  # VariationalQuantumClassifier (sample_weight)
-│  ├─ quantum/noise.py        # modelos de ruído do Aer
-│  ├─ models.py        # fábrica dos pipelines dos 4 modelos + grids
-│  ├─ tuning.py        # run_grid_search com cache
-│  ├─ evaluation.py    # métricas, limiar F1, bootstrap, McNemar (precision_at_prevalence desde a Fase 2)
+│  ├─ quantum/noise.py        # modelos de ruído do Aer (Fase 9)
+│  ├─ models.py        # fábrica dos pipelines dos 4 modelos, fit_and_score (grids: Fase 5)
+│  ├─ tuning.py        # run_grid_search com cache (Fase 5)
+│  ├─ evaluation.py    # métricas (Fase 4), limiar F1, bootstrap, McNemar (precision_at_prevalence desde a Fase 2)
 │  ├─ profiling.py     # measure_cost
 │  └─ plotting.py
 ├─ tests/              # pytest
@@ -255,8 +292,8 @@ As versões são fixadas depois de um `uv pip install --dry-run` que confirma a 
 | **2. Coleta** | Leitura do `.zip`, contrato dos dados, apresentação das variáveis. |
 | **3. Divisão** | Remoção de duplicatas (a única operação na base inteira além do contrato). Split 60/20/20 estratificado na base deduplicada (170.235 / 56.745 / 56.746 linhas; 284 / 94 / 95 fraudes), com os `assert`s, o porquê de dividir antes de balancear e duas checagens de integridade (quase-duplicatas; os dois dias da coleta). |
 | **4. EDA + pré-processamento (só no treino)** | Escalas, `Amount`, `Time` e ranking de features no treino; `log1p(Amount)` e hora sin/cos decididos ali e aplicados às três partes. No **treino balanceado**: estudo dos scalers (Standard x Robust x MinMax, a equivalência Standard→MinMax), efeito da faixa na concentração do kernel, ângulo x amplitude, seleção de features (PCA x informação mútua) e a prova de que o undersampling age só no `fit`. Termina com as opções que seguem para o grid. |
-| **5. Treinamento** | Dummy, SVM, AdaBoost, QSVM (A e B), Quantum AdaBoost (A e B) com hiperparâmetros padrão, avaliados na validação, com custo computacional. |
-| **6. GridSearchCV** | `StratifiedKFold(5)` no treino balanceado. O grid do Quantum AdaBoost é pequeno (n_estimators, learning_rate, reps do ansatz), dimensionado pelo benchmark da Seção 1. A seção separa decisões de entrada, de codificação e de modelo e mostra a matriz dimensão × algoritmo (ver "Nota para a Seção 6" na decisão de arquitetura 4). |
+| **5. Treinamento** | Dummy, SVM, AdaBoost (os dois clássicos com 31 features e com os 5 componentes da variação A), QSVM (A e B), Quantum AdaBoost (A e B) com hiperparâmetros padrão, avaliados na validação (PR-AUC com bootstrap pareado), com custo computacional. Curva de custo do classificador fraco, diagnóstico fase × RY com largura e scaler (CC14), variação entre sementes num conjunto interno do treino, e o boosting por dentro (ε e α por rodada, classificador descartado, parada por semente). |
+| **6. GridSearchCV** | `StratifiedKFold(5)` no treino balanceado. O grid do Quantum AdaBoost (n_estimators, learning_rate, reps do ansatz, codificação e largura) é dimensionado pelo custo medido na Seção 5.4, e não mais pelo benchmark da Seção 1 (pontos ⑤ a ⑦). A seção separa decisões de entrada, de codificação e de modelo e mostra a matriz dimensão × algoritmo (ver "Nota para a Seção 6" na decisão de arquitetura 4). |
 | **7. Avaliação** | Na validação: PR-AUC (principal), ROC-AUC, precisão, recall, F1, **MCC** (usado por Randhawa), acurácia, matriz de confusão, curvas PR/ROC, limiar por F1-máx (0,5 contra o ótimo) e modelo de custo complementar. Tabela comparativa dos pares e custo computacional. |
 | **8. Diagnóstico** | `learning_curve` (score de treino x validação conforme cresce o nº de amostras) e `validation_curve`: C/γ no SVM, C e range/largura de banda no QSVM, n_estimators nos dois AdaBoost via `staged_decision_function`, sem refazer fits. |
 | **9. Modelo final** | Retreino em treino+validação (undersampling de novo) e **avaliação única no teste** com o limiar escolhido. Bootstrap pareado para as diferenças SVM−QSVM e AdaBoost−QAdaBoost e McNemar. **Robustez:** o pipeline final repetido com as 5 sementes de undersampling (média ± desvio), sem nenhuma decisão tomada a partir disso. Ficha do modelo em JSON. |
@@ -331,10 +368,13 @@ a fórmula de correção usada na Seção 4.10.
 | Largura de banda do kernel (o γ do RBF) | sklearn, [1.4.6.1 *Parameters of the RBF Kernel*](https://scikit-learn.org/stable/modules/svm.html) |
 | Codificação de ângulo, de amplitude e o mapa ZZ | QML-IBM, lição [*Data encoding*](https://quantum.cloud.ibm.com/learning/en/courses/quantum-machine-learning/data-encoding): seções *Amplitude encoding*, *Angle encoding* e *ZZ feature map* |
 | Só se faltar: produto interno entre estados | IBM, *Basics of quantum information*, [*Inner products and projections*](https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/quantum-circuits/inner-products-and-projections) |
+| Alinhamento kernel-alvo (KTA): o que é e como se calcula | PennyLane, demo [*Training and evaluating quantum kernels*](https://pennylane.ai/qml/demos/tutorial_kernels_module) (Derks, Faehrmann, Gil-Fuster, Hubregtsen, Meyer e Wierichs): só a seção *Training the Quantum Embedding Kernel*, até a fórmula do KTA. Ela traz a versão **sem** centralização; a centralizada, que o projeto usa, está explicada com um exemplo calculado no `study_notes.md` (Fase 2b, "Conceito: o KTA") |
 
 **Para citar no TCC:** Havlíček et al. 2019, [arXiv:1804.11326](https://arxiv.org/abs/1804.11326) (origem do
 ZZFeatureMap; dados artificiais gerados pelo próprio mapa) e Schuld 2021, [arXiv:2101.11020](https://arxiv.org/abs/2101.11020)
-(seção II, *Summary of results*: modelos de QML supervisionado são métodos de kernel, CC3).
+(seção II, *Summary of results*: modelos de QML supervisionado são métodos de kernel, CC3). Para o KTA centrado,
+Cortes, Mohri & Rostamizadeh 2012, *Algorithms for Learning Kernels Based on Centered Alignment*, JMLR 13
+([PDF](https://www.jmlr.org/papers/volume13/cortes12a/cortes12a.pdf)): seção 2, *Alignment Definitions* (pp. 798–800).
 
 ### Fase 4 — Treinamento
 
@@ -407,6 +447,7 @@ era unfolds*.
 | Dal Pozzolo et al. 2015 | Correção da probabilidade após o undersampling | 2 |
 | Havlíček et al. 2019 | Origem do ZZFeatureMap e do QSVM | 3b |
 | Schuld 2021 | QML supervisionado = métodos de kernel (CC3) | 3b |
+| Cortes, Mohri & Rostamizadeh 2012 | Definição do alinhamento kernel-alvo centrado (KTA) | 3b |
 | Zhu et al. 2009 | SAMME = AdaBoost com 2 classes (WA2) | 4 |
 | Thanasilp et al. 2024 | Concentração exponencial do kernel (CC5) | 5 |
 | Saito & Rehmsmeier 2015 | PR-AUC como métrica principal | 6 |
@@ -425,7 +466,8 @@ As próximas versões do texto precisam refletir estas mudanças:
 
 ## Riscos
 
-- **Quantum AdaBoost é caro.** Treinar VQC × rodadas × folds pode levar horas. Mitigação: benchmark na Seção 1, grid pequeno, COBYLA com poucas iterações (o classificador precisa ser *fraco*), cache e `staged_decision_function`.
+- **Quantum AdaBoost é caro.** *(Deixou de ser em 2026-10-13, Fase 4: com os estados em lote e o ansatz como matriz, um ajuste leva cerca de 2,5 s.)* Texto original: treinar VQC × rodadas × folds pode levar horas. Mitigação: benchmark na Seção 1, grid pequeno, COBYLA com poucas iterações (o classificador precisa ser *fraco*), cache e `staged_decision_function`.
+- **O boosting quântico para cedo e é instável entre sementes** (Fase 4, ponto ⑤): o resultado do par AdaBoost × Quantum AdaBoost pode depender mais da regra de parada do que dos hiperparâmetros.
 - **Wheels do `qiskit-aer` para Windows/py3.12:** conferidas no dry-run da Fase 0. O plano B é outra versão do Python via `uv`.
 - **`SVC` com kernel callable + `clone`:** coberto por testes. O plano B é `kernel="precomputed"` com o cálculo do kernel dentro do wrapper.
 - **Expectativa honesta de resultado:** com ~568 amostras de treino e a proporção real no teste, a precisão vai ser baixa para todos os modelos, bem abaixo dos 0,818 de PR-AUC do Random Forest com a base inteira do trabalho anterior. Isso é resultado, não defeito, e vira discussão sobre o custo do undersampling imposto pelo QML.

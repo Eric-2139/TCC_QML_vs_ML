@@ -62,8 +62,8 @@ teste 50/50 tem 0,131 na proporção real (Seção 3.2 do notebook). Este experi
 | 2. Coleta | Leitura e verificação do arquivo (contrato dos dados) | concluída |
 | 3. Divisão | Duplicatas, split 60/20/20 e checagens de integridade | concluída |
 | 4. Exploração e pré-processamento | Análise do treino, escalonamento, codificação quântica e seleção de features | concluída |
-| 5. Treinamento | Os quatro modelos com hiperparâmetros padrão | próxima |
-| 6. Ajuste de hiperparâmetros | Busca em grade com validação cruzada | a fazer |
+| 5. Treinamento | Os quatro modelos com hiperparâmetros padrão, avaliados na validação, com custo | concluída |
+| 6. Ajuste de hiperparâmetros | Busca em grade com validação cruzada | próxima |
 | 7. Avaliação | Métricas na validação, curvas e escolha do limiar | a fazer |
 | 8. Diagnóstico | Curvas de aprendizado e de validação | a fazer |
 | 9. Modelo final | Avaliação única no teste, com análise estatística | a fazer |
@@ -81,6 +81,15 @@ teste 50/50 tem 0,131 na proporção real (Seção 3.2 do notebook). Este experi
   Completar com uma constante a preserva: o alinhamento do kernel com as classes sobe de 0,08 para 0,48.
 - **O kernel da codificação de amplitude pode ser calculado classicamente** (é o cosseno ao quadrado do ângulo entre
   os vetores), o que limita a vantagem que se pode esperar dela.
+- **Codificação de fase e rotação em Y dão o mesmo kernel, mas não o mesmo classificador variacional:** num
+  classificador fraco de 5 qubits, na faixa padrão de ângulos, a acurácia com o corte padrão é 0,654 com a fase pura
+  e 0,874 com a rotação em Y (validação cruzada no treino); a ordem das transações (ROC-AUC) quase não muda. A
+  diferença depende da largura da faixa; a rotação em Y é a mais estável.
+- **O boosting quântico para antes das rodadas pedidas:** o AdaBoost do scikit-learn interrompe quando um
+  classificador fraco não supera o acaso, e no Quantum AdaBoost isso aconteceu em todas as execuções (de 7 a 44
+  classificadores, de 50 pedidos, conforme a semente).
+- **Com 0,17% de fraudes, a ROC-AUC esconde o que a PR-AUC mostra:** com hiperparâmetros padrão, os modelos têm
+  ROC-AUC entre 0,87 e 0,98 na validação e PR-AUC entre 0,02 e 0,75.
 - **O custo decide o desenho:** treinar o kernel quântico com SMOTE exigiria uma matriz de similaridade de cerca de
   860 GiB; com undersampling, ela tem 2,5 MiB.
 
@@ -109,10 +118,12 @@ legível:
 | `splitting.py` | Divisão treino/validação/teste estratificada e as verificações dela |
 | `features.py` | Transformações linha a linha (`log(1 + Amount)`, hora do dia em seno e cosseno) |
 | `preprocessing.py` | Escalonamento, redução para 5 componentes, preparo para a codificação de amplitude e undersampling |
-| `quantum/encodings.py` | Os circuitos que transformam uma transação num estado quântico |
-| `quantum/kernels.py` | Os kernels quânticos e as medidas de qualidade de um kernel |
-| `quantum/diagnostics.py` | As varreduras que comparam configurações de kernel |
-| `evaluation.py` | Métricas e a correção de probabilidade após o undersampling |
+| `quantum/encodings.py` | Os circuitos que transformam uma transação num estado quântico, a simulação deles e a etapa de codificação do pipeline |
+| `quantum/kernels.py` | Os kernels quânticos, o QSVM e as medidas de qualidade de um kernel |
+| `quantum/variational.py` | O classificador variacional, que é o classificador fraco do Quantum AdaBoost |
+| `quantum/diagnostics.py` | As varreduras que comparam configurações de kernel e de codificação |
+| `models.py` | A montagem dos pipelines dos quatro modelos e a medição de um ajuste |
+| `evaluation.py` | Métricas, intervalo de confiança por bootstrap e a correção de probabilidade após o undersampling |
 | `profiling.py` | Medição de tempo e memória |
 | `environment.py`, `plotting.py` | Registro de versões e identidade visual dos gráficos |
 
@@ -134,10 +145,10 @@ uv venv --python 3.12 .venv
 uv pip install --python .venv/Scripts/python.exe -r requirements.txt
 uv pip install --python .venv/Scripts/python.exe -e ".[dev]" --no-deps
 
-.venv/Scripts/python.exe -m pytest                     # testes (cerca de 15 s)
+.venv/Scripts/python.exe -m pytest                     # testes (cerca de 50 s)
 .venv/Scripts/jupyter notebook notebooks/tcc_ml_vs_qml.ipynb
 ```
 
-Ao abrir o notebook, escolha o ambiente `.venv` como kernel. Executado inteiro, ele leva cerca de 1 min 30 s até a
-Seção 4. A simulação quântica usa o Qiskit 2.5 e o Qiskit Aer 0.17; o aprendizado de máquina clássico, o scikit-learn
+Ao abrir o notebook, escolha o ambiente `.venv` como kernel. Executado inteiro, ele leva cerca de 14 min até a
+Seção 5. A simulação quântica usa o Qiskit 2.5 e o Qiskit Aer 0.17; o aprendizado de máquina clássico, o scikit-learn
 1.9 e o imbalanced-learn 0.14.

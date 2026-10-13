@@ -6,13 +6,24 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import ParameterVector
 from qiskit_machine_learning.circuit.library import raw_feature_vector
 from qiskit_machine_learning.kernels import FidelityStatevectorKernel
+from sklearn.base import clone
+from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import Pipeline
+from sklearn.svm import SVC
 
 from fraud_qml.preprocessing import DEFAULT_ANGLE_RANGE, AmplitudeEncodingPreparer
-from fraud_qml.quantum.encodings import build_angle_feature_map
+from fraud_qml.quantum.encodings import (
+    StatevectorEncoder,
+    build_angle_feature_map,
+    features_to_states,
+    simulate_statevectors,
+)
 from fraud_qml.quantum.kernels import (
+    QuantumKernelSVC,
     amplitude_kernel_matrix,
     angle_kernel_matrix,
     centered_kernel_target_alignment,
+    fidelity_kernel_matrix,
     off_diagonal_values,
 )
 
@@ -132,6 +143,77 @@ def test_amplitude_kernel_matches_qiskit_simulation() -> None:
 def test_amplitude_kernel_rejects_unnormalized_rows() -> None:
     with pytest.raises(ValueError, match="norma 1"):
         amplitude_kernel_matrix(np.array([[1.0, 1.0]]))
+
+
+@pytest.mark.parametrize(("encoding", "reps"), [("z", 1), ("z", 2), ("zz", 1), ("zz", 2), ("ry", 1)])
+def test_fidelity_of_batch_states_matches_the_qiskit_kernel(angles: np.ndarray, encoding: str, reps: int) -> None:
+    # O produto matricial sobre os estados simulados em lote é o kernel do qiskit-machine-learning
+    feature_map = build_angle_feature_map(encoding, n_qubits=3, reps=reps)
+    states = simulate_statevectors(feature_map, angles)
+    kernel = fidelity_kernel_matrix(states)
+    np.testing.assert_allclose(kernel, angle_kernel_matrix(feature_map, angles), atol=1e-10)
+    np.testing.assert_allclose(np.diag(kernel), 1.0, atol=1e-12)
+    assert np.linalg.eigvalsh(kernel).min() > -1e-9
+    assert kernel.min() >= -1e-12 and kernel.max() <= 1 + 1e-12
+
+
+def test_fidelity_of_amplitude_states_is_the_classical_cosine_squared() -> None:
+    rng = np.random.default_rng(RNG_SEED)
+    amplitudes = AmplitudeEncodingPreparer(n_qubits=3).fit_transform(rng.normal(size=(6, 7)))
+    states = features_to_states(StatevectorEncoder(encoding="amplitude").fit_transform(amplitudes))
+    np.testing.assert_allclose(fidelity_kernel_matrix(states), amplitude_kernel_matrix(amplitudes), atol=1e-12)
+    np.testing.assert_allclose(
+        fidelity_kernel_matrix(states[:2], states), amplitude_kernel_matrix(amplitudes[:2], amplitudes), atol=1e-12
+    )
+
+
+def _labeled_angles() -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    rng = np.random.default_rng(RNG_SEED)
+    labels = np.array([0, 1] * 20)
+    # As duas classes ocupam metades diferentes da faixa de ângulos: problema fácil, mas não trivial
+    train = rng.uniform(0, np.pi / 4, size=(40, 3)) + labels[:, None] * np.pi / 4
+    return train, labels, rng.uniform(0, np.pi / 2, size=(15, 3))
+
+
+def test_qsvm_matches_svc_with_the_qiskit_kernel_as_callable() -> None:
+    # O desenho original do plano era SVC(kernel=callable); o estimador precisa dar as mesmas decisões
+    train, labels, new_rows = _labeled_angles()
+    feature_map = build_angle_feature_map("zz", n_qubits=3)
+    reference = SVC(kernel=lambda left, right: angle_kernel_matrix(feature_map, left, right), C=2.0).fit(train, labels)
+    encoder = StatevectorEncoder(encoding="zz").fit(train)
+    qsvm = QuantumKernelSVC(C=2.0).fit(encoder.transform(train), labels)
+    np.testing.assert_allclose(
+        qsvm.decision_function(encoder.transform(new_rows)), reference.decision_function(new_rows), atol=1e-8
+    )
+    np.testing.assert_array_equal(qsvm.predict(encoder.transform(new_rows)), reference.predict(new_rows))
+
+
+def test_qsvm_prediction_does_not_depend_on_the_batch_size(monkeypatch: pytest.MonkeyPatch) -> None:
+    train, labels, new_rows = _labeled_angles()
+    encoder = StatevectorEncoder(encoding="zz").fit(train)
+    qsvm = QuantumKernelSVC().fit(encoder.transform(train), labels)
+    encoded_rows = encoder.transform(new_rows)
+    in_one_batch = qsvm.decision_function(encoded_rows)
+    monkeypatch.setattr("fraud_qml.quantum.kernels.PREDICTION_BATCH_ROWS", 4)
+    np.testing.assert_allclose(qsvm.decision_function(encoded_rows), in_one_batch, atol=1e-12)
+
+
+def test_qsvm_separates_an_easy_problem_and_keeps_the_original_labels() -> None:
+    train, labels, _ = _labeled_angles()
+    named_labels = np.where(labels == 1, 7, 3)
+    encoded = StatevectorEncoder(encoding="z", feature_map_reps=1).fit_transform(train)
+    qsvm = QuantumKernelSVC().fit(encoded, named_labels)
+    assert qsvm.classes_.tolist() == [3, 7]
+    assert (qsvm.predict(encoded) == named_labels).mean() > 0.9
+
+
+def test_qsvm_works_inside_a_grid_search() -> None:
+    train, labels, _ = _labeled_angles()
+    pipeline = Pipeline([("encoder", StatevectorEncoder()), ("model", QuantumKernelSVC())])
+    search = GridSearchCV(pipeline, {"encoder__encoding": ["z", "zz"], "model__C": [0.1, 1.0]}, cv=2, scoring="roc_auc")
+    search.fit(train, labels)
+    assert set(search.best_params_) == {"encoder__encoding", "model__C"}
+    assert clone(QuantumKernelSVC(C=3.0)).get_params() == {"C": 3.0}
 
 
 def test_off_diagonal_excludes_the_diagonal() -> None:
