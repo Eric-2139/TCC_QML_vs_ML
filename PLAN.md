@@ -344,31 +344,78 @@ ensina o conceito do zero (guia oficial, curso, livro-texto aberto); artigo entr
 "Só se faltar" marca pré-requisito: pule se já sabe. Todos gratuitos, de fora da Base de Conhecimento, com autor,
 link e nome de seção conferidos na web.
 
+**Regra (2026-10-20): ao fim de toda fase, conferir se os materiais explicam o que a seção aplicou.** Para cada
+conceito usado no código, nas leituras e nas decisões da seção, a tabela da fase precisa ter um material que o
+explique do jeito que o projeto usa; se não tiver, entra um material novo, ou fica registrado por que não precisa
+(definido no próprio notebook, já estudado em outro trabalho, detalhe explicado na seção). Conceito usado antes da
+fase em que é estudado ganha uma nota apontando a leitura futura. É o passo 9 do `/fase`. Na primeira conferência
+(2026-10-20) as Fases 0 a 3b foram revistas; o que entrou nelas está marcado com *(acrescentado na conferência)*.
+
 Abreviações: **QML-IBM** = curso [*Quantum machine learning*](https://quantum.cloud.ibm.com/learning/en/courses/quantum-machine-learning/)
 da IBM Quantum Learning; **sklearn** = [*User Guide*](https://scikit-learn.org/stable/user_guide.html) do
 scikit-learn 1.9.
+
+### Fase 0 — Setup e benchmark de custo (já entregue)
+
+| Conceito | Ler só isto |
+|---|---|
+| Só se faltar: o estado de vários qubits (o *statevector*) *(acrescentado na conferência)* | IBM, *Basics of quantum information*, lição *Multiple systems*, página [*Quantum information*](https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/multiple-systems/quantum-information): só a seção *Quantum states*, até *Tensor products of quantum state vectors*. A página não diz "2ⁿ" com essas palavras: o vetor tem uma posição por cadeia de bits (00, 01, 10, 11 com 2 qubits), e é daí que vêm as 2ⁿ amplitudes que a Seção 1 usa para medir custo e memória |
+| O que o `tracemalloc` mede, e por que o RSS complementa *(acrescentado na conferência)* | Python 3.12, [`tracemalloc`](https://docs.python.org/3.12/library/tracemalloc.html): só o 1º parágrafo (*"trace memory blocks allocated by Python"*). A memória alocada fora do Python (Aer, libsvm) não aparece nele, que é o motivo de o `CostMeter` medir também o RSS |
+
+**Coberto pela aula ou pelo notebook, sem material:** a concentração do kernel (aula da Fase 0 no `study_notes.md`,
+retomada na Fase 5) e a extrapolação linear do custo pelo número de linhas (Seção 1.2).
+
+### Fase 1 — Coleta e carregamento (já entregue)
+
+Sem material: o contrato dos dados e o hash de integridade são procedimentos de engenharia explicados na própria
+Seção 2 e na aula da Fase 1; nenhum conceito de ML ou de computação quântica é aplicado nela.
 
 ### Fase 2 — Divisão e undersampling (já entregue)
 
 | Conceito | Ler só isto |
 |---|---|
 | Vazamento | sklearn, [12.2 *Data leakage*](https://scikit-learn.org/stable/common_pitfalls.html) |
-| Reamostrar antes do split 
-| imbalanced-learn, [9.1 *Data leakage*](https://imbalanced-learn.org/stable/common_pitfalls.html) |
+| Reamostrar antes do split | imbalanced-learn, [9.1 *Data leakage*](https://imbalanced-learn.org/stable/common_pitfalls.html) |
 | Undersampling distorce a probabilidade | Google *Machine Learning Crash Course*, [*Class-imbalanced datasets*](https://developers.google.com/machine-learning/crash-course/overfitting/imbalanced-datasets): *Step 1: Downsample the majority class* e *Step 2: Upweight the downsampled class* |
+| Treino, validação e teste: o papel de cada parte *(acrescentado na conferência)* | Google *Machine Learning Crash Course*, [*Datasets: Dividing the original dataset*](https://developers.google.com/machine-learning/crash-course/overfitting/dividing-datasets): só a seção *Training, validation, and test sets* |
+| Estratificação: por que o sorteio precisa preservar a proporção da classe rara *(acrescentado na conferência)* | sklearn, [3.1.2.2 *Cross-validation iterators with stratification based on class labels*](https://scikit-learn.org/stable/modules/cross_validation.html): só o 1º parágrafo (o exemplo dele é justamente fraude). O texto fala de folds; o `stratified_three_way_split` aplica a mesma ideia às três partes |
+| Só se faltar: por que não um split aleatório para dados no tempo (CC12) *(acrescentado na conferência)* | sklearn, [3.1.2.6 *Cross validation of time series data*](https://scikit-learn.org/stable/modules/cross_validation.html): só o 1º parágrafo |
+
+**Usado na Seção 3 antes da leitura própria.** A Seção 3.2 mostra que a precisão muda com a proporção de fraudes
+(`precision_at_prevalence`). Precisão e recall são lidos na Fase 6 (*Accuracy, recall, precision, and related
+metrics*); para a Fase 2 basta a fórmula explicada na própria 3.2.
 
 **Para citar no TCC:** Dal Pozzolo et al. 2015 ([ResearchGate](https://www.researchgate.net/publication/283349138_Calibrating_Probability_with_Undersampling_for_Unbalanced_Classification)):
 a fórmula de correção usada na Seção 4.10.
+
+### Fase 3a — Exploração do treino e engenharia de features (já entregue)
+
+| Conceito | Ler só isto |
+|---|---|
+| Transformação log para valores com cauda longa (`log1p(Amount)`) *(acrescentado na conferência)* | Google *Machine Learning Crash Course*, [*Numerical data: Normalization*](https://developers.google.com/machine-learning/crash-course/numerical-data/normalization): só a seção *Log scaling* |
+| Hora do dia em seno e cosseno *(acrescentado na conferência)* | sklearn, exemplo [*Time-related feature engineering*](https://scikit-learn.org/stable/auto_examples/applications/plot_cyclical_feature_engineering.html): só os dois primeiros parágrafos da seção *Trigonometric features* (seno e cosseno com o período certo eliminam o salto entre o último e o primeiro valor do ciclo, as 23h59 e 00h00 da Seção 4.3) |
+| Teste qui-quadrado de independência (a taxa de fraude difere entre os dois dias? Seção 4.3) *(acrescentado na conferência)* | Diez, Çetinkaya-Rundel e Barr, *OpenIntro Statistics*, 4ª ed. ([PDF gratuito](https://www.openintro.org/book/os/)): só a seção 6.4, *Chi-square for two-way tables* |
+
+**Já estudado, sem material novo:** informação mútua × correlação de Pearson e média × mediana (Trabalho Humberto,
+referenciados no topo do `study_notes.md`).
 
 ### Fase 3b — Scalers e codificação (já entregue)
 
 | Conceito | Ler só isto |
 |---|---|
+| StandardScaler, MinMaxScaler e RobustScaler: o que cada um aprende *(acrescentado na conferência)* | sklearn, [8.3.1 *Standardization, or mean removal and variance scaling*](https://scikit-learn.org/stable/modules/preprocessing.html): a introdução, 8.3.1.1 *Scaling features to a range* e 8.3.1.3 *Scaling data with outliers*. A equivalência Standard → MinMax = MinMax não está lá: é demonstrada na Seção 4.6.2 |
+| Só se faltar: PCA *(acrescentado na conferência)* | sklearn, [2.5.1.1 *Exact PCA and probabilistic interpretation*](https://scikit-learn.org/stable/modules/decomposition.html): só os dois primeiros parágrafos |
+| Só se faltar: seleção das k melhores features por informação mútua *(acrescentado na conferência)* | sklearn, [1.13.2 *Univariate feature selection*](https://scikit-learn.org/stable/modules/feature_selection.html): só os parágrafos sobre `SelectKBest` e o que cita `mutual_info_classif` |
 | Kernel e SVM | QML-IBM, lição [*Review of relevant machine learning methods*](https://quantum.cloud.ibm.com/learning/en/courses/quantum-machine-learning/classical-ml-review): seções *Support vector machines*, *Kernel methods and how quantum can play a role* e *Moving to higher dimensional spaces* |
 | Largura de banda do kernel (o γ do RBF) | sklearn, [1.4.6.1 *Parameters of the RBF Kernel*](https://scikit-learn.org/stable/modules/svm.html) |
 | Codificação de ângulo, de amplitude e o mapa ZZ | QML-IBM, lição [*Data encoding*](https://quantum.cloud.ibm.com/learning/en/courses/quantum-machine-learning/data-encoding): seções *Amplitude encoding*, *Angle encoding* e *ZZ feature map* |
 | Só se faltar: produto interno entre estados | IBM, *Basics of quantum information*, [*Inner products and projections*](https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/quantum-circuits/inner-products-and-projections) |
 | Alinhamento kernel-alvo (KTA): o que é e como se calcula | PennyLane, demo [*Training and evaluating quantum kernels*](https://pennylane.ai/qml/demos/tutorial_kernels_module) (Derks, Faehrmann, Gil-Fuster, Hubregtsen, Meyer e Wierichs): só a seção *Training the Quantum Embedding Kernel*, até a fórmula do KTA. Ela traz a versão **sem** centralização; a centralizada, que o projeto usa, está explicada com um exemplo calculado no `study_notes.md` (Fase 2b, "Conceito: o KTA") |
+
+**Coberto pelo notebook, sem material:** a periodicidade dos mapas do Qiskit (α = 2, período π; Seção 4.7.1, análise
+própria com testes), a constante de preenchimento da amplitude e a perda da norma (4.8, idem), e a correlação de
+Spearman da 4.6.0 (definida no próprio texto). O KTA centrado está explicado com exemplo calculado no
+`study_notes.md`.
 
 **Para citar no TCC:** Havlíček et al. 2019, [arXiv:1804.11326](https://arxiv.org/abs/1804.11326) (origem do
 ZZFeatureMap; dados artificiais gerados pelo próprio mapa) e Schuld 2021, [arXiv:2101.11020](https://arxiv.org/abs/2101.11020)
@@ -376,17 +423,43 @@ ZZFeatureMap; dados artificiais gerados pelo próprio mapa) e Schuld 2021, [arXi
 Cortes, Mohri & Rostamizadeh 2012, *Algorithms for Learning Kernels Based on Centered Alignment*, JMLR 13
 ([PDF](https://www.jmlr.org/papers/volume13/cortes12a/cortes12a.pdf)): seção 2, *Alignment Definitions* (pp. 798–800).
 
-### Fase 4 — Treinamento
+### Fase 4 — Treinamento (já entregue; materiais conferidos em 2026-10-20)
 
 | Conceito | Ler só isto |
 |---|---|
 | AdaBoost: reponderação e classificador fraco | sklearn, [1.11.7 *AdaBoost*](https://scikit-learn.org/stable/modules/ensemble.html) |
 | De onde vem o α | Schapire 2013, *Explaining AdaBoost* ([PDF](https://www.schapire.net/papers/explaining-adaboost.pdf)): só a seção 1, *Introduction* |
+| O que o AdaBoost guarda de cada rodada (o que a Seção 5.5 lê) | sklearn, API do [`AdaBoostClassifier`](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.AdaBoostClassifier.html): só o parâmetro `n_estimators` e os atributos `estimator_weights_` e `estimator_errors_`. **A página não documenta a parada por ε ≥ 0,5:** no `n_estimators` ela só diz *"In case of perfect fit, the learning procedure is stopped early"*. A regra que encerra o boosting quântico (o classificador da rodada com ε ≥ 0,5 é descartado, e `n_estimators` vira teto) está no código do scikit-learn (`_boost` em `sklearn/ensemble/_weight_boosting.py`) e é explicada na própria Seção 5.5 |
+| Peso por amostra: o elo entre o boosting e o classificador variacional | sklearn, [Glossário: `sample_weight`](https://scikit-learn.org/stable/glossary.html#term-sample_weight): só o 1º parágrafo (peso inteiro = repetir a linha; por isso peso zero = remover a linha, que é um dos testes do `VariationalQuantumClassifier`) |
+| Entropia cruzada (*log loss*), o custo do classificador fraco | Google *Machine Learning Crash Course*, [*Logistic regression: Loss and regularization*](https://developers.google.com/machine-learning/crash-course/logistic-regression/loss-regularization): só a seção *Log Loss*. A versão ponderada do projeto multiplica cada termo da soma pelo peso da linha |
 | QSVM = SVM com kernel pré-calculado | sklearn, [1.4.6.2 *Custom Kernels*](https://scikit-learn.org/stable/modules/svm.html) |
-| Classificador variacional | QML-IBM, lição [*QVCs and QNNs*](https://quantum.cloud.ibm.com/learning/en/courses/quantum-machine-learning/qvc-qnn): de *Variational quantum classifier: a first attempt* até *Testing and accuracy* |
+| Classificador variacional | QML-IBM, lição [*QVCs and QNNs*](https://quantum.cloud.ibm.com/learning/en/courses/quantum-machine-learning/qvc-qnn): de *Variational quantum classifier: a first attempt* até *Testing and accuracy*. Serve para a **estrutura** (feature map + ansatz + medição + otimizador clássico); o classificador da lição é diferente do nosso (tabela abaixo) |
+| Só se faltar: COBYLA, o otimizador sem gradiente | SciPy, [`minimize(method='COBYLA')`](https://docs.scipy.org/doc/scipy/reference/optimize.minimize-cobyla.html): só o parágrafo de descrição e a opção `maxiter` (*"Maximum number of function evaluations"*: é contagem de avaliações do custo, e não de passos) |
+| Só se faltar: linha de base sem modelo | sklearn, API do [`DummyClassifier`](https://scikit-learn.org/stable/modules/generated/sklearn.dummy.DummyClassifier.html): só o 1º parágrafo e a estratégia `"prior"` |
 
-**Para citar no TCC:** Zhu et al. 2009, *Multi-class AdaBoost* ([PDF](https://hastie.su.domains/Papers/samme.pdf)):
-equação (1) e "when K = 2, SAMME reduces to AdaBoost" (WA2).
+**A lição da IBM × o classificador fraco do projeto** (conferido no código da lição e em
+`src/fraud_qml/quantum/variational.py`):
+
+| | Lição da IBM | `VariationalQuantumClassifier` |
+|---|---|---|
+| Custo | Erro quadrático médio (MSE) | Entropia cruzada **ponderada** pelos pesos do boosting |
+| Peso por linha | Não existe | Essencial: é por ele que o boosting diz onde errar custa mais |
+| O que se mede | Z em **todos** os qubits ao mesmo tempo (`"Z" * num_qubits`, a paridade) | Z só no **qubit 0** |
+| Da medição à classe | Corte em 0 sobre ⟨Z⟩ | P(1) = (1 − ⟨Z₀⟩)/2, corte em 0,5: é o mesmo que ⟨Z₀⟩ < 0 |
+| Ansatz | Feito à mão (RY, CNOT, RX) | `RealAmplitudes` (RY e CNOT) |
+| Otimizador | COBYLA, `maxiter` 100 | COBYLA, `maxiter` 60 |
+
+**Usados na Seção 5 antes da leitura própria.** A Seção 5.4 já avalia com **PR-AUC** e **bootstrap pareado**. A
+leitura da curva precisão-recall é a da Fase 6 e a do bootstrap, a da Fase 8. Para a Fase 4 basta a definição que a
+própria Seção 5 dá (termos novos e 5.4); quem quiser adiantar usa as leituras daquelas fases.
+
+**Para citar no TCC:** Wang, Wang, Qi e Dong 2024, *Supervised Learning Guarantee for Quantum AdaBoost*,
+Phys. Rev. Applied 22, 054001 ([arXiv:2402.02376](https://arxiv.org/abs/2402.02376)). É a referência principal do
+Quantum AdaBoost: a entropia cruzada ponderada (Eq. 7), a leitura pelo sinal de ⟨Z⟩ (Eq. 9), o α do Algoritmo 1
+(α = ln((1−ε)/ε) + ln(D−1), que com D = 2 classes é a fórmula do scikit-learn) e o do Algoritmo 2
+(α = ½·ln((1−ε)/ε), com a exigência ε < ½), e a regra de ficar com a iteração de menor erro (seção III.C) (WA2, WA3).
+Substitui Zhu et al. 2009 como citação da fase: o Algoritmo 1 do próprio Wang já mostra que a fórmula do
+scikit-learn é a do AdaBoost com duas classes.
 
 ### Fase 5 — Ajuste de hiperparâmetros
 
@@ -448,7 +521,7 @@ era unfolds*.
 | Havlíček et al. 2019 | Origem do ZZFeatureMap e do QSVM | 3b |
 | Schuld 2021 | QML supervisionado = métodos de kernel (CC3) | 3b |
 | Cortes, Mohri & Rostamizadeh 2012 | Definição do alinhamento kernel-alvo centrado (KTA) | 3b |
-| Zhu et al. 2009 | SAMME = AdaBoost com 2 classes (WA2) | 4 |
+| Wang et al. 2024 | Quantum AdaBoost: entropia cruzada ponderada, os dois α e a regra de parada (WA2, WA3) | 4 |
 | Thanasilp et al. 2024 | Concentração exponencial do kernel (CC5) | 5 |
 | Saito & Rehmsmeier 2015 | PR-AUC como métrica principal | 6 |
 | Preskill 2018 | Definição de NISQ | 9 |
