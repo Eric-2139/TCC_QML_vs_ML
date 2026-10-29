@@ -91,6 +91,35 @@ def test_train_only_cells_of_the_training_section_do_not_read_validation_or_test
     assert used == [], f"{TRAIN_ONLY_TRAINING_CELLS[marker]} usa {used}"
 
 
+TUNING_SECTION_MARKER: Final[str] = "## 6. Ajuste de hiperparâmetros"
+AFTER_TUNING_PATTERN: Final[re.Pattern[str]] = re.compile(r"^## 7\. ", re.MULTILINE)
+
+
+def _tuning_code_cells() -> list[str]:
+    notebook = nbt.load()
+    start = nbt.find_cell_index(notebook, TUNING_SECTION_MARKER)
+    sources: list[str] = []
+    for cell in notebook.cells[start + 1 :]:
+        if cell.cell_type == "markdown" and AFTER_TUNING_PATTERN.search(cell.source):
+            break
+        if cell.cell_type == "code":
+            sources.append(cell.source)
+    return sources
+
+
+def test_tuning_section_has_code_to_check() -> None:
+    assert len(_tuning_code_cells()) >= 5
+
+
+@pytest.mark.parametrize("name", FORBIDDEN_NAMES)
+def test_tuning_section_only_reads_training_rows(name: str) -> None:
+    # A escolha de hiperparâmetros é da validação cruzada no treino (PLAN, decisão de arquitetura 3): uma célula da
+    # Seção 6 que lesse a validação ou o teste transformaria a escolha em seleção nas linhas de avaliação
+    pattern = re.compile(rf"\b{re.escape(name)}\b")
+    offenders = [source.splitlines()[0] for source in _tuning_code_cells() if pattern.search(source)]
+    assert offenders == [], f"células da Seção 6 que usam {name}: {offenders}"
+
+
 def test_every_declared_exception_still_exists() -> None:
     # Uma exceção que não corresponde a nenhuma célula é uma porta aberta sem dono
     sources = _exploration_code_cells()

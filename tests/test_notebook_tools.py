@@ -1,6 +1,7 @@
 """Operações de edição e inspeção do notebook, com um notebook sintético."""
 
 import base64
+import subprocess
 from pathlib import Path
 
 import nbformat
@@ -87,6 +88,16 @@ def test_set_cell_source_replaces_whole_cell_and_clears_outputs(notebook_path: P
 def test_replace_in_cell_rejects_ambiguous_text(notebook_path: Path) -> None:
     with pytest.raises(ValueError, match="aparece 2 vezes"):
         nbt.replace_in_cell("print(x)", "x", "y", notebook_path)
+
+
+def test_execution_failure_reports_the_failing_cell(notebook_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Com --inplace, uma célula que falha não deixa rastro no notebook: o relato do nbconvert precisa chegar a quem executou
+    def failing_run(*args: object, **kwargs: object) -> None:
+        raise subprocess.CalledProcessError(1, "nbconvert", stderr="linha 1\nNameError: name 'x' is not defined\n")
+
+    monkeypatch.setattr(nbt.subprocess, "run", failing_run)
+    with pytest.raises(nbt.NotebookExecutionError, match="NameError: name 'x' is not defined"):
+        nbt.execute(notebook_path)
 
 
 def test_health_flags_unexecuted_and_error_cells(notebook_path: Path) -> None:

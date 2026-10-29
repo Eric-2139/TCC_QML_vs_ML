@@ -73,10 +73,14 @@ def _angle_steps(scaler: ScalerName, reducer: ReducerName, angle_range: AngleRan
     return list(build_angle_preprocessor(scaler, reducer, config.N_QUBITS, angle_range, random_state).steps)
 
 
-def _classical_input_steps(model_input: ClassicalInput, scaler: ScalerName, random_state: int) -> list[Step]:
+def _classical_input_steps(
+    model_input: ClassicalInput, scaler: ScalerName, reducer: ReducerName, random_state: int
+) -> list[Step]:
     if model_input == "angle_components":
-        # Entrada idêntica à da variação A dos quânticos: os mesmos 5 valores que viram ângulos
-        return _angle_steps(scaler, "pca", DEFAULT_ANGLE_RANGE, random_state)
+        # Entrada idêntica à da variação A dos quânticos: os mesmos 5 valores que viram ângulos. A largura da
+        # faixa fica na padrão: num stump ela não muda nada, e no RBF reescalar as 5 colunas por um mesmo fator
+        # equivale a mudar o γ (com γ = "scale", o RBF fica exatamente igual)
+        return _angle_steps(scaler, reducer, DEFAULT_ANGLE_RANGE, random_state)
     return [("scaler", make_scaler(scaler))]
 
 
@@ -124,7 +128,7 @@ def quantum_encoding_steps(
 
 
 def build_dummy_pipeline(random_state: int = config.RANDOM_STATE) -> ImbPipeline:
-    """Linha de base sem modelo: prevê a proporção de classes do treino balanceado e ignora as features."""
+    """Linha de base: um ``DummyClassifier`` que prevê a proporção de classes do treino balanceado e ignora as features."""
     return ImbPipeline([_undersampling_step(random_state), ("model", DummyClassifier(strategy="prior"))])
 
 
@@ -134,6 +138,7 @@ def build_svm_pipeline(
     C: float = DEFAULT_SVM_C,  # noqa: N803  (mesmo nome do parâmetro no scikit-learn)
     gamma: str | float = DEFAULT_SVM_GAMMA,
     random_state: int = config.RANDOM_STATE,
+    reducer: ReducerName = "pca",
 ) -> ImbPipeline:
     """SVM clássico com kernel RBF.
 
@@ -144,6 +149,7 @@ def build_svm_pipeline(
         C: Penalidade por erro de classificação no treino.
         gamma: Largura de banda do RBF.
         random_state: Semente do undersampling e do redutor.
+        reducer: Redutor para os 5 componentes (só com ``angle_components``).
 
     Returns:
         Pipeline não ajustado.
@@ -151,7 +157,7 @@ def build_svm_pipeline(
     return ImbPipeline(
         [
             _undersampling_step(random_state),
-            *_classical_input_steps(model_input, scaler, random_state),
+            *_classical_input_steps(model_input, scaler, reducer, random_state),
             ("model", SVC(kernel="rbf", C=C, gamma=gamma)),
         ]
     )
@@ -163,6 +169,7 @@ def build_adaboost_pipeline(
     n_estimators: int = DEFAULT_N_ESTIMATORS,
     learning_rate: float = DEFAULT_LEARNING_RATE,
     random_state: int = config.RANDOM_STATE,
+    reducer: ReducerName = "pca",
 ) -> ImbPipeline:
     """AdaBoost clássico; o classificador fraco é o padrão do scikit-learn (árvore de um corte, *stump*).
 
@@ -173,6 +180,7 @@ def build_adaboost_pipeline(
         n_estimators: Número máximo de classificadores fracos (rodadas de boosting).
         learning_rate: Fator que encolhe o peso de cada classificador fraco no voto.
         random_state: Semente do undersampling, do redutor e do boosting.
+        reducer: Redutor para os 5 componentes (só com ``angle_components``).
 
     Returns:
         Pipeline não ajustado.
@@ -180,7 +188,7 @@ def build_adaboost_pipeline(
     return ImbPipeline(
         [
             _undersampling_step(random_state),
-            *_classical_input_steps(model_input, scaler, random_state),
+            *_classical_input_steps(model_input, scaler, reducer, random_state),
             ("model", AdaBoostClassifier(n_estimators=n_estimators, learning_rate=learning_rate, random_state=random_state)),
         ]
     )
@@ -254,6 +262,153 @@ def build_weak_quantum_classifier_pipeline(
     """
     model = VariationalQuantumClassifier(ansatz_reps=ansatz_reps, max_iterations=max_iterations, random_state=random_state)
     return Pipeline([*encoding_steps, ("model", model)])
+
+
+InputKind = Literal["all_features", "angle_components", "angle", "amplitude"]
+ModelFamily = Literal["svm", "qsvm", "adaboost", "quantum_adaboost"]
+
+_CLASSICAL_INPUTS: Final[frozenset[str]] = frozenset({"all_features", "angle_components"})
+_QUANTUM_FAMILIES: Final[frozenset[str]] = frozenset({"qsvm", "quantum_adaboost"})
+_BOOSTING_FAMILIES: Final[frozenset[str]] = frozenset({"adaboost", "quantum_adaboost"})
+
+
+@dataclass(frozen=True)
+class InputEncoding:
+    """Decisões de **entrada** e de **codificação**: tudo o que fica entre o undersampling e o modelo.
+
+    Os campos que não se aplicam a um tipo de entrada são ignorados por ele (por exemplo, a faixa dos
+    ângulos na amplitude). Os nomes e os padrões são os da Seção 5.
+
+    Attributes:
+        kind: ``all_features`` e ``angle_components`` (clássicos); ``angle`` (variação A) e
+            ``amplitude`` (variação B) (quânticos).
+        scaler: Scaler de entrada.
+        reducer: Redutor para 5 componentes (``angle_components`` e ``angle``).
+        range_width: Largura da faixa [0, largura] dos ângulos (só ``angle``).
+        feature_map: Mapa de codificação (só ``angle``).
+        feature_map_reps: Repetições do mapa (só ``angle``; ignorado no ``ry``).
+        entanglement: Pares acoplados no ``zz`` (só ``angle``).
+        padding_value: Constante de preenchimento (só ``amplitude``).
+    """
+
+    kind: InputKind
+    scaler: ScalerName = "standard"
+    reducer: ReducerName = "pca"
+    range_width: float = DEFAULT_ANGLE_RANGE[1]
+    feature_map: AngleFeatureMapName = "zz"
+    feature_map_reps: int = DEFAULT_FEATURE_MAP_REPS
+    entanglement: Entanglement = "linear"
+    padding_value: float = DEFAULT_AMPLITUDE_PADDING
+
+    @property
+    def is_quantum(self) -> bool:
+        """Se a entrada termina num estado quântico (etapa ``encoder``)."""
+        return self.kind not in _CLASSICAL_INPUTS
+
+    def steps(self, random_state: int = config.RANDOM_STATE) -> list[Step]:
+        """Etapas desta entrada (e da codificação, nos quânticos), sem o undersampling e sem o modelo.
+
+        Args:
+            random_state: Semente do redutor.
+
+        Returns:
+            Lista de etapas ``(nome, transformador)``.
+        """
+        if not self.is_quantum:
+            return _classical_input_steps(self.kind, self.scaler, self.reducer, random_state)  # type: ignore[arg-type]
+        return quantum_encoding_steps(
+            variation=self.kind,  # type: ignore[arg-type]
+            scaler=self.scaler,
+            reducer=self.reducer,
+            angle_range=(0.0, self.range_width),
+            feature_map=self.feature_map,
+            feature_map_reps=self.feature_map_reps,
+            entanglement=self.entanglement,
+            padding_value=self.padding_value,
+            random_state=random_state,
+        )
+
+
+@dataclass(frozen=True)
+class ModelSettings:
+    """Decisões de **modelo**. Cada família usa só os seus campos; os outros são ignorados.
+
+    Attributes:
+        family: ``svm``, ``qsvm``, ``adaboost`` ou ``quantum_adaboost``.
+        C: Penalidade do SVM e do QSVM.
+        gamma: Largura de banda do RBF (só ``svm``).
+        n_estimators: Teto de rodadas dos dois AdaBoost.
+        learning_rate: Taxa de aprendizado dos dois AdaBoost.
+        ansatz_reps: Repetições do ansatz (só ``quantum_adaboost``).
+        max_iterations: Avaliações do COBYLA (só ``quantum_adaboost``; fixo no grid, Seção 5.2).
+    """
+
+    family: ModelFamily
+    C: float = DEFAULT_SVM_C  # noqa: N815  (mesmo nome do parâmetro no scikit-learn)
+    gamma: str | float = DEFAULT_SVM_GAMMA
+    n_estimators: int = DEFAULT_N_ESTIMATORS
+    learning_rate: float = DEFAULT_LEARNING_RATE
+    ansatz_reps: int = DEFAULT_ANSATZ_REPS
+    max_iterations: int = DEFAULT_MAX_ITERATIONS
+
+    @property
+    def is_quantum(self) -> bool:
+        """Se o modelo espera estados quânticos na entrada."""
+        return self.family in _QUANTUM_FAMILIES
+
+    @property
+    def is_boosting(self) -> bool:
+        """Se o modelo é um dos dois AdaBoost (cuja pontuação pode ser lida rodada a rodada)."""
+        return self.family in _BOOSTING_FAMILIES
+
+    def build(self, random_state: int = config.RANDOM_STATE) -> BaseEstimator:
+        """Cria o modelo não ajustado.
+
+        Args:
+            random_state: Semente do boosting (os SVM não sorteiam nada).
+
+        Returns:
+            O estimador da etapa ``model``.
+        """
+        if self.family == "svm":
+            return SVC(kernel="rbf", C=self.C, gamma=self.gamma)
+        if self.family == "qsvm":
+            return QuantumKernelSVC(C=self.C)
+        weak_learner = None
+        if self.family == "quantum_adaboost":
+            weak_learner = VariationalQuantumClassifier(ansatz_reps=self.ansatz_reps, max_iterations=self.max_iterations)
+        return AdaBoostClassifier(
+            estimator=weak_learner,
+            n_estimators=self.n_estimators,
+            learning_rate=self.learning_rate,
+            random_state=random_state,
+        )
+
+
+def build_pipeline(
+    input_encoding: InputEncoding, model: ModelSettings, random_state: int = config.RANDOM_STATE
+) -> ImbPipeline:
+    """Pipeline completo (undersampling → entrada → codificação → modelo) a partir das duas descrições.
+
+    É a forma usada pelo grid e pelos modelos finais; com os padrões, dá exatamente os pipelines das
+    funções ``build_*_pipeline`` (há teste).
+
+    Args:
+        input_encoding: Entrada e codificação.
+        model: Modelo.
+        random_state: Semente do undersampling, do redutor e do boosting.
+
+    Returns:
+        Pipeline não ajustado.
+
+    Raises:
+        ValueError: Se um modelo quântico receber uma entrada clássica, ou o contrário.
+    """
+    if input_encoding.is_quantum != model.is_quantum:
+        raise ValueError(f"o modelo {model.family} não aceita a entrada {input_encoding.kind}")
+    return ImbPipeline(
+        [_undersampling_step(random_state), *input_encoding.steps(random_state), ("model", model.build(random_state))]
+    )
 
 
 @dataclass(frozen=True)

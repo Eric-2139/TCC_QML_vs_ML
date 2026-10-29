@@ -9,7 +9,10 @@ from sklearn.preprocessing import StandardScaler
 
 from fraud_qml import config
 from fraud_qml.models import (
+    InputEncoding,
+    ModelSettings,
     build_adaboost_pipeline,
+    build_pipeline,
     build_dummy_pipeline,
     build_qsvm_pipeline,
     build_quantum_adaboost_pipeline,
@@ -125,6 +128,45 @@ def test_adaboost_with_stumps_ignores_the_scaler() -> None:
     np.testing.assert_allclose(
         raw.decision_function(features), scaled.decision_function(scaler.transform(features)), atol=1e-12
     )
+
+
+def _default_descriptions() -> dict[str, tuple[InputEncoding, ModelSettings]]:
+    return {
+        "svm": (InputEncoding("all_features"), ModelSettings("svm")),
+        "svm_like_for_like": (InputEncoding("angle_components"), ModelSettings("svm")),
+        "adaboost": (InputEncoding("all_features"), ModelSettings("adaboost", n_estimators=5)),
+        "adaboost_like_for_like": (InputEncoding("angle_components"), ModelSettings("adaboost", n_estimators=5)),
+        "qsvm_angle": (InputEncoding("angle"), ModelSettings("qsvm")),
+        "qsvm_amplitude": (InputEncoding("amplitude"), ModelSettings("qsvm")),
+        "quantum_adaboost_angle": (InputEncoding("angle"), ModelSettings("quantum_adaboost", n_estimators=2, max_iterations=15)),
+        "quantum_adaboost_amplitude": (
+            InputEncoding("amplitude"), ModelSettings("quantum_adaboost", n_estimators=2, max_iterations=15),
+        ),
+    }
+
+
+@pytest.mark.parametrize("name", list(_default_descriptions()))
+def test_generic_factory_with_defaults_gives_the_section_5_pipelines(name: str) -> None:
+    # O grid e os modelos finais usam build_pipeline; com os padrões, ele precisa dar os mesmos pipelines da Seção 5
+    features, labels = _imbalanced_data()
+    generic = build_pipeline(*_default_descriptions()[name]).fit(features, labels)
+    specific = _all_pipelines()[name].fit(features, labels)
+    assert [step for step, _ in generic.steps] == [step for step, _ in specific.steps]
+    np.testing.assert_allclose(generic.decision_function(features), specific.decision_function(features), atol=1e-12)
+
+
+def test_classical_reducer_is_a_parameter() -> None:
+    features, labels = _imbalanced_data()
+    pipeline = build_svm_pipeline("angle_components", reducer="mutual_info").fit(features, labels)
+    assert type(pipeline.named_steps["reducer"]).__name__ == "SelectKBest"
+    assert pipeline.named_steps["reducer"].transform(features).shape[1] == config.N_QUBITS
+
+
+def test_generic_factory_rejects_a_quantum_model_on_a_classical_input() -> None:
+    with pytest.raises(ValueError, match="não aceita"):
+        build_pipeline(InputEncoding("all_features"), ModelSettings("qsvm"))
+    with pytest.raises(ValueError, match="não aceita"):
+        build_pipeline(InputEncoding("amplitude"), ModelSettings("svm"))
 
 
 def test_weak_classifier_pipeline_has_no_undersampler() -> None:

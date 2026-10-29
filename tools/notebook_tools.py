@@ -32,7 +32,11 @@ from nbformat.v4 import new_code_cell, new_markdown_cell
 PROJECT_ROOT: Final[Path] = Path(__file__).resolve().parents[1]
 DEFAULT_NOTEBOOK: Final[Path] = PROJECT_ROOT / "notebooks" / "tcc_ml_vs_qml.ipynb"
 NOTEBOOK_VERSION: Final[int] = 4
-DEFAULT_EXECUTION_TIMEOUT_SECONDS: Final[int] = 3600
+# Limite por célula. O grid da Seção 6 roda numa célula por modelo e, sem o cache, o do Quantum AdaBoost passa de
+# uma hora; 3 h cobre o limite de 2 h fixado para a seção inteira (PLAN, decisão de arquitetura 3)
+DEFAULT_EXECUTION_TIMEOUT_SECONDS: Final[int] = 3 * 3600
+# Linhas finais do relato do nbconvert repassadas quando uma célula falha: o traceback da célula fica no fim
+ERROR_REPORT_LINES: Final[int] = 40
 
 # Reexportados para que os scripts de construção de células importem tudo de um lugar só
 code_cell = new_code_cell
@@ -155,21 +159,31 @@ def set_cell_source(marker: str, new_source: str, path: Path = DEFAULT_NOTEBOOK)
     save(notebook, path)
 
 
+class NotebookExecutionError(RuntimeError):
+    """Uma célula falhou durante a execução do notebook inteiro."""
+
+
 def execute(path: Path = DEFAULT_NOTEBOOK, timeout_seconds: int = DEFAULT_EXECUTION_TIMEOUT_SECONDS) -> None:
     """Executa o notebook inteiro no kernel do ambiente atual e grava as saídas no próprio arquivo.
 
     Raises:
-        subprocess.CalledProcessError: Se alguma célula falhar.
+        NotebookExecutionError: Se alguma célula falhar. A mensagem traz o fim do relato do ``nbconvert``,
+            que diz qual célula falhou e por quê (com ``--inplace``, o notebook não é gravado nesse caso, então
+            a mensagem é o único lugar em que o erro aparece).
     """
-    subprocess.run(
-        [
-            sys.executable, "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--inplace",
-            f"--ExecutePreprocessor.timeout={timeout_seconds}", str(path),
-        ],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    try:
+        subprocess.run(
+            [
+                sys.executable, "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--inplace",
+                f"--ExecutePreprocessor.timeout={timeout_seconds}", str(path),
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as error:
+        report = "\n".join((error.stderr or "").strip().splitlines()[-ERROR_REPORT_LINES:])
+        raise NotebookExecutionError(f"a execução de {path.name} falhou:\n{report}") from error
 
 
 def _start_index(notebook: NotebookNode, from_marker: str | None) -> int:

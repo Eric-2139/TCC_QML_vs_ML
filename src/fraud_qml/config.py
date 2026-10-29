@@ -51,5 +51,29 @@ AMPLITUDE_PADDING_GRID: Final[tuple[float, ...]] = (1.0, 3.0, 5.0)
 # (kernel Π cos²(Δ), o mesmo da rotação em Y); com 2, o kernel muda. Por isso as duas entram no grid.
 FEATURE_MAP_REPS_GRID: Final[tuple[int, ...]] = (1, 2)
 
+# Emaranhamento do mapa ZZ: só vizinhos ou todos os pares. Não foi medido na Seção 4; entra pelo plano.
+ENTANGLEMENT_GRID: Final[tuple[str, ...]] = ("linear", "full")
+
+# Grids dos modelos (Seção 6). C e γ em escala logarítmica, uma década por passo: o efeito deles é
+# multiplicativo, e passos lineares gastariam pontos numa só ordem de grandeza. O γ = "scale" do
+# scikit-learn (1 / (nº de features × variância)) entra ao lado dos valores fixos porque se ajusta à escala
+# de cada entrada (31 features padronizadas ou 5 componentes numa faixa de ângulos).
+SVM_C_GRID: Final[tuple[float, ...]] = (0.1, 1.0, 10.0, 100.0)
+SVM_GAMMA_GRID: Final[tuple[str | float, ...]] = ("scale", 0.01, 0.1, 1.0, 10.0)
+# Os dois AdaBoost têm o mesmo grid de modelo. n_estimators é um teto (o boosting quântico para antes,
+# CC17) e é lido rodada a rodada num único ajuste com o maior valor. Taxas menores que 1 mudam os pesos
+# mais devagar: é a saída "reduzir a taxa" do ponto ⑤ do PLAN.
+BOOSTING_N_ESTIMATORS_GRID: Final[tuple[int, ...]] = (10, 25, 50, 100)
+BOOSTING_LEARNING_RATE_GRID: Final[tuple[float, ...]] = (0.1, 0.5, 1.0)
+# Repetições do ansatz do classificador fraco: 1 (10 pesos) ou 2 (15 pesos). Mais que isso deixaria de
+# ser um classificador fraco e raso; as avaliações do COBYLA ficam fixas em 60 (Seção 5.2).
+ANSATZ_REPS_GRID: Final[tuple[int, ...]] = (1, 2)
+
+# Validação cruzada da Seção 6 (PLAN, decisão de arquitetura 3): 5 folds estratificados no treino inteiro,
+# com o undersampling sorteado dentro de cada fold, e o tempo máximo aceito para o grid antes de voltar ao
+# desenho anterior (validação cruzada dentro do treino balanceado), fixado com o Eric antes de rodar.
+CV_N_SPLITS: Final[int] = 5
+GRID_TIME_LIMIT_SECONDS: Final[float] = 2 * 3600.0
+
 # joblib.cpu_count respeita limites de contêiner; os.cpu_count enxergaria a máquina hospedeira.
 N_JOBS: Final[int] = joblib.cpu_count()
