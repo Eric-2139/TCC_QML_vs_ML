@@ -15,7 +15,18 @@ from fraud_qml import config
 from fraud_qml.models import InputEncoding, ModelSettings, build_pipeline
 from fraud_qml.tuning import (
     CONFIGURATION_COLUMNS,
+    LIKE_FOR_LIKE,
+    PIPELINES,
     SearchSpace,
+    border_extension,
+    choose_n_components,
+    describe_input,
+    describe_model,
+    merge_fold_scores,
+    package_dependencies,
+    package_source_fingerprint,
+    qubit_sweep_space,
+    round_two_space,
     amplitude_encoding_grid,
     angle_encoding_grid,
     angle_input_options,
@@ -177,6 +188,88 @@ def test_the_four_project_grids_follow_the_plan() -> None:
     assert project_search_spaces() == spaces
 
 
+def test_border_extension_adds_one_step_only_at_a_border() -> None:
+    grid = (0.1, 1.0, 10.0)
+    assert border_extension(0.1, grid, 0.01, 100.0) == (0.01, 0.1)
+    assert border_extension(10.0, grid, 0.01, 100.0) == (10.0, 100.0)
+    assert border_extension(1.0, grid, 0.01, 100.0) == (1.0,)
+    # Borda que vem de princípio (None) não se estende; e um valor que não é número volta sozinho
+    assert border_extension(0.1, grid, None, 100.0) == (0.1,)
+    assert border_extension("scale", grid, 0.01, 100.0) == ("scale",)
+
+
+def test_round_two_extends_only_the_borders_of_the_chosen_configuration() -> None:
+    # QSVM A escolhido com C no menor valor e o intervalo do MinMax no menor valor: os dois se estendem, o resto fica
+    chosen = InputEncoding("angle", reducer="mutual_info", range_width=0.25, feature_map="zz", entanglement="full")
+    row = {**describe_input(chosen), **describe_model(ModelSettings("qsvm", C=0.1))}
+    space = round_two_space("qsvm_angle_r2", row)
+    assert {option.range_width for option in space.input_encodings} == {0.1, 0.25}
+    assert {model.C for model in space.models} == {0.01, 0.1}
+    assert {(option.feature_map, option.entanglement, option.reducer) for option in space.input_encodings} == {("zz", "full", "mutual_info")}
+    # A largura π/2 é borda de princípio: não se estende para cima
+    wide = {**describe_input(replace(chosen, range_width=config.ANGLE_RANGE_WIDTH_GRID[-1])), **describe_model(ModelSettings("qsvm", C=1.0))}
+    assert len(round_two_space("x", wide).input_encodings) == 1
+
+
+def test_round_two_reads_a_longer_ceiling_in_the_boosters() -> None:
+    row = {**describe_input(InputEncoding("all_features")), **describe_model(ModelSettings("adaboost", n_estimators=100, learning_rate=0.1))}
+    space = round_two_space("adaboost_r2", row)
+    assert space.boosting_stages == config.EXTENDED_BOOSTING_N_ESTIMATORS
+    assert {model.learning_rate for model in space.models} == {0.05, 0.1}
+    assert {model.n_estimators for model in space.models} == {max(config.EXTENDED_BOOSTING_N_ESTIMATORS)}
+
+
+def test_qubit_sweep_varies_components_and_retunes_the_bandwidth() -> None:
+    angle = {**describe_input(InputEncoding("angle", reducer="mutual_info", range_width=0.25)), **describe_model(ModelSettings("qsvm", C=0.1))}
+    space = qubit_sweep_space("qsvm_qubits", angle)
+    assert {option.n_components for option in space.input_encodings} == set(config.QUBIT_SWEEP_N_COMPONENTS)
+    assert {option.range_width for option in space.input_encodings} == set(config.QUBIT_SWEEP_RANGE_WIDTHS)
+    svm = {**describe_input(InputEncoding("angle_components", reducer="mutual_info")), **describe_model(ModelSettings("svm", C=10.0, gamma=0.01))}
+    svm_space = qubit_sweep_space("svm_qubits", svm)
+    assert {model.gamma for model in svm_space.models} == set(config.QUBIT_SWEEP_GAMMAS)
+    with pytest.raises(ValueError, match="componentes"):
+        qubit_sweep_space("x", {**describe_input(InputEncoding("amplitude")), **describe_model(ModelSettings("qsvm"))})
+
+
+def test_more_components_reach_the_pipeline_and_the_qubits() -> None:
+    features, labels = _imbalanced_data()
+    pipeline = build_pipeline(InputEncoding("angle", n_components=7), ModelSettings("qsvm")).fit(features, labels)
+    assert pipeline.named_steps["encoder"].n_qubits_ == 7
+    classical = build_pipeline(InputEncoding("angle_components", n_components=7), ModelSettings("svm")).fit(features, labels)
+    assert classical.named_steps["reducer"].n_components_ == 7
+
+
+def test_merging_rounds_keeps_one_row_per_combination_and_fold_and_checks_they_agree() -> None:
+    features, labels = _imbalanced_data()
+    result = run_grid_search(_small_spaces()["svm"], features, labels, n_splits=N_SPLITS, n_jobs=1)
+    merged = merge_fold_scores(result.fold_scores, result.fold_scores.iloc[:3])
+    assert len(merged) == len(result.fold_scores)
+    tampered = result.fold_scores.iloc[:1].assign(pr_auc=result.fold_scores["pr_auc"].iloc[0] + 0.01)
+    with pytest.raises(ValueError, match="diferente"):
+        merge_fold_scores(result.fold_scores, tampered)
+
+
+def test_the_number_of_qubits_prefers_fewer_when_tied() -> None:
+    def summary(rows: list[tuple[int, float, float]]) -> pd.DataFrame:
+        return pd.DataFrame(rows, columns=["n_components", "pr_auc_mean", "pr_auc_std"])
+
+    # 7 é o melhor, mas 5 fica a menos de um desvio (0,05) dele: fica o 5
+    assert choose_n_components(summary([(5, 0.72, 0.06), (6, 0.70, 0.06), (7, 0.75, 0.05), (8, 0.60, 0.05)])) == 5
+    # 7 ganha com folga: fica o 7
+    assert choose_n_components(summary([(5, 0.60, 0.06), (6, 0.62, 0.06), (7, 0.75, 0.05), (8, 0.74, 0.05)])) == 7
+    # Várias combinações por número: vale a melhor de cada um
+    assert choose_n_components(summary([(4, 0.50, 0.02), (4, 0.80, 0.02), (6, 0.79, 0.02)])) == 4
+
+
+def test_every_pipeline_has_a_like_for_like_partner_with_components() -> None:
+    assert set(PIPELINES) == {
+        "svm_all_features", "svm_components", "adaboost_all_features", "adaboost_components",
+        "qsvm_angle", "qsvm_amplitude", "quantum_adaboost_angle", "quantum_adaboost_amplitude",
+    }
+    for classical, quantum in LIKE_FOR_LIKE.items():
+        assert PIPELINES[classical][1] == {"kind": "angle_components"} and PIPELINES[quantum][1] == {"kind": "angle"}
+
+
 def test_search_space_rejects_inconsistent_boosting_settings() -> None:
     adaboost = ModelSettings("adaboost", n_estimators=10)
     with pytest.raises(ValueError, match="tetos"):
@@ -229,6 +322,47 @@ def test_cache_returns_the_same_result_and_depends_on_the_grid(tmp_path: Path) -
     pd.testing.assert_frame_equal(first.fold_scores, second.fold_scores)
     other = replace(space, models=space.models[:1])
     assert not cached_grid_search(other, features, labels, cache_dir=tmp_path, n_splits=N_SPLITS, n_jobs=1).from_cache
+
+
+def test_cache_fingerprint_covers_exactly_what_the_grid_imports() -> None:
+    package_dir = Path(config.__file__).resolve().parent
+    covered = {path.relative_to(package_dir).as_posix() for path in package_dependencies()}
+    expected = {
+        "__init__.py", "config.py", "data.py", "environment.py", "evaluation.py", "models.py", "preprocessing.py",
+        "profiling.py", "tuning.py", "quantum/__init__.py", "quantum/encodings.py", "quantum/kernels.py",
+        "quantum/variational.py",
+    }
+    assert covered == expected
+
+
+def _write_package(root: Path, files: dict[str, str]) -> Path:
+    package_dir = root / "toy"
+    for name, text in files.items():
+        (package_dir / name).parent.mkdir(parents=True, exist_ok=True)
+        (package_dir / name).write_text(text, encoding="utf-8")
+    return package_dir
+
+
+def test_fingerprint_changes_with_imported_modules_only(tmp_path: Path) -> None:
+    package_dir = _write_package(
+        tmp_path,
+        {
+            "__init__.py": "",
+            "search.py": "from toy.direct import x\n\ndef run():\n    from toy import lazy\n",
+            "direct.py": "from toy.sub.deep import y\nx = 1\n",
+            "lazy.py": "",
+            "sub/__init__.py": "",
+            "sub/deep.py": "y = 2\n",
+            "unrelated.py": "z = 3\n",
+        },
+    )
+    covered = {path.relative_to(package_dir).as_posix() for path in package_dependencies("toy.search", package_dir)}
+    assert covered == {"__init__.py", "search.py", "direct.py", "lazy.py", "sub/__init__.py", "sub/deep.py"}
+    before = package_source_fingerprint("toy.search", package_dir)
+    (package_dir / "unrelated.py").write_text("z = 4\n", encoding="utf-8")
+    assert package_source_fingerprint("toy.search", package_dir) == before
+    (package_dir / "sub" / "deep.py").write_text("y = 5\n", encoding="utf-8")
+    assert package_source_fingerprint("toy.search", package_dir) != before
 
 
 def test_projection_assumes_every_task_as_slow_as_the_slowest() -> None:

@@ -99,6 +99,15 @@ def test_constant_padding_preserves_norm_information() -> None:
     assert not np.allclose(with_constant.transform(vector), with_constant.transform(doubled))
 
 
+@pytest.mark.parametrize(("width", "padding"), [(0.25, 1.0), (np.pi / 2, 3.0), (2.0, 5.0)])
+def test_amplitude_width_is_the_padding_constant_in_disguise(features: np.ndarray, width: float, padding: float) -> None:
+    # Na amplitude, multiplicar as features por uma largura equivale a dividir a constante por ela: a normalização
+    # divide tudo pelo mesmo comprimento. Uma "largura do MinMax" no grid da variação B repetiria a constante (4.8.1)
+    widened = AmplitudeEncodingPreparer(5, padding).fit_transform(width * features[:, :31])
+    rescaled = AmplitudeEncodingPreparer(5, padding / width).fit_transform(features[:, :31])
+    np.testing.assert_allclose(widened, rescaled, atol=1e-12)
+
+
 def test_amplitude_rejects_too_many_features() -> None:
     with pytest.raises(ValueError, match="não cabem"):
         AmplitudeEncodingPreparer(n_qubits=2).fit(np.ones((3, 5)))

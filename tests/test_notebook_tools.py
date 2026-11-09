@@ -118,6 +118,15 @@ def test_dump_outputs_includes_markdown_and_outputs_from_marker(notebook_path: P
     assert "## Seção B" in text and "[figura]" in text
 
 
+def test_dump_includes_code_only_when_asked(notebook_path: Path) -> None:
+    # A leitura de uma sessão nova precisa do código: constantes que só existem no notebook não aparecem nas saídas
+    without_code = nbt.dump_outputs(notebook_path)
+    with_code = nbt.dump_outputs(notebook_path, include_code=True)
+    assert "print(x)" not in without_code
+    assert "[código]\nx = 1\nprint(x)\n[saída]\n1" in with_code
+    assert "## Seção A" in with_code and "[figura]" in with_code
+
+
 def test_dump_reads_styled_tables_from_html(notebook_path: Path) -> None:
     import pandas as pd
 

@@ -1,0 +1,898 @@
+{
+  "section": "7. Avaliação na validação",
+  "validation": {
+    "rows": 56745,
+    "frauds": 94
+  },
+  "threshold_rule": "F1 máximo na validação; no empate, o limiar mais alto (menos alertas)",
+  "bootstrap": {
+    "resamples": 2000,
+    "random_state": 42,
+    "stratified": true,
+    "paired": true
+  },
+  "pipelines": {
+    "DummyClassifier": {
+      "pr_auc": 0.0016565336152965019,
+      "pr_auc_interval": [
+        0.0016565336152965019,
+        0.0016565336152965019
+      ],
+      "roc_auc": 0.5,
+      "chosen_threshold": {
+        "threshold": 0.5,
+        "alerts": 56745,
+        "true_positives": 94,
+        "precision": 0.0016565336152965019,
+        "recall": 1.0,
+        "f1": 0.0033075880997202626
+      },
+      "metrics_at_default_threshold": {
+        "pr_auc": 0.0016565336152965019,
+        "roc_auc": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mcc": 0.0,
+        "accuracy": 0.9983434663847035
+      },
+      "metrics_at_chosen_threshold": {
+        "pr_auc": 0.0016565336152965019,
+        "roc_auc": 0.5,
+        "precision": 0.0016565336152965019,
+        "recall": 1.0,
+        "f1": 0.0033075880997202626,
+        "mcc": 0.0,
+        "accuracy": 0.0016565336152965019
+      },
+      "confusion_at_chosen_threshold": {
+        "VP (fraude com alerta)": 94,
+        "FP (legítima com alerta)": 56651,
+        "FN (fraude sem alerta)": 0,
+        "VN (legítima sem alerta)": 0
+      },
+      "fit_cost": {
+        "wall_seconds": 0.03160000000207219,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 1.31640625
+      },
+      "predict_cost": {
+        "wall_seconds": 0.0009458000022277702,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 0.00390625
+      },
+      "kept_estimators": "—"
+    },
+    "SVM, 31 features": {
+      "input_encoding": {
+        "kind": "all_features",
+        "scaler": "standard",
+        "reducer": "pca",
+        "range_width": 1.5707963267948966,
+        "feature_map": "zz",
+        "feature_map_reps": 2,
+        "entanglement": "linear",
+        "padding_value": 1.0,
+        "n_components": 5
+      },
+      "model": {
+        "family": "svm",
+        "C": 1.0,
+        "gamma": 0.001,
+        "n_estimators": 50,
+        "learning_rate": 1.0,
+        "ansatz_reps": 1,
+        "max_iterations": 60
+      },
+      "cv_pr_auc_mean": 0.7029815339861053,
+      "cv_pr_auc_std": 0.08344894169125937,
+      "pr_auc": 0.7363284575508516,
+      "pr_auc_interval": [
+        0.6445692701403649,
+        0.830574226861251
+      ],
+      "roc_auc": 0.974567687111493,
+      "chosen_threshold": {
+        "threshold": 0.3409947741847356,
+        "alerts": 83,
+        "true_positives": 72,
+        "precision": 0.8674698795180723,
+        "recall": 0.7659574468085106,
+        "f1": 0.8135593220338984
+      },
+      "metrics_at_default_threshold": {
+        "pr_auc": 0.7363284575508516,
+        "roc_auc": 0.974567687111493,
+        "precision": 0.719626168224299,
+        "recall": 0.8191489361702128,
+        "f1": 0.7661691542288557,
+        "mcc": 0.767368370542615,
+        "accuracy": 0.9991717331923518
+      },
+      "metrics_at_chosen_threshold": {
+        "pr_auc": 0.7363284575508516,
+        "roc_auc": 0.974567687111493,
+        "precision": 0.8674698795180723,
+        "recall": 0.7659574468085106,
+        "f1": 0.8135593220338984,
+        "mcc": 0.8148492225579078,
+        "accuracy": 0.9994184509648427
+      },
+      "confusion_at_chosen_threshold": {
+        "VP (fraude com alerta)": 72,
+        "FP (legítima com alerta)": 11,
+        "FN (fraude sem alerta)": 22,
+        "VN (legítima sem alerta)": 56640
+      },
+      "fit_cost": {
+        "wall_seconds": 0.042337399998359615,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 1.31640625
+      },
+      "predict_cost": {
+        "wall_seconds": 1.5236105999974825,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 26.84765625
+      },
+      "kept_estimators": "—"
+    },
+    "SVM, componentes": {
+      "input_encoding": {
+        "kind": "angle_components",
+        "scaler": "standard",
+        "reducer": "mutual_info",
+        "range_width": 1.5707963267948966,
+        "feature_map": "zz",
+        "feature_map_reps": 2,
+        "entanglement": "linear",
+        "padding_value": 1.0,
+        "n_components": 5
+      },
+      "model": {
+        "family": "svm",
+        "C": 10.0,
+        "gamma": 0.01,
+        "n_estimators": 50,
+        "learning_rate": 1.0,
+        "ansatz_reps": 1,
+        "max_iterations": 60
+      },
+      "cv_pr_auc_mean": 0.7241713287186891,
+      "cv_pr_auc_std": 0.06080422244698812,
+      "pr_auc": 0.7688580877999239,
+      "pr_auc_interval": [
+        0.6793065175867762,
+        0.8524583730477352
+      ],
+      "roc_auc": 0.9791996310369162,
+      "chosen_threshold": {
+        "threshold": 0.6328251939952171,
+        "alerts": 103,
+        "true_positives": 79,
+        "precision": 0.7669902912621359,
+        "recall": 0.8404255319148937,
+        "f1": 0.8020304568527918
+      },
+      "metrics_at_default_threshold": {
+        "pr_auc": 0.7688580877999239,
+        "roc_auc": 0.9791996310369162,
+        "precision": 0.45108695652173914,
+        "recall": 0.8829787234042553,
+        "f1": 0.5971223021582733,
+        "mcc": 0.6303368871267742,
+        "accuracy": 0.9980262578200723
+      },
+      "metrics_at_chosen_threshold": {
+        "pr_auc": 0.7688580877999239,
+        "roc_auc": 0.9791996310369162,
+        "precision": 0.7669902912621359,
+        "recall": 0.8404255319148937,
+        "f1": 0.8020304568527918,
+        "mcc": 0.8025277817339119,
+        "accuracy": 0.9993127147766323
+      },
+      "confusion_at_chosen_threshold": {
+        "VP (fraude com alerta)": 79,
+        "FP (legítima com alerta)": 24,
+        "FN (fraude sem alerta)": 15,
+        "VN (legítima sem alerta)": 56627
+      },
+      "fit_cost": {
+        "wall_seconds": 0.12191030000030878,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 1.3125
+      },
+      "predict_cost": {
+        "wall_seconds": 0.6396187999998801,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 4.39453125
+      },
+      "kept_estimators": "—"
+    },
+    "AdaBoost, 31 features": {
+      "input_encoding": {
+        "kind": "all_features",
+        "scaler": "standard",
+        "reducer": "pca",
+        "range_width": 1.5707963267948966,
+        "feature_map": "zz",
+        "feature_map_reps": 2,
+        "entanglement": "linear",
+        "padding_value": 1.0,
+        "n_components": 5
+      },
+      "model": {
+        "family": "adaboost",
+        "C": 1.0,
+        "gamma": "scale",
+        "n_estimators": 100,
+        "learning_rate": 0.1,
+        "ansatz_reps": 1,
+        "max_iterations": 60
+      },
+      "cv_pr_auc_mean": 0.710217149412246,
+      "cv_pr_auc_std": 0.054457731381867915,
+      "pr_auc": 0.7714987440044458,
+      "pr_auc_interval": [
+        0.6835192496194591,
+        0.8546120436679574
+      ],
+      "roc_auc": 0.9759520498220347,
+      "chosen_threshold": {
+        "threshold": 1.4910188401572746,
+        "alerts": 79,
+        "true_positives": 70,
+        "precision": 0.8860759493670886,
+        "recall": 0.7446808510638298,
+        "f1": 0.8092485549132948
+      },
+      "metrics_at_default_threshold": {
+        "pr_auc": 0.7714987440044458,
+        "roc_auc": 0.9759520498220347,
+        "precision": 0.041405873856523834,
+        "recall": 0.9148936170212766,
+        "f1": 0.07922616305849839,
+        "mcc": 0.19052039067031118,
+        "accuracy": 0.9647722266278967
+      },
+      "metrics_at_chosen_threshold": {
+        "pr_auc": 0.7714987440044458,
+        "roc_auc": 0.9759520498220347,
+        "precision": 0.8860759493670886,
+        "recall": 0.7446808510638298,
+        "f1": 0.8092485549132948,
+        "mcc": 0.8120269039793854,
+        "accuracy": 0.9994184509648427
+      },
+      "confusion_at_chosen_threshold": {
+        "VP (fraude com alerta)": 70,
+        "FP (legítima com alerta)": 9,
+        "FN (fraude sem alerta)": 24,
+        "VN (legítima sem alerta)": 56642
+      },
+      "fit_cost": {
+        "wall_seconds": 0.2894839000000502,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 1.31640625
+      },
+      "predict_cost": {
+        "wall_seconds": 0.5302265999998781,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 21.0
+      },
+      "kept_estimators": "100 de 100"
+    },
+    "AdaBoost, componentes": {
+      "input_encoding": {
+        "kind": "angle_components",
+        "scaler": "standard",
+        "reducer": "mutual_info",
+        "range_width": 1.5707963267948966,
+        "feature_map": "zz",
+        "feature_map_reps": 2,
+        "entanglement": "linear",
+        "padding_value": 1.0,
+        "n_components": 5
+      },
+      "model": {
+        "family": "adaboost",
+        "C": 1.0,
+        "gamma": "scale",
+        "n_estimators": 100,
+        "learning_rate": 0.05,
+        "ansatz_reps": 1,
+        "max_iterations": 60
+      },
+      "cv_pr_auc_mean": 0.6901564080476946,
+      "cv_pr_auc_std": 0.07256302560772876,
+      "pr_auc": 0.777375454167443,
+      "pr_auc_interval": [
+        0.6925745466106504,
+        0.8613701333173953
+      ],
+      "roc_auc": 0.977000744010453,
+      "chosen_threshold": {
+        "threshold": 1.5410666134948514,
+        "alerts": 90,
+        "true_positives": 76,
+        "precision": 0.8444444444444444,
+        "recall": 0.8085106382978723,
+        "f1": 0.8260869565217391
+      },
+      "metrics_at_default_threshold": {
+        "pr_auc": 0.777375454167443,
+        "roc_auc": 0.977000744010453,
+        "precision": 0.0403187998124707,
+        "recall": 0.9148936170212766,
+        "f1": 0.07723394701392007,
+        "mcc": 0.18788779816176454,
+        "accuracy": 0.9637853555379329
+      },
+      "metrics_at_chosen_threshold": {
+        "pr_auc": 0.777375454167443,
+        "roc_auc": 0.977000744010453,
+        "precision": 0.8444444444444444,
+        "recall": 0.8085106382978723,
+        "f1": 0.8260869565217391,
+        "mcc": 0.8260005061995256,
+        "accuracy": 0.9994360736628778
+      },
+      "confusion_at_chosen_threshold": {
+        "VP (fraude com alerta)": 76,
+        "FP (legítima com alerta)": 14,
+        "FN (fraude sem alerta)": 18,
+        "VN (legítima sem alerta)": 56637
+      },
+      "fit_cost": {
+        "wall_seconds": 0.27254080000057,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 1.31640625
+      },
+      "predict_cost": {
+        "wall_seconds": 0.2524935000001278,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 3.2578125
+      },
+      "kept_estimators": "100 de 100"
+    },
+    "QSVM A (ângulo)": {
+      "input_encoding": {
+        "kind": "angle",
+        "scaler": "standard",
+        "reducer": "mutual_info",
+        "range_width": 0.25,
+        "feature_map": "zz",
+        "feature_map_reps": 2,
+        "entanglement": "full",
+        "padding_value": 1.0,
+        "n_components": 5
+      },
+      "model": {
+        "family": "qsvm",
+        "C": 0.1,
+        "gamma": "scale",
+        "n_estimators": 50,
+        "learning_rate": 1.0,
+        "ansatz_reps": 1,
+        "max_iterations": 60
+      },
+      "cv_pr_auc_mean": 0.7523653593134665,
+      "cv_pr_auc_std": 0.07431360793711674,
+      "pr_auc": 0.7864810292113873,
+      "pr_auc_interval": [
+        0.701879061061802,
+        0.8708425953684547
+      ],
+      "roc_auc": 0.9768633781229379,
+      "chosen_threshold": {
+        "threshold": 0.7770123401381837,
+        "alerts": 96,
+        "true_positives": 78,
+        "precision": 0.8125,
+        "recall": 0.8297872340425532,
+        "f1": 0.8210526315789474
+      },
+      "metrics_at_default_threshold": {
+        "pr_auc": 0.7864810292113873,
+        "roc_auc": 0.9768633781229379,
+        "precision": 0.4444444444444444,
+        "recall": 0.8936170212765957,
+        "f1": 0.5936395759717314,
+        "mcc": 0.6294296509013673,
+        "accuracy": 0.997973389725967
+      },
+      "metrics_at_chosen_threshold": {
+        "pr_auc": 0.7864810292113873,
+        "roc_auc": 0.9768633781229379,
+        "precision": 0.8125,
+        "recall": 0.8297872340425532,
+        "f1": 0.8210526315789474,
+        "mcc": 0.8207982041031737,
+        "accuracy": 0.9994008282668077
+      },
+      "confusion_at_chosen_threshold": {
+        "VP (fraude com alerta)": 78,
+        "FP (legítima com alerta)": 18,
+        "FN (fraude sem alerta)": 16,
+        "VN (legítima sem alerta)": 56633
+      },
+      "fit_cost": {
+        "wall_seconds": 0.41377660000216565,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 1.3203125
+      },
+      "predict_cost": {
+        "wall_seconds": 31.89836970000033,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 43.0234375
+      },
+      "kept_estimators": "—"
+    },
+    "QSVM B (amplitude)": {
+      "input_encoding": {
+        "kind": "amplitude",
+        "scaler": "standard",
+        "reducer": "pca",
+        "range_width": 1.5707963267948966,
+        "feature_map": "zz",
+        "feature_map_reps": 2,
+        "entanglement": "linear",
+        "padding_value": 5.0,
+        "n_components": 5
+      },
+      "model": {
+        "family": "qsvm",
+        "C": 1.0,
+        "gamma": "scale",
+        "n_estimators": 50,
+        "learning_rate": 1.0,
+        "ansatz_reps": 1,
+        "max_iterations": 60
+      },
+      "cv_pr_auc_mean": 0.6858500639527231,
+      "cv_pr_auc_std": 0.08672082189807588,
+      "pr_auc": 0.721993917120179,
+      "pr_auc_interval": [
+        0.6381347593847033,
+        0.8084931162782848
+      ],
+      "roc_auc": 0.9804681294240173,
+      "chosen_threshold": {
+        "threshold": 1.0337264300177824,
+        "alerts": 96,
+        "true_positives": 72,
+        "precision": 0.75,
+        "recall": 0.7659574468085106,
+        "f1": 0.7578947368421053
+      },
+      "metrics_at_default_threshold": {
+        "pr_auc": 0.721993917120179,
+        "roc_auc": 0.9804681294240173,
+        "precision": 0.11170212765957446,
+        "recall": 0.8936170212765957,
+        "f1": 0.19858156028368795,
+        "mcc": 0.3135989460227689,
+        "accuracy": 0.9880518107322231
+      },
+      "metrics_at_chosen_threshold": {
+        "pr_auc": 0.721993917120179,
+        "roc_auc": 0.9804681294240173,
+        "precision": 0.75,
+        "recall": 0.7659574468085106,
+        "f1": 0.7578947368421053,
+        "mcc": 0.7575308906410841,
+        "accuracy": 0.9991893558903868
+      },
+      "confusion_at_chosen_threshold": {
+        "VP (fraude com alerta)": 72,
+        "FP (legítima com alerta)": 24,
+        "FN (fraude sem alerta)": 22,
+        "VN (legítima sem alerta)": 56627
+      },
+      "fit_cost": {
+        "wall_seconds": 0.03891440000006696,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 1.03125
+      },
+      "predict_cost": {
+        "wall_seconds": 0.4615985000018554,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 109.49609375
+      },
+      "kept_estimators": "—"
+    },
+    "Quantum AdaBoost A (ângulo)": {
+      "input_encoding": {
+        "kind": "angle",
+        "scaler": "standard",
+        "reducer": "mutual_info",
+        "range_width": 0.25,
+        "feature_map": "zz",
+        "feature_map_reps": 1,
+        "entanglement": "full",
+        "padding_value": 1.0,
+        "n_components": 5
+      },
+      "model": {
+        "family": "quantum_adaboost",
+        "C": 1.0,
+        "gamma": "scale",
+        "n_estimators": 100,
+        "learning_rate": 0.1,
+        "ansatz_reps": 2,
+        "max_iterations": 60
+      },
+      "cv_pr_auc_mean": 0.7454478145023582,
+      "cv_pr_auc_std": 0.08898788049298544,
+      "pr_auc": 0.7785320141188885,
+      "pr_auc_interval": [
+        0.6944660021421453,
+        0.8599862679457625
+      ],
+      "roc_auc": 0.9782012636534932,
+      "chosen_threshold": {
+        "threshold": 1.6227040270778694,
+        "alerts": 92,
+        "true_positives": 75,
+        "precision": 0.8152173913043478,
+        "recall": 0.7978723404255319,
+        "f1": 0.8064516129032258
+      },
+      "metrics_at_default_threshold": {
+        "pr_auc": 0.7785320141188885,
+        "roc_auc": 0.9782012636534932,
+        "precision": 0.02905811623246493,
+        "recall": 0.925531914893617,
+        "f1": 0.056347150259067356,
+        "mcc": 0.15902600686875237,
+        "accuracy": 0.9486474579258084
+      },
+      "metrics_at_chosen_threshold": {
+        "pr_auc": 0.7785320141188885,
+        "roc_auc": 0.9782012636534932,
+        "precision": 0.8152173913043478,
+        "recall": 0.7978723404255319,
+        "f1": 0.8064516129032258,
+        "mcc": 0.8061806803110647,
+        "accuracy": 0.9993655828707375
+      },
+      "confusion_at_chosen_threshold": {
+        "VP (fraude com alerta)": 75,
+        "FP (legítima com alerta)": 17,
+        "FN (fraude sem alerta)": 19,
+        "VN (legítima sem alerta)": 56634
+      },
+      "fit_cost": {
+        "wall_seconds": 16.882777499999065,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 7.13671875
+      },
+      "predict_cost": {
+        "wall_seconds": 22.23336869999912,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 103.09765625
+      },
+      "kept_estimators": "81 de 100"
+    },
+    "Quantum AdaBoost B (amplitude)": {
+      "input_encoding": {
+        "kind": "amplitude",
+        "scaler": "standard",
+        "reducer": "pca",
+        "range_width": 1.5707963267948966,
+        "feature_map": "zz",
+        "feature_map_reps": 2,
+        "entanglement": "linear",
+        "padding_value": 10.0,
+        "n_components": 5
+      },
+      "model": {
+        "family": "quantum_adaboost",
+        "C": 1.0,
+        "gamma": "scale",
+        "n_estimators": 100,
+        "learning_rate": 0.05,
+        "ansatz_reps": 2,
+        "max_iterations": 60
+      },
+      "cv_pr_auc_mean": 0.7221781730660325,
+      "cv_pr_auc_std": 0.09663017882299979,
+      "pr_auc": 0.7940071567547671,
+      "pr_auc_interval": [
+        0.7175858084636265,
+        0.8654256696456647
+      ],
+      "roc_auc": 0.9750069199356869,
+      "chosen_threshold": {
+        "threshold": 1.6367783613882585,
+        "alerts": 78,
+        "true_positives": 68,
+        "precision": 0.8717948717948718,
+        "recall": 0.723404255319149,
+        "f1": 0.7906976744186046
+      },
+      "metrics_at_default_threshold": {
+        "pr_auc": 0.7940071567547671,
+        "roc_auc": 0.9750069199356869,
+        "precision": 0.08768267223382047,
+        "recall": 0.8936170212765957,
+        "f1": 0.1596958174904943,
+        "mcc": 0.27720851331276836,
+        "accuracy": 0.9844215349369989
+      },
+      "metrics_at_chosen_threshold": {
+        "pr_auc": 0.7940071567547671,
+        "roc_auc": 0.9750069199356869,
+        "precision": 0.8717948717948718,
+        "recall": 0.723404255319149,
+        "f1": 0.7906976744186046,
+        "mcc": 0.7938352469951571,
+        "accuracy": 0.9993655828707375
+      },
+      "confusion_at_chosen_threshold": {
+        "VP (fraude com alerta)": 68,
+        "FP (legítima com alerta)": 10,
+        "FN (fraude sem alerta)": 26,
+        "VN (legítima sem alerta)": 56641
+      },
+      "fit_cost": {
+        "wall_seconds": 20.24220129999958,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 2.6171875
+      },
+      "predict_cost": {
+        "wall_seconds": 4.638785300001473,
+        "python_peak_mib": null,
+        "rss_peak_increase_mib": 104.0
+      },
+      "kept_estimators": "100 de 100"
+    }
+  },
+  "validation_vs_cross_validation": [
+    {
+      "pipeline": "SVM, 31 features",
+      "escolhida: validação cruzada (média)": 0.7029815339861053,
+      "escolhida: pior fold": 0.6104776857088058,
+      "escolhida: melhor fold": 0.788054450139578,
+      "escolhida: validação": 0.7363284575508516,
+      "escolhida: validação − validação cruzada": 0.033346923564746334,
+      "padrão: validação cruzada (média)": 0.6388913716670254,
+      "padrão: validação": 0.6906264630535718,
+      "padrão: validação − validação cruzada": 0.05173509138654642,
+      "ganho do ajuste na validação": 0.04570199449727985,
+      "escolhida − padrão (das duas diferenças)": -0.018388167821800083
+    },
+    {
+      "pipeline": "SVM, componentes",
+      "escolhida: validação cruzada (média)": 0.7241713287186891,
+      "escolhida: pior fold": 0.6478801963453129,
+      "escolhida: melhor fold": 0.7953884931279079,
+      "escolhida: validação": 0.7688580877999239,
+      "escolhida: validação − validação cruzada": 0.04468675908123487,
+      "padrão: validação cruzada (média)": 0.6334605335576117,
+      "padrão: validação": 0.7449762835777289,
+      "padrão: validação − validação cruzada": 0.11151575002011727,
+      "ganho do ajuste na validação": 0.02388180422219499,
+      "escolhida − padrão (das duas diferenças)": -0.0668289909388824
+    },
+    {
+      "pipeline": "AdaBoost, 31 features",
+      "escolhida: validação cruzada (média)": 0.710217149412246,
+      "escolhida: pior fold": 0.6170274543158166,
+      "escolhida: melhor fold": 0.7530065100718069,
+      "escolhida: validação": 0.7714987440044458,
+      "escolhida: validação − validação cruzada": 0.06128159459219984,
+      "padrão: validação cruzada (média)": 0.5955432143467622,
+      "padrão: validação": 0.4455483202963769,
+      "padrão: validação − validação cruzada": -0.14999489405038524,
+      "ganho do ajuste na validação": 0.3259504237080689,
+      "escolhida − padrão (das duas diferenças)": 0.21127648864258508
+    },
+    {
+      "pipeline": "AdaBoost, componentes",
+      "escolhida: validação cruzada (média)": 0.6901564080476946,
+      "escolhida: pior fold": 0.5615747920478998,
+      "escolhida: melhor fold": 0.7325772030673983,
+      "escolhida: validação": 0.777375454167443,
+      "escolhida: validação − validação cruzada": 0.0872190461197484,
+      "padrão: validação cruzada (média)": 0.46180083059242427,
+      "padrão: validação": 0.6691303443354234,
+      "padrão: validação − validação cruzada": 0.20732951374299913,
+      "ganho do ajuste na validação": 0.10824510983201963,
+      "escolhida − padrão (das duas diferenças)": -0.12011046762325073
+    },
+    {
+      "pipeline": "QSVM A (ângulo)",
+      "escolhida: validação cruzada (média)": 0.7523653593134665,
+      "escolhida: pior fold": 0.62246345440536,
+      "escolhida: melhor fold": 0.7983483743640603,
+      "escolhida: validação": 0.7864810292113873,
+      "escolhida: validação − validação cruzada": 0.03411566989792081,
+      "padrão: validação cruzada (média)": 0.32458111260460937,
+      "padrão: validação": 0.5095356162786921,
+      "padrão: validação − validação cruzada": 0.18495450367408278,
+      "ganho do ajuste na validação": 0.27694541293269515,
+      "escolhida − padrão (das duas diferenças)": -0.15083883377616197
+    },
+    {
+      "pipeline": "QSVM B (amplitude)",
+      "escolhida: validação cruzada (média)": 0.6858500639527231,
+      "escolhida: pior fold": 0.5328988022393735,
+      "escolhida: melhor fold": 0.7432268058097391,
+      "escolhida: validação": 0.721993917120179,
+      "escolhida: validação − validação cruzada": 0.03614385316745594,
+      "padrão: validação cruzada (média)": 0.3964295993011985,
+      "padrão: validação": 0.45233473503638094,
+      "padrão: validação − validação cruzada": 0.055905135735182465,
+      "ganho do ajuste na validação": 0.2696591820837981,
+      "escolhida − padrão (das duas diferenças)": -0.019761282567726524
+    },
+    {
+      "pipeline": "Quantum AdaBoost A (ângulo)",
+      "escolhida: validação cruzada (média)": 0.7454478145023582,
+      "escolhida: pior fold": 0.5917922327808945,
+      "escolhida: melhor fold": 0.8112727901714938,
+      "escolhida: validação": 0.7785320141188885,
+      "escolhida: validação − validação cruzada": 0.03308419961653031,
+      "padrão: validação cruzada (média)": 0.06953619902612097,
+      "padrão: validação": 0.15382635971312733,
+      "padrão: validação − validação cruzada": 0.08429016068700636,
+      "ganho do ajuste na validação": 0.6247056544057612,
+      "escolhida − padrão (das duas diferenças)": -0.05120596107047605
+    },
+    {
+      "pipeline": "Quantum AdaBoost B (amplitude)",
+      "escolhida: validação cruzada (média)": 0.7221781730660325,
+      "escolhida: pior fold": 0.6020603730132733,
+      "escolhida: melhor fold": 0.8219654159630299,
+      "escolhida: validação": 0.7940071567547671,
+      "escolhida: validação − validação cruzada": 0.07182898368873458,
+      "padrão: validação cruzada (média)": 0.03373786929481447,
+      "padrão: validação": 0.021190542762062767,
+      "padrão: validação − validação cruzada": -0.012547326532751701,
+      "ganho do ajuste na validação": 0.7728166139927043,
+      "escolhida − padrão (das duas diferenças)": 0.08437631022148628
+    }
+  ],
+  "comparisons": [
+    {
+      "comparação": "QSVM A − SVM, componentes (mesma entrada)",
+      "diferença de PR-AUC na validação": 0.017622941411463366,
+      "IC 95%, de": -0.052797775619605254,
+      "IC 95%, até": 0.0897502205915422,
+      "o intervalo exclui o zero": false,
+      "validação cruzada: média fold a fold (6.7)": 0.028194030594777562,
+      "validação cruzada: folds a favor do primeiro (de 5)": 2
+    },
+    {
+      "comparação": "Quantum AdaBoost A − AdaBoost, componentes (mesma entrada)",
+      "diferença de PR-AUC na validação": 0.0011565599514454794,
+      "IC 95%, de": -0.053756675802703685,
+      "IC 95%, até": 0.061532111035498036,
+      "o intervalo exclui o zero": false,
+      "validação cruzada: média fold a fold (6.7)": 0.05529140645466348,
+      "validação cruzada: folds a favor do primeiro (de 5)": 5
+    },
+    {
+      "comparação": "QSVM B − SVM, 31 features",
+      "diferença de PR-AUC na validação": -0.014334540430672615,
+      "IC 95%, de": -0.0905387689022062,
+      "IC 95%, até": 0.07203723039546488,
+      "o intervalo exclui o zero": false,
+      "validação cruzada: média fold a fold (6.7)": -0.01713147003338238,
+      "validação cruzada: folds a favor do primeiro (de 5)": 2
+    },
+    {
+      "comparação": "Quantum AdaBoost B − AdaBoost, 31 features",
+      "diferença de PR-AUC na validação": 0.022508412750321227,
+      "IC 95%, de": -0.03008553264659199,
+      "IC 95%, até": 0.07567838966093189,
+      "o intervalo exclui o zero": false,
+      "validação cruzada: média fold a fold (6.7)": 0.01196102365378653,
+      "validação cruzada: folds a favor do primeiro (de 5)": 2
+    },
+    {
+      "comparação": "QSVM A − QSVM B",
+      "diferença de PR-AUC na validação": 0.06448711209120828,
+      "IC 95%, de": -0.004170455245786299,
+      "IC 95%, até": 0.13591233853249862,
+      "o intervalo exclui o zero": false,
+      "validação cruzada: média fold a fold (6.7)": 0.06651529536074356,
+      "validação cruzada: folds a favor do primeiro (de 5)": 5
+    },
+    {
+      "comparação": "Quantum AdaBoost A − Quantum AdaBoost B",
+      "diferença de PR-AUC na validação": -0.01547514263587857,
+      "IC 95%, de": -0.06427093178081814,
+      "IC 95%, até": 0.034540967811524444,
+      "o intervalo exclui o zero": false,
+      "validação cruzada: média fold a fold (6.7)": 0.02326964143632555,
+      "validação cruzada: folds a favor do primeiro (de 5)": 2
+    },
+    {
+      "comparação": "SVM, componentes − SVM, 31 features",
+      "diferença de PR-AUC na validação": 0.032529630249072294,
+      "IC 95%, de": -0.00033909139301010593,
+      "IC 95%, até": 0.06952785232839201,
+      "o intervalo exclui o zero": false,
+      "validação cruzada: média fold a fold (6.7)": 0.021189794732583624,
+      "validação cruzada: folds a favor do primeiro (de 5)": 4
+    },
+    {
+      "comparação": "AdaBoost, componentes − AdaBoost, 31 features",
+      "diferença de PR-AUC na validação": 0.0058767101629971785,
+      "IC 95%, de": -0.038275251694806306,
+      "IC 95%, até": 0.04990119332059889,
+      "o intervalo exclui o zero": false,
+      "validação cruzada: média fold a fold (6.7)": -0.020060741364551403,
+      "validação cruzada: folds a favor do primeiro (de 5)": 2
+    }
+  ],
+  "missed_frauds_by_model_count": {
+    "0": 60,
+    "1": 7,
+    "2": 6,
+    "3": 2,
+    "4": 1,
+    "5": 3,
+    "6": 1,
+    "7": 0,
+    "8": 14
+  },
+  "cv": {
+    "n_splits": 5,
+    "random_state": 42,
+    "undersampling": "dentro de cada fold"
+  },
+  "split_fingerprint": "04d958c0d5744326c9313324382483156d3238d0ba5548fdf133d28fc8d13ab3",
+  "commit": "339cd4b9038396521b02a2193fe966297df817ec",
+  "uncommitted_changes": [
+    " M PLAN.md",
+    " M artifacts/results/grid_adaboost.json",
+    " M artifacts/results/grid_qsvm.json",
+    " M artifacts/results/grid_quantum_adaboost.json",
+    " M artifacts/results/grid_svm.json",
+    " M methodological_issues.md",
+    " M notebooks/tcc_ml_vs_qml.ipynb",
+    " M src/fraud_qml/config.py",
+    " M src/fraud_qml/features.py",
+    " M src/fraud_qml/models.py",
+    " M src/fraud_qml/tuning.py",
+    " M tests/test_notebook_protocol.py",
+    " M tests/test_notebook_tools.py",
+    " M tests/test_preprocessing.py",
+    " M tests/test_tuning.py",
+    " M tools/notebook_tools.py",
+    "?? artifacts/results/grid_adaboost_all_features_round2.json",
+    "?? artifacts/results/grid_adaboost_components_qubits.json",
+    "?? artifacts/results/grid_adaboost_components_round2.json",
+    "?? artifacts/results/grid_qsvm_amplitude_round2.json",
+    "?? artifacts/results/grid_qsvm_angle_qubits.json",
+    "?? artifacts/results/grid_qsvm_angle_qubits_narrow.json",
+    "?? artifacts/results/grid_qsvm_angle_round2.json",
+    "?? artifacts/results/grid_quantum_adaboost_amplitude_round2.json",
+    "?? artifacts/results/grid_quantum_adaboost_angle_qubits.json",
+    "?? artifacts/results/grid_quantum_adaboost_angle_qubits_narrow.json",
+    "?? artifacts/results/grid_quantum_adaboost_angle_round2.json",
+    "?? artifacts/results/grid_svm_all_features_round2.json",
+    "?? artifacts/results/grid_svm_components_qubits.json",
+    "?? artifacts/results/grid_svm_components_round2.json",
+    "?? artifacts/results/validation_evaluation.json",
+    "?? src/fraud_qml/reporting.py",
+    "?? src/fraud_qml/thresholds.py",
+    "?? tests/test_thresholds.py"
+  ],
+  "package_source_fingerprint": "772dc4366d4a90e91b2915f9c8a8af88ed4c50744dab61190d630936b984ee57",
+  "versions": {
+    "python": "3.12.14",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "imbalanced-learn": "0.14.2",
+    "qiskit": "2.5.2",
+    "qiskit-aer": "0.17.2",
+    "qiskit-machine-learning": "0.9.1",
+    "matplotlib": "3.11.2"
+  }
+}

@@ -3,6 +3,8 @@
 A regra (CC7): na base inteira, só o contrato dos dados e a remoção de duplicatas; depois do split,
 a exploração (Seção 4) lê apenas linhas de treino. Este teste varre o código da Seção 4 e falha se
 alguma célula tocar na base inteira, na validação ou no teste fora das exceções declaradas.
+Também confere que a escolha da Seção 6 só usa o treino e que a Seção 7 não lê o teste nem volta a escolher
+configurações (elas ficaram congeladas na 6.7).
 """
 
 import re
@@ -118,6 +120,49 @@ def test_tuning_section_only_reads_training_rows(name: str) -> None:
     pattern = re.compile(rf"\b{re.escape(name)}\b")
     offenders = [source.splitlines()[0] for source in _tuning_code_cells() if pattern.search(source)]
     assert offenders == [], f"células da Seção 6 que usam {name}: {offenders}"
+
+
+VALIDATION_SECTION_MARKER: Final[str] = "## 7. Avaliação na validação"
+AFTER_VALIDATION_PATTERN: Final[re.Pattern[str]] = re.compile(r"^## 8\. ", re.MULTILINE)
+# O teste é usado uma única vez, na Seção 9; a base inteira só no contrato e nas duplicatas
+TEST_SET_NAMES: Final[tuple[str, ...]] = ("raw_df", "clean_df", "test_raw_df", "test_df", "X_test", "y_test")
+# As configurações ficaram congeladas na 6.7: a Seção 7 avalia, e não volta a buscar nem a escolher
+RESELECTION_CALLS: Final[tuple[str, ...]] = (
+    "cached_grid_search",
+    "run_grid_search",
+    "select_best",
+    "choose_n_components",
+)
+
+
+def _validation_code_cells() -> list[str]:
+    notebook = nbt.load()
+    start = nbt.find_cell_index(notebook, VALIDATION_SECTION_MARKER)
+    sources: list[str] = []
+    for cell in notebook.cells[start + 1 :]:
+        if cell.cell_type == "markdown" and AFTER_VALIDATION_PATTERN.search(cell.source):
+            break
+        if cell.cell_type == "code":
+            sources.append(cell.source)
+    return sources
+
+
+def test_validation_section_has_code_to_check() -> None:
+    assert len(_validation_code_cells()) >= 6
+
+
+@pytest.mark.parametrize("name", TEST_SET_NAMES)
+def test_validation_section_never_reads_the_test_set(name: str) -> None:
+    pattern = re.compile(rf"\b{re.escape(name)}\b")
+    offenders = [source.splitlines()[0] for source in _validation_code_cells() if pattern.search(source)]
+    assert offenders == [], f"células da Seção 7 que usam {name}: {offenders}"
+
+
+@pytest.mark.parametrize("call", RESELECTION_CALLS)
+def test_validation_section_does_not_choose_configurations_again(call: str) -> None:
+    pattern = re.compile(rf"\b{re.escape(call)}\b")
+    offenders = [source.splitlines()[0] for source in _validation_code_cells() if pattern.search(source)]
+    assert offenders == [], f"células da Seção 7 que chamam {call}: {offenders}"
 
 
 def test_every_declared_exception_still_exists() -> None:

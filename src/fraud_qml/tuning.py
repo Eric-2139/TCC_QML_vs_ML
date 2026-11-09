@@ -13,8 +13,10 @@ o mesmo de ajustar o pipeline inteiro em cada combinação (há teste); muda só
 valor dá, por ``staged_decision_function``, a pontuação que cada teto menor daria (há teste).
 """
 
+import ast
 import hashlib
 import json
+import itertools
 import math
 from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import asdict, dataclass, replace
@@ -45,6 +47,8 @@ from fraud_qml.quantum.encodings import AngleFeatureMapName, Entanglement
 # em vez de parar, o AdaBoostClassifier não consegue ajustar nada
 _WORSE_THAN_RANDOM_MESSAGE: Final[str] = "worse than random"
 
+_PACKAGE_DIR: Final[Path] = Path(__file__).resolve().parent
+
 METRIC_COLUMNS: Final[tuple[str, ...]] = ("pr_auc", "roc_auc")
 FOLD_COLUMNS: Final[tuple[str, ...]] = (
     "fold",
@@ -60,8 +64,8 @@ FOLD_COLUMNS: Final[tuple[str, ...]] = (
 # para que um valor padrão ignorado (a faixa dos ângulos na amplitude, por exemplo) não pareça uma escolha
 _INPUT_FIELDS: Final[dict[str, tuple[str, ...]]] = {
     "all_features": ("kind", "scaler"),
-    "angle_components": ("kind", "scaler", "reducer"),
-    "angle": ("kind", "scaler", "reducer", "range_width", "feature_map", "feature_map_reps", "entanglement"),
+    "angle_components": ("kind", "scaler", "reducer", "n_components"),
+    "angle": ("kind", "scaler", "reducer", "range_width", "feature_map", "feature_map_reps", "entanglement", "n_components"),
     "amplitude": ("kind", "scaler", "padding_value"),
 }
 _MODEL_FIELDS: Final[dict[str, tuple[str, ...]]] = {
@@ -454,11 +458,73 @@ def run_grid_search(
     )
 
 
-def package_source_fingerprint() -> str:
-    """Hash do código-fonte do pacote: qualquer mudança em ``fraud_qml`` invalida o cache do grid."""
-    package_dir = Path(__file__).resolve().parent
+def _module_file(module: str, package_dir: Path) -> Path | None:
+    """Arquivo de um módulo do pacote (``pacote.sub.mod``), ou None se o nome não for um módulo (uma classe, uma função)."""
+    target = package_dir.joinpath(*module.split(".")[1:])
+    if target.with_suffix(".py").is_file():
+        return target.with_suffix(".py")
+    if (target / "__init__.py").is_file():
+        return target / "__init__.py"
+    return None
+
+
+def _imported_package_modules(source: Path, package_name: str) -> set[str]:
+    """Nomes do pacote importados por um arquivo, inclusive dentro de funções; ``from p import x`` gera ``p`` e ``p.x``."""
+    names: set[str] = set()
+    for node in ast.walk(ast.parse(source.read_text(encoding="utf-8"))):
+        if isinstance(node, ast.Import):
+            names.update(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module is not None and node.level == 0:
+            names.add(node.module)
+            names.update(f"{node.module}.{alias.name}" for alias in node.names)
+    return {name for name in names if name == package_name or name.startswith(f"{package_name}.")}
+
+
+def package_dependencies(root_module: str = __name__, package_dir: Path = _PACKAGE_DIR) -> list[Path]:
+    """Arquivos do pacote que um módulo importa, direta ou indiretamente (ele e os ``__init__`` incluídos).
+
+    A leitura é estática (pelo texto dos ``import``), então um import feito só dentro de uma função também conta: o
+    erro possível é incluir um arquivo a mais, nunca deixar de fora um que a busca executa.
+
+    Args:
+        root_module: Nome completo do módulo de partida.
+        package_dir: Pasta do pacote ao qual o módulo pertence.
+
+    Returns:
+        Os arquivos, em ordem.
+    """
+    package_name = root_module.split(".")[0]
+    pending, seen, files = [root_module], set[str](), set[Path]()
+    while pending:
+        module = pending.pop()
+        if module in seen:
+            continue
+        seen.add(module)
+        parts = module.split(".")
+        # Importar pacote.sub.mod executa também pacote/__init__.py e pacote/sub/__init__.py
+        pending.extend(".".join(parts[:end]) for end in range(1, len(parts)))
+        source = _module_file(module, package_dir)
+        if source is not None:
+            files.add(source)
+            pending.extend(_imported_package_modules(source, package_name))
+    return sorted(files)
+
+
+def package_source_fingerprint(root_module: str = __name__, package_dir: Path = _PACKAGE_DIR) -> str:
+    """Hash do código que a busca executa: este módulo e tudo o que ele importa do pacote.
+
+    Módulos que a busca não importa (gráficos, avaliação na validação, diagnósticos) ficam de fora: mudá-los não muda
+    nenhuma nota do grid, e antes de 2026-11-04 cada mudança neles refazia 193 min de buscas (decisão do Eric, opção A).
+
+    Args:
+        root_module: Módulo de partida (padrão: este, ``fraud_qml.tuning``).
+        package_dir: Pasta do pacote.
+
+    Returns:
+        SHA-256 dos caminhos relativos e do conteúdo de cada arquivo de ``package_dependencies``.
+    """
     digest = hashlib.sha256()
-    for source in sorted(package_dir.rglob("*.py")):
+    for source in package_dependencies(root_module, package_dir):
         digest.update(source.relative_to(package_dir).as_posix().encode())
         digest.update(source.read_bytes())
     return digest.hexdigest()
@@ -491,7 +557,7 @@ def cached_grid_search(
     """``run_grid_search`` com cache em disco, para reexecutar o notebook sem refazer o grid.
 
     O cache só é reaproveitado se nada que muda o resultado mudou (``grid_cache_key``); qualquer
-    alteração no código do pacote, nos dados, no grid ou nas versões refaz a busca.
+    alteração no código que a busca importa, nos dados, no grid ou nas versões refaz a busca.
 
     Returns:
         O resultado, com ``from_cache`` indicando de onde veio.
@@ -506,10 +572,11 @@ def cached_grid_search(
 
 
 def project_grid_seconds(pilot_task_seconds: Sequence[float], n_tasks: int, n_jobs: int) -> float:
-    """Projeção conservadora do tempo de um grid a partir de um piloto.
+    """Projeção do tempo de um grid a partir de um piloto.
 
     Supõe que toda tarefa demora o mesmo que a **mais lenta** do piloto e que as tarefas rodam em
-    levas de ``n_jobs``.
+    levas de ``n_jobs``. Não é garantidamente conservadora: o piloto roda menos tarefas ao mesmo tempo que o
+    grid, e com todos os núcleos ocupados cada tarefa fica mais lenta (NC16).
 
     Args:
         pilot_task_seconds: Tempos das tarefas do piloto.
@@ -563,7 +630,7 @@ def configuration_from_row(row: Mapping[str, object]) -> tuple[InputEncoding, Mo
     """
     input_fields = _defined(row, INPUT_COLUMNS)
     model_fields = _defined(row, MODEL_COLUMNS)
-    for integer_field in ("feature_map_reps", "n_estimators", "ansatz_reps", "max_iterations"):
+    for integer_field in ("feature_map_reps", "n_estimators", "ansatz_reps", "max_iterations", "n_components"):
         for fields in (input_fields, model_fields):
             if integer_field in fields:
                 fields[integer_field] = int(fields[integer_field])  # type: ignore[call-overload]
@@ -610,3 +677,192 @@ def write_grid_report(
     }
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(_json_ready(payload), ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+# ---------------------------------------------------------------- os pipelines que seguem, a segunda rodada e os qubits
+
+# Os oito pipelines do TCC: nome curto → (grid de onde sai, critério que define o grupo de combinações)
+PIPELINES: Final[dict[str, tuple[str, dict[str, object]]]] = {
+    "svm_all_features": ("svm", {"kind": "all_features"}),
+    "svm_components": ("svm", {"kind": "angle_components"}),
+    "adaboost_all_features": ("adaboost", {"kind": "all_features"}),
+    "adaboost_components": ("adaboost", {"kind": "angle_components"}),
+    "qsvm_angle": ("qsvm", {"kind": "angle"}),
+    "qsvm_amplitude": ("qsvm", {"kind": "amplitude"}),
+    "quantum_adaboost_angle": ("quantum_adaboost", {"kind": "angle"}),
+    "quantum_adaboost_amplitude": ("quantum_adaboost", {"kind": "amplitude"}),
+}
+# Cada clássico com 5 componentes é comparado com a variação A do quântico do par, com a mesma entrada (ponto ② do PLAN)
+LIKE_FOR_LIKE: Final[dict[str, str]] = {"svm_components": "qsvm_angle", "adaboost_components": "quantum_adaboost_angle"}
+
+# As bordas de cada dimensão numérica: o grid da primeira rodada
+_FIRST_ROUND_GRIDS: Final[dict[str, tuple[float, ...]]] = {
+    "C": config.SVM_C_GRID,
+    "gamma": tuple(float(value) for value in config.SVM_GAMMA_GRID if not isinstance(value, str)),
+    "learning_rate": config.BOOSTING_LEARNING_RATE_GRID,
+    "range_width": config.ANGLE_RANGE_WIDTH_GRID,
+    "padding_value": config.AMPLITUDE_PADDING_GRID,
+}
+_INPUT_EXTENSION_FIELDS: Final[tuple[str, ...]] = ("range_width", "padding_value")
+_MODEL_EXTENSION_FIELDS: Final[tuple[str, ...]] = ("C", "gamma", "learning_rate")
+
+
+def _is_missing(value: object) -> bool:
+    return value is None or (isinstance(value, float) and math.isnan(value))
+
+
+def matching_rows(frame: pd.DataFrame, criteria: Mapping[str, object]) -> pd.Series:
+    """Máscara das linhas com os valores dados; um valor vazio casa com campo vazio."""
+    mask = pd.Series(True, index=frame.index)
+    for column, value in criteria.items():
+        mask &= frame[column].isna() if _is_missing(value) else frame[column].eq(value)
+    return mask
+
+
+def select_best(summary: pd.DataFrame, criteria: Mapping[str, object]) -> pd.Series:
+    """A melhor combinação (maior PR-AUC média) do grupo definido pelo critério, num resumo de ``summarize_grid``.
+
+    Raises:
+        ValueError: Se nenhuma combinação do grupo terminou sem falha.
+    """
+    group = summary[matching_rows(summary, criteria) & summary["pr_auc_mean"].notna()]
+    if group.empty:
+        raise ValueError(f"nenhuma combinação válida para {dict(criteria)}")
+    return group.sort_values("pr_auc_mean", ascending=False, kind="stable").iloc[0]
+
+
+def border_extension(value: object, grid: Sequence[float], below: float | None, above: float | None) -> tuple[object, ...]:
+    """O valor escolhido e, se ele estiver numa borda do grid, o passo seguinte além dela.
+
+    Um valor que não é número (o γ = "scale") ou que fica no meio do grid volta sozinho.
+
+    Args:
+        value: O valor escolhido.
+        grid: Os valores do grid em que ele foi escolhido.
+        below: O passo abaixo do menor valor; ``None`` quando a borda vem de princípio.
+        above: O passo acima do maior valor; ``None`` quando a borda vem de princípio.
+
+    Returns:
+        As opções da vizinhança, em ordem crescente.
+    """
+    if isinstance(value, str) or _is_missing(value):
+        return (value,)
+    options = [float(value)]
+    if below is not None and float(value) == min(grid):
+        options.append(below)
+    if above is not None and float(value) == max(grid):
+        options.append(above)
+    return tuple(sorted(options))
+
+
+def neighborhood_space(
+    name: str,
+    input_encoding: InputEncoding,
+    model: ModelSettings,
+    input_options: Mapping[str, Sequence[object]],
+    model_options: Mapping[str, Sequence[object]],
+) -> SearchSpace:
+    """Um grid pequeno em torno de uma configuração: só as dimensões dadas variam; o resto fica como está.
+
+    Nos AdaBoost, o teto passa a ser o maior de ``EXTENDED_BOOSTING_N_ESTIMATORS`` e todos os tetos são lidos.
+
+    Args:
+        name: Nome do grid (vai para o cache).
+        input_encoding: A entrada de partida.
+        model: O modelo de partida.
+        input_options: Campo da entrada → valores a testar.
+        model_options: Campo do modelo → valores a testar.
+
+    Returns:
+        O grid, com o produto das opções de entrada e das de modelo.
+    """
+    input_fields = list(input_options)
+    model_fields = list(model_options)
+    inputs = tuple(
+        replace(input_encoding, **dict(zip(input_fields, values, strict=True)))
+        for values in itertools.product(*(input_options[field] for field in input_fields))
+    )
+    stages: tuple[int, ...] = ()
+    if model.is_boosting:
+        stages = config.EXTENDED_BOOSTING_N_ESTIMATORS
+        model = replace(model, n_estimators=max(stages))
+    models = tuple(
+        replace(model, **dict(zip(model_fields, values, strict=True)))
+        for values in itertools.product(*(model_options[field] for field in model_fields))
+    )
+    return SearchSpace(name, inputs, models, boosting_stages=stages)
+
+
+def round_two_space(name: str, row: Mapping[str, object]) -> SearchSpace:
+    """A segunda rodada em torno de uma escolhida: um passo além de cada borda em que ela ficou (``BORDER_EXTENSIONS``).
+
+    As dimensões que não estão na borda ficam com o valor escolhido. Nos AdaBoost, o teto de 200 rodadas é lido sempre.
+    """
+    input_encoding, model = configuration_from_row(row)
+    described = {**describe_input(input_encoding), **describe_model(model)}
+
+    def options(fields: Sequence[str]) -> dict[str, tuple[object, ...]]:
+        return {
+            field: border_extension(described[field], _FIRST_ROUND_GRIDS[field], *config.BORDER_EXTENSIONS[field])
+            for field in fields
+            if not _is_missing(described[field])
+        }
+
+    return neighborhood_space(name, input_encoding, model, options(_INPUT_EXTENSION_FIELDS), options(_MODEL_EXTENSION_FIELDS))
+
+
+def qubit_sweep_space(name: str, row: Mapping[str, object]) -> SearchSpace:
+    """O teste de 4 a 8 qubits em torno de uma escolhida com componentes (variação A ou clássico com 5 componentes).
+
+    Varia o número de componentes (``QUBIT_SWEEP_N_COMPONENTS``) e reajusta a largura de banda para cada um: o intervalo
+    do MinMax na variação A e o γ no SVM. O AdaBoost de *stumps* não tem largura de banda (ignora a escala).
+
+    Raises:
+        ValueError: Se a entrada não tiver componentes (31 features ou amplitude).
+    """
+    input_encoding, model = configuration_from_row(row)
+    if input_encoding.kind not in ("angle", "angle_components"):
+        raise ValueError(f"a entrada {input_encoding.kind} não tem componentes para variar")
+    input_options: dict[str, Sequence[object]] = {"n_components": config.QUBIT_SWEEP_N_COMPONENTS}
+    model_options: dict[str, Sequence[object]] = {}
+    if input_encoding.kind == "angle":
+        input_options["range_width"] = config.QUBIT_SWEEP_RANGE_WIDTHS
+    if model.family == "svm":
+        model_options["gamma"] = config.QUBIT_SWEEP_GAMMAS
+    return neighborhood_space(name, input_encoding, model, input_options, model_options)
+
+
+def merge_fold_scores(*fold_scores: pd.DataFrame) -> pd.DataFrame:
+    """Junta os resultados de várias rodadas, sem repetir combinação e fold.
+
+    Uma combinação que aparece em mais de uma rodada (a escolhida, que a segunda rodada refaz) precisa ter a mesma
+    PR-AUC nas duas: a busca é determinística, então uma diferença indicaria que as rodadas não são comparáveis.
+
+    Raises:
+        ValueError: Se a mesma combinação, no mesmo fold, tiver PR-AUC diferente em duas rodadas.
+    """
+    combined = pd.concat(fold_scores, ignore_index=True)
+    keys = [*CONFIGURATION_COLUMNS, "fold"]
+    spread = combined.groupby(keys, dropna=False)["pr_auc"].agg(lambda values: values.max() - values.min())
+    if (spread.fillna(0.0) > 1e-12).any():
+        raise ValueError("a mesma combinação deu PR-AUC diferente em duas rodadas")
+    return combined.drop_duplicates(subset=keys, keep="first").reset_index(drop=True)
+
+
+def choose_n_components(summary: pd.DataFrame) -> int:
+    """O número de componentes (qubits, na variação A) que segue, pela regra fixada antes de rodar.
+
+    Para cada número, vale a melhor combinação dele. Fica o de maior PR-AUC média, a menos que um número **menor** fique a
+    menos de um desvio entre folds desse melhor: aí fica o menor deles. Mais qubits só entram se ganharem com folga.
+
+    Args:
+        summary: Resumo (``summarize_grid``) de um teste de qubits.
+
+    Returns:
+        O número de componentes escolhido.
+    """
+    valid = summary[summary["pr_auc_mean"].notna()]
+    best_per_k = valid.sort_values("pr_auc_mean", ascending=False, kind="stable").groupby("n_components").head(1)
+    best = best_per_k.iloc[0]
+    tied = best_per_k[best_per_k["pr_auc_mean"] >= best["pr_auc_mean"] - best["pr_auc_std"]]
+    return int(tied["n_components"].min())

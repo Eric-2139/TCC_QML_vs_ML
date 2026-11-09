@@ -13,6 +13,7 @@ Uso pela linha de comando (a partir da raiz do projeto)::
 
     .venv/Scripts/python.exe tools/notebook_tools.py health
     .venv/Scripts/python.exe tools/notebook_tools.py dump --from "### 3.6 "
+    .venv/Scripts/python.exe tools/notebook_tools.py dump --code > <scratchpad>/notebook.txt   # leitura inteira
     .venv/Scripts/python.exe tools/notebook_tools.py figures <pasta> --from "### 3.6 "
     .venv/Scripts/python.exe tools/notebook_tools.py execute
 """
@@ -246,11 +247,17 @@ def _output_text(output: NotebookNode) -> str:
     return data.get("text/plain", "")
 
 
-def dump_outputs(path: Path = DEFAULT_NOTEBOOK, from_marker: str | None = None) -> str:
+def dump_outputs(path: Path = DEFAULT_NOTEBOOK, from_marker: str | None = None, include_code: bool = False) -> str:
     """Texto das células a partir de ``from_marker``: markdown na íntegra e saídas das células de código.
 
     É o material que o auditor compara: cada número afirmado num markdown precisa aparecer numa
     saída de código.
+
+    Args:
+        path: Notebook a ler.
+        from_marker: Marcador da primeira célula; sem ele, o notebook inteiro.
+        include_code: Inclui o código de cada célula antes das saídas. É a leitura do início de uma sessão
+            nova: constantes e decisões que só existem no notebook ficam no código, e não nas saídas.
     """
     notebook = load(path)
     blocks: list[str] = []
@@ -260,7 +267,8 @@ def dump_outputs(path: Path = DEFAULT_NOTEBOOK, from_marker: str | None = None) 
             blocks.append(f"--- célula {index} (markdown)\n{cell.source}")
         elif cell.cell_type == "code":
             outputs = "\n".join(_output_text(output) for output in cell.get("outputs", []))
-            blocks.append(f"--- célula {index} (código, execução {cell.execution_count})\n{outputs}")
+            code = f"[código]\n{cell.source}\n[saída]\n" if include_code else ""
+            blocks.append(f"--- célula {index} (código, execução {cell.execution_count})\n{code}{outputs}")
     return "\n\n".join(blocks)
 
 
@@ -315,6 +323,7 @@ def _main() -> int:
     commands.add_parser("health", help="lista erros e células não executadas")
     dump = commands.add_parser("dump", help="texto das células e saídas")
     dump.add_argument("--from", dest="from_marker")
+    dump.add_argument("--code", action="store_true", help="inclui o código de cada célula")
     figures = commands.add_parser("figures", help="salva as figuras em PNG")
     figures.add_argument("out_dir", type=Path)
     figures.add_argument("--from", dest="from_marker")
@@ -328,7 +337,7 @@ def _main() -> int:
         print("\n".join(problems) if problems else "notebook saudável")
         return 1 if problems else 0
     if arguments.command == "dump":
-        print(dump_outputs(arguments.notebook, arguments.from_marker))
+        print(dump_outputs(arguments.notebook, arguments.from_marker, arguments.code))
     elif arguments.command == "figures":
         for figure in extract_figures(arguments.out_dir, arguments.notebook, arguments.from_marker):
             print(figure)

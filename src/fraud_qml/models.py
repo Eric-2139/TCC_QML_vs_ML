@@ -69,18 +69,21 @@ def _undersampling_step(random_state: int) -> Step:
     return ("undersampler", make_undersampler(random_state))
 
 
-def _angle_steps(scaler: ScalerName, reducer: ReducerName, angle_range: AngleRange, random_state: int) -> list[Step]:
-    return list(build_angle_preprocessor(scaler, reducer, config.N_QUBITS, angle_range, random_state).steps)
+def _angle_steps(
+    scaler: ScalerName, reducer: ReducerName, angle_range: AngleRange, random_state: int, n_components: int = config.N_QUBITS
+) -> list[Step]:
+    return list(build_angle_preprocessor(scaler, reducer, n_components, angle_range, random_state).steps)
 
 
 def _classical_input_steps(
-    model_input: ClassicalInput, scaler: ScalerName, reducer: ReducerName, random_state: int
+    model_input: ClassicalInput, scaler: ScalerName, reducer: ReducerName, random_state: int,
+    n_components: int = config.N_QUBITS,
 ) -> list[Step]:
     if model_input == "angle_components":
         # Entrada idêntica à da variação A dos quânticos: os mesmos 5 valores que viram ângulos. A largura da
         # faixa fica na padrão: num stump ela não muda nada, e no RBF reescalar as 5 colunas por um mesmo fator
         # equivale a mudar o γ (com γ = "scale", o RBF fica exatamente igual)
-        return _angle_steps(scaler, reducer, DEFAULT_ANGLE_RANGE, random_state)
+        return _angle_steps(scaler, reducer, DEFAULT_ANGLE_RANGE, random_state, n_components)
     return [("scaler", make_scaler(scaler))]
 
 
@@ -94,10 +97,11 @@ def quantum_encoding_steps(
     entanglement: Entanglement = "linear",
     padding_value: float = DEFAULT_AMPLITUDE_PADDING,
     random_state: int = config.RANDOM_STATE,
+    n_components: int = config.N_QUBITS,
 ) -> list[Step]:
     """Etapas de entrada e de codificação dos modelos quânticos, até o estado de cada linha.
 
-    - **Variação A (``angle``):** scaler → redutor para ``N_QUBITS`` componentes → MinMax na faixa
+    - **Variação A (``angle``):** scaler → redutor para ``n_components`` componentes → MinMax na faixa
       de ângulos → feature map (uma feature por qubit).
     - **Variação B (``amplitude``):** scaler → completar até 2ⁿ com uma constante e normalizar. O
       vetor resultante já é o estado; não há feature map.
@@ -112,6 +116,8 @@ def quantum_encoding_steps(
         entanglement: Pares acoplados no mapa ``zz`` (só na variação A).
         padding_value: Constante de preenchimento (só na variação B).
         random_state: Semente do redutor.
+        n_components: Componentes, e portanto qubits, da variação A (a B tem sempre 5 qubits: 31 features + 1
+            constante = 32 amplitudes).
 
     Returns:
         Lista de etapas ``(nome, transformador)``, para compor um pipeline.
@@ -122,7 +128,7 @@ def quantum_encoding_steps(
             ("encoder", StatevectorEncoder(encoding=AMPLITUDE_ENCODING)),
         ]
     return [
-        *_angle_steps(scaler, reducer, angle_range, random_state),
+        *_angle_steps(scaler, reducer, angle_range, random_state, n_components),
         ("encoder", StatevectorEncoder(feature_map, feature_map_reps, entanglement)),
     ]
 
@@ -289,6 +295,8 @@ class InputEncoding:
         feature_map_reps: Repetições do mapa (só ``angle``; ignorado no ``ry``).
         entanglement: Pares acoplados no ``zz`` (só ``angle``).
         padding_value: Constante de preenchimento (só ``amplitude``).
+        n_components: Número de componentes depois do redutor (``angle_components`` e ``angle``); na variação A,
+            é também o número de qubits. O padrão é o orçamento comum de 5 (Seção 4.6).
     """
 
     kind: InputKind
@@ -299,6 +307,7 @@ class InputEncoding:
     feature_map_reps: int = DEFAULT_FEATURE_MAP_REPS
     entanglement: Entanglement = "linear"
     padding_value: float = DEFAULT_AMPLITUDE_PADDING
+    n_components: int = config.N_QUBITS
 
     @property
     def is_quantum(self) -> bool:
@@ -315,7 +324,9 @@ class InputEncoding:
             Lista de etapas ``(nome, transformador)``.
         """
         if not self.is_quantum:
-            return _classical_input_steps(self.kind, self.scaler, self.reducer, random_state)  # type: ignore[arg-type]
+            return _classical_input_steps(  # type: ignore[arg-type]
+                self.kind, self.scaler, self.reducer, random_state, self.n_components
+            )
         return quantum_encoding_steps(
             variation=self.kind,  # type: ignore[arg-type]
             scaler=self.scaler,
@@ -326,6 +337,7 @@ class InputEncoding:
             entanglement=self.entanglement,
             padding_value=self.padding_value,
             random_state=random_state,
+            n_components=self.n_components,
         )
 
 

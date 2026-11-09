@@ -22,7 +22,7 @@ ENGINEERED_COLUMNS: Final[tuple[str, ...]] = ("amount_log", "hour_sin", "hour_co
 # Entrada dos modelos: 28 componentes V + 3 features derivadas = 31 colunas
 MODEL_FEATURE_COLUMNS: Final[tuple[str, ...]] = (*PCA_FEATURE_COLUMNS, *ENGINEERED_COLUMNS)
 
-# Mantidas para análise (gráficos, modelo de custo do limiar), mas NUNCA entregues aos modelos
+# Mantidas para análise (gráficos), mas NUNCA entregues aos modelos
 AUXILIARY_COLUMNS: Final[tuple[str, ...]] = ("Amount", "hour_of_day")
 
 

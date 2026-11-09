@@ -75,5 +75,26 @@ ANSATZ_REPS_GRID: Final[tuple[int, ...]] = (1, 2)
 CV_N_SPLITS: Final[int] = 5
 GRID_TIME_LIMIT_SECONDS: Final[float] = 2 * 3600.0
 
+# Segunda rodada (Seção 6.5, decidida com o Eric em 2026-11-02): em torno de cada escolhida, um passo além de cada
+# borda em que ela ficou, com o resto fixo. (passo abaixo do menor valor, passo acima do maior); None = a borda vem de
+# princípio e não se estende: a faixa dos ângulos para em π/2 pela periodicidade (4.7.1), e a constante zero apaga a
+# norma (4.8), então abaixo de 1 o passo é 0,5.
+BORDER_EXTENSIONS: Final[dict[str, tuple[float | None, float | None]]] = {
+    "C": (0.01, 1000.0),
+    "gamma": (0.001, 100.0),
+    "learning_rate": (0.05, 2.0),
+    "range_width": (0.1, None),
+    "padding_value": (0.5, 10.0),
+}
+# Os AdaBoost da segunda rodada e do teste de qubits leem também o teto de 200 rodadas (um passo além de 100)
+EXTENDED_BOOSTING_N_ESTIMATORS: Final[tuple[int, ...]] = (*BOOSTING_N_ESTIMATORS_GRID, 200)
+
+# Teste de 4 a 8 qubits (Seção 6.6): o número de componentes depois do redutor, que na variação A é o número de
+# qubits. Para cada número, a largura de banda é reajustada (a concentração do kernel muda com os qubits, CC5): o
+# intervalo do MinMax nos quânticos e o γ no SVM.
+QUBIT_SWEEP_N_COMPONENTS: Final[tuple[int, ...]] = (4, 5, 6, 7, 8)
+QUBIT_SWEEP_RANGE_WIDTHS: Final[tuple[float, ...]] = (0.1, *ANGLE_RANGE_WIDTH_GRID)
+QUBIT_SWEEP_GAMMAS: Final[tuple[str | float, ...]] = (*SVM_GAMMA_GRID, 0.001)
+
 # joblib.cpu_count respeita limites de contêiner; os.cpu_count enxergaria a máquina hospedeira.
 N_JOBS: Final[int] = joblib.cpu_count()
