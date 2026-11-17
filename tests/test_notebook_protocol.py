@@ -3,8 +3,8 @@
 A regra (CC7): na base inteira, só o contrato dos dados e a remoção de duplicatas; depois do split,
 a exploração (Seção 4) lê apenas linhas de treino. Este teste varre o código da Seção 4 e falha se
 alguma célula tocar na base inteira, na validação ou no teste fora das exceções declaradas.
-Também confere que a escolha da Seção 6 só usa o treino e que a Seção 7 não lê o teste nem volta a escolher
-configurações (elas ficaram congeladas na 6.7).
+Também confere que a escolha da Seção 6 só usa o treino e que as Seções 7 e 8 não leem o teste nem voltam a escolher
+configurações (elas ficaram congeladas na 6.7), e que a Seção 8 não troca as configurações nem os limiares.
 """
 
 import re
@@ -170,3 +170,46 @@ def test_every_declared_exception_still_exists() -> None:
     sources = _exploration_code_cells()
     for marker in ALLOWED_CELLS:
         assert sum(marker in source for source in sources) == 1, marker
+
+
+DIAGNOSTICS_SECTION_MARKER: Final[str] = "## 8. Diagnóstico"
+AFTER_DIAGNOSTICS_PATTERN: Final[re.Pattern[str]] = re.compile(r"^## 9\. ", re.MULTILINE)
+# A Seção 8 descreve as configurações congeladas (CC19): não as substitui, nem troca o limiar escolhido na 7.3
+FROZEN_ASSIGNMENTS: Final[tuple[str, ...]] = ("selected_configurations", "threshold_choices", "final_rows")
+
+
+def _diagnostics_code_cells() -> list[str]:
+    notebook = nbt.load()
+    start = nbt.find_cell_index(notebook, DIAGNOSTICS_SECTION_MARKER)
+    sources: list[str] = []
+    for cell in notebook.cells[start + 1 :]:
+        if cell.cell_type == "markdown" and AFTER_DIAGNOSTICS_PATTERN.search(cell.source):
+            break
+        if cell.cell_type == "code":
+            sources.append(cell.source)
+    return sources
+
+
+def test_diagnostics_section_has_code_to_check() -> None:
+    assert len(_diagnostics_code_cells()) >= 6
+
+
+@pytest.mark.parametrize("name", TEST_SET_NAMES)
+def test_diagnostics_section_never_reads_the_test_set(name: str) -> None:
+    pattern = re.compile(rf"\b{re.escape(name)}\b")
+    offenders = [source.splitlines()[0] for source in _diagnostics_code_cells() if pattern.search(source)]
+    assert offenders == [], f"células da Seção 8 que usam {name}: {offenders}"
+
+
+@pytest.mark.parametrize("call", RESELECTION_CALLS)
+def test_diagnostics_section_does_not_choose_configurations_again(call: str) -> None:
+    pattern = re.compile(rf"\b{re.escape(call)}\b")
+    offenders = [source.splitlines()[0] for source in _diagnostics_code_cells() if pattern.search(source)]
+    assert offenders == [], f"células da Seção 8 que chamam {call}: {offenders}"
+
+
+@pytest.mark.parametrize("name", FROZEN_ASSIGNMENTS)
+def test_diagnostics_section_does_not_replace_frozen_choices(name: str) -> None:
+    pattern = re.compile(rf"^\s*{re.escape(name)}\s*(\[[^\]]*\]\s*)?=[^=]", re.MULTILINE)
+    offenders = [source.splitlines()[0] for source in _diagnostics_code_cells() if pattern.search(source)]
+    assert offenders == [], f"células da Seção 8 que reatribuem {name}: {offenders}"

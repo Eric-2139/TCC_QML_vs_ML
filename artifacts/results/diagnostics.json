@@ -1,0 +1,2980 @@
+{
+  "section": "8. Diagnóstico",
+  "learning_curve": {
+    "fractions": [
+      0.25,
+      0.5,
+      0.75,
+      0.8,
+      1.0
+    ],
+    "seeds": [
+      42,
+      0,
+      1,
+      2,
+      3
+    ],
+    "evaluation": "validação",
+    "training_scores": "PR-AUC em todas as linhas passadas ao fit; ROC-AUC nas linhas sorteadas pelo undersampling",
+    "summary": [
+      {
+        "pipeline / ": "AdaBoost, 31 features",
+        "fraction / ": 0.25,
+        "frauds_seen / mean": 71.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7083197199571942,
+        "pr_auc / std": 0.04387545368582602,
+        "roc_auc / mean": 0.9679166054795374,
+        "roc_auc / std": 0.005966672496359643,
+        "train_pr_auc / mean": 0.6832999249709987,
+        "train_pr_auc / std": 0.05410750139273878,
+        "train_roc_auc / mean": 0.9988891093037097,
+        "train_roc_auc / std": 0.0011869292046539847
+      },
+      {
+        "pipeline / ": "AdaBoost, 31 features",
+        "fraction / ": 0.5,
+        "frauds_seen / mean": 142.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7250163994526013,
+        "pr_auc / std": 0.05997053614878423,
+        "roc_auc / mean": 0.9728464352660204,
+        "roc_auc / std": 0.004409351933489911,
+        "train_pr_auc / mean": 0.6711836104961054,
+        "train_pr_auc / std": 0.05131692900520574,
+        "train_roc_auc / mean": 0.9973219599285855,
+        "train_roc_auc / std": 0.0031463443613493408
+      },
+      {
+        "pipeline / ": "AdaBoost, 31 features",
+        "fraction / ": 0.75,
+        "frauds_seen / mean": 213.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7283301055090888,
+        "pr_auc / std": 0.006665799193378772,
+        "roc_auc / mean": 0.9711533889657353,
+        "roc_auc / std": 0.002981623288482527,
+        "train_pr_auc / mean": 0.6950721431155678,
+        "train_pr_auc / std": 0.026270424010285204,
+        "train_roc_auc / mean": 0.993374330489982,
+        "train_roc_auc / std": 0.0020196451377532646
+      },
+      {
+        "pipeline / ": "AdaBoost, 31 features",
+        "fraction / ": 0.8,
+        "frauds_seen / mean": 227.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7215125638372497,
+        "pr_auc / std": 0.05955279369615715,
+        "roc_auc / mean": 0.9732567865133177,
+        "roc_auc / std": 0.0009588491233518596,
+        "train_pr_auc / mean": 0.6785524206637179,
+        "train_pr_auc / std": 0.07351507667908089,
+        "train_roc_auc / mean": 0.99447107454055,
+        "train_roc_auc / std": 0.0018997042748593802
+      },
+      {
+        "pipeline / ": "AdaBoost, 31 features",
+        "fraction / ": 1.0,
+        "frauds_seen / mean": 284.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7571234169581744,
+        "pr_auc / std": 0.012003655206572764,
+        "roc_auc / mean": 0.9741869310301183,
+        "roc_auc / std": 0.0028322704230827065,
+        "train_pr_auc / mean": 0.7134737508459841,
+        "train_pr_auc / std": 0.018034678494854354,
+        "train_roc_auc / mean": 0.9924072604641936,
+        "train_roc_auc / std": 0.0007618849175221108
+      },
+      {
+        "pipeline / ": "AdaBoost, componentes",
+        "fraction / ": 0.25,
+        "frauds_seen / mean": 71.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.6521977645076565,
+        "pr_auc / std": 0.10722961743675057,
+        "roc_auc / mean": 0.9665314540653356,
+        "roc_auc / std": 0.0073009353266739845,
+        "train_pr_auc / mean": 0.6209402550235075,
+        "train_pr_auc / std": 0.09896822455848099,
+        "train_roc_auc / mean": 0.9905772664153938,
+        "train_roc_auc / std": 0.005073570230453956
+      },
+      {
+        "pipeline / ": "AdaBoost, componentes",
+        "fraction / ": 0.5,
+        "frauds_seen / mean": 142.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7180718456372734,
+        "pr_auc / std": 0.04255186644286713,
+        "roc_auc / mean": 0.9693684023530411,
+        "roc_auc / std": 0.00416703829109061,
+        "train_pr_auc / mean": 0.678375829789484,
+        "train_pr_auc / std": 0.03996777601835704,
+        "train_roc_auc / mean": 0.987452886332077,
+        "train_roc_auc / std": 0.005068871875800214
+      },
+      {
+        "pipeline / ": "AdaBoost, componentes",
+        "fraction / ": 0.75,
+        "frauds_seen / mean": 213.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7421407618879611,
+        "pr_auc / std": 0.015232221804353033,
+        "roc_auc / mean": 0.9695062752643379,
+        "roc_auc / std": 0.0042800772301778145,
+        "train_pr_auc / mean": 0.7016753959270672,
+        "train_pr_auc / std": 0.028164514796503875,
+        "train_roc_auc / mean": 0.9815314421741718,
+        "train_roc_auc / std": 0.0075552360408026875
+      },
+      {
+        "pipeline / ": "AdaBoost, componentes",
+        "fraction / ": 0.8,
+        "frauds_seen / mean": 227.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7072652422373569,
+        "pr_auc / std": 0.06828624352074193,
+        "roc_auc / mean": 0.9713695125473363,
+        "roc_auc / std": 0.0056065783584833525,
+        "train_pr_auc / mean": 0.670243637486329,
+        "train_pr_auc / std": 0.07077463013016685,
+        "train_roc_auc / mean": 0.9855634691144791,
+        "train_roc_auc / std": 0.005244264513843217
+      },
+      {
+        "pipeline / ": "AdaBoost, componentes",
+        "fraction / ": 1.0,
+        "frauds_seen / mean": 284.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7660344146795424,
+        "pr_auc / std": 0.010548324102423876,
+        "roc_auc / mean": 0.9740903336103812,
+        "roc_auc / std": 0.0036509813167816714,
+        "train_pr_auc / mean": 0.7183075579252596,
+        "train_pr_auc / std": 0.0050772421486685645,
+        "train_roc_auc / mean": 0.9871230906566157,
+        "train_roc_auc / std": 0.003994037605209245
+      },
+      {
+        "pipeline / ": "QSVM A (ângulo)",
+        "fraction / ": 0.25,
+        "frauds_seen / mean": 71.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7791682965203588,
+        "pr_auc / std": 0.035563981946256214,
+        "roc_auc / mean": 0.9683071827993496,
+        "roc_auc / std": 0.0067034709988611505,
+        "train_pr_auc / mean": 0.7402834746727267,
+        "train_pr_auc / std": 0.02949603237310322,
+        "train_roc_auc / mean": 0.9653640150763738,
+        "train_roc_auc / std": 0.012767447390544183
+      },
+      {
+        "pipeline / ": "QSVM A (ângulo)",
+        "fraction / ": 0.5,
+        "frauds_seen / mean": 142.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.787220101966525,
+        "pr_auc / std": 0.0288316683414215,
+        "roc_auc / mean": 0.9702198267330729,
+        "roc_auc / std": 0.0040063977145088385,
+        "train_pr_auc / mean": 0.7398065841011909,
+        "train_pr_auc / std": 0.034963389851891694,
+        "train_roc_auc / mean": 0.9725748859353303,
+        "train_roc_auc / std": 0.004225922513940152
+      },
+      {
+        "pipeline / ": "QSVM A (ângulo)",
+        "fraction / ": 0.75,
+        "frauds_seen / mean": 213.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7727892849324973,
+        "pr_auc / std": 0.024009800999445954,
+        "roc_auc / mean": 0.9732755276145808,
+        "roc_auc / std": 0.0034237780168795587,
+        "train_pr_auc / mean": 0.7514279192629669,
+        "train_pr_auc / std": 0.01739337712335131,
+        "train_roc_auc / mean": 0.9693050320703565,
+        "train_roc_auc / std": 0.005867002011859451
+      },
+      {
+        "pipeline / ": "QSVM A (ângulo)",
+        "fraction / ": 0.8,
+        "frauds_seen / mean": 227.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7589861130204671,
+        "pr_auc / std": 0.03912303105533196,
+        "roc_auc / mean": 0.9730541272299188,
+        "roc_auc / std": 0.0041480955168932635,
+        "train_pr_auc / mean": 0.7376698007206116,
+        "train_pr_auc / std": 0.033541332899489344,
+        "train_roc_auc / mean": 0.9730947621727571,
+        "train_roc_auc / std": 0.0038603326092998855
+      },
+      {
+        "pipeline / ": "QSVM A (ângulo)",
+        "fraction / ": 1.0,
+        "frauds_seen / mean": 284.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7865224299308424,
+        "pr_auc / std": 0.015080481925831063,
+        "roc_auc / mean": 0.974215587263112,
+        "roc_auc / std": 0.004569626334493725,
+        "train_pr_auc / mean": 0.7625294622029484,
+        "train_pr_auc / std": 0.004226609315273476,
+        "train_roc_auc / mean": 0.9771771473913906,
+        "train_roc_auc / std": 0.00550821979604075
+      },
+      {
+        "pipeline / ": "QSVM B (amplitude)",
+        "fraction / ": 0.25,
+        "frauds_seen / mean": 71.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7110575541287719,
+        "pr_auc / std": 0.0415743008323062,
+        "roc_auc / mean": 0.9696310031146282,
+        "roc_auc / std": 0.0033413618603163747,
+        "train_pr_auc / mean": 0.7011081268503633,
+        "train_pr_auc / std": 0.033522531443349164,
+        "train_roc_auc / mean": 0.9927395358063876,
+        "train_roc_auc / std": 0.005007895545536608
+      },
+      {
+        "pipeline / ": "QSVM B (amplitude)",
+        "fraction / ": 0.5,
+        "frauds_seen / mean": 142.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7219953729655341,
+        "pr_auc / std": 0.025764848731560756,
+        "roc_auc / mean": 0.973980403343052,
+        "roc_auc / std": 0.004092475188861792,
+        "train_pr_auc / mean": 0.6900981707303713,
+        "train_pr_auc / std": 0.05650471452887972,
+        "train_roc_auc / mean": 0.9932354691529458,
+        "train_roc_auc / std": 0.002953115472678263
+      },
+      {
+        "pipeline / ": "QSVM B (amplitude)",
+        "fraction / ": 0.75,
+        "frauds_seen / mean": 213.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7372968765973691,
+        "pr_auc / std": 0.012474995205171594,
+        "roc_auc / mean": 0.974004515140669,
+        "roc_auc / std": 0.00515247345718686,
+        "train_pr_auc / mean": 0.6948978187308746,
+        "train_pr_auc / std": 0.03405839878776064,
+        "train_roc_auc / mean": 0.99349776278957,
+        "train_roc_auc / std": 0.002073129989231377
+      },
+      {
+        "pipeline / ": "QSVM B (amplitude)",
+        "fraction / ": 0.8,
+        "frauds_seen / mean": 227.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7295987635074337,
+        "pr_auc / std": 0.015249518436985925,
+        "roc_auc / mean": 0.9758032852887613,
+        "roc_auc / std": 0.003815920082023633,
+        "train_pr_auc / mean": 0.684942998897166,
+        "train_pr_auc / std": 0.04036738639124386,
+        "train_roc_auc / mean": 0.9930408119699587,
+        "train_roc_auc / std": 0.0023917969814064004
+      },
+      {
+        "pipeline / ": "QSVM B (amplitude)",
+        "fraction / ": 1.0,
+        "frauds_seen / mean": 284.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7357285371442555,
+        "pr_auc / std": 0.011857455402793246,
+        "roc_auc / mean": 0.9795012538510335,
+        "roc_auc / std": 0.0018647027151517572,
+        "train_pr_auc / mean": 0.6892856959876331,
+        "train_pr_auc / std": 0.0044493136944453076,
+        "train_roc_auc / mean": 0.9926130728030153,
+        "train_roc_auc / std": 0.00044937759937419805
+      },
+      {
+        "pipeline / ": "Quantum AdaBoost A (ângulo)",
+        "fraction / ": 0.25,
+        "frauds_seen / mean": 71.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7199602168666149,
+        "pr_auc / std": 0.07243556723190747,
+        "roc_auc / mean": 0.9672641409871641,
+        "roc_auc / std": 0.009957167974568571,
+        "train_pr_auc / mean": 0.689876620251996,
+        "train_pr_auc / std": 0.055883934555717135,
+        "train_roc_auc / mean": 0.9798055941281492,
+        "train_roc_auc / std": 0.006713113226137727
+      },
+      {
+        "pipeline / ": "Quantum AdaBoost A (ângulo)",
+        "fraction / ": 0.5,
+        "frauds_seen / mean": 142.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7406672430149477,
+        "pr_auc / std": 0.027621632727998623,
+        "roc_auc / mean": 0.9715760590130612,
+        "roc_auc / std": 0.004992334541775594,
+        "train_pr_auc / mean": 0.7064035145021308,
+        "train_pr_auc / std": 0.055619791530509693,
+        "train_roc_auc / mean": 0.9791311247768298,
+        "train_roc_auc / std": 0.005528033116800349
+      },
+      {
+        "pipeline / ": "Quantum AdaBoost A (ângulo)",
+        "fraction / ": 0.75,
+        "frauds_seen / mean": 213.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7460360159714845,
+        "pr_auc / std": 0.013718427884289579,
+        "roc_auc / mean": 0.971261647932451,
+        "roc_auc / std": 0.00624243211627613,
+        "train_pr_auc / mean": 0.717473998056368,
+        "train_pr_auc / std": 0.03171058607071493,
+        "train_roc_auc / mean": 0.9759240891357533,
+        "train_roc_auc / std": 0.0036326559175837293
+      },
+      {
+        "pipeline / ": "Quantum AdaBoost A (ângulo)",
+        "fraction / ": 0.8,
+        "frauds_seen / mean": 227.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7455962612509898,
+        "pr_auc / std": 0.04848217896410576,
+        "roc_auc / mean": 0.9718766114436393,
+        "roc_auc / std": 0.007326730044709231,
+        "train_pr_auc / mean": 0.702422916141621,
+        "train_pr_auc / std": 0.036748702267149734,
+        "train_roc_auc / mean": 0.9775485648857923,
+        "train_roc_auc / std": 0.003868944868558882
+      },
+      {
+        "pipeline / ": "Quantum AdaBoost A (ângulo)",
+        "fraction / ": 1.0,
+        "frauds_seen / mean": 284.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7616922602762313,
+        "pr_auc / std": 0.036868511431549934,
+        "roc_auc / mean": 0.975083649534646,
+        "roc_auc / std": 0.0044258675465047,
+        "train_pr_auc / mean": 0.7298703130645856,
+        "train_pr_auc / std": 0.024857690300674147,
+        "train_roc_auc / mean": 0.9783822654235271,
+        "train_roc_auc / std": 0.004769336163429174
+      },
+      {
+        "pipeline / ": "Quantum AdaBoost B (amplitude)",
+        "fraction / ": 0.25,
+        "frauds_seen / mean": 71.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7228885603419619,
+        "pr_auc / std": 0.024505944265516274,
+        "roc_auc / mean": 0.9639651062477723,
+        "roc_auc / std": 0.007707241495190579,
+        "train_pr_auc / mean": 0.7211077266116419,
+        "train_pr_auc / std": 0.021675106306156863,
+        "train_roc_auc / mean": 0.9903987304106329,
+        "train_roc_auc / std": 0.003848135994169885
+      },
+      {
+        "pipeline / ": "Quantum AdaBoost B (amplitude)",
+        "fraction / ": 0.5,
+        "frauds_seen / mean": 142.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7357600711971364,
+        "pr_auc / std": 0.015152458537947807,
+        "roc_auc / mean": 0.9659749860756246,
+        "roc_auc / std": 0.006826217184859508,
+        "train_pr_auc / mean": 0.7118313906713574,
+        "train_pr_auc / std": 0.05300760493350732,
+        "train_roc_auc / mean": 0.9853798849434636,
+        "train_roc_auc / std": 0.0037979234932190116
+      },
+      {
+        "pipeline / ": "Quantum AdaBoost B (amplitude)",
+        "fraction / ": 0.75,
+        "frauds_seen / mean": 213.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7371638883557392,
+        "pr_auc / std": 0.012486480949017834,
+        "roc_auc / mean": 0.967456960253467,
+        "roc_auc / std": 0.005581894240964909,
+        "train_pr_auc / mean": 0.7036959730593971,
+        "train_pr_auc / std": 0.03266486059319751,
+        "train_roc_auc / mean": 0.9835085631157838,
+        "train_roc_auc / std": 0.0021932880637745155
+      },
+      {
+        "pipeline / ": "Quantum AdaBoost B (amplitude)",
+        "fraction / ": 0.8,
+        "frauds_seen / mean": 227.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7371689582631265,
+        "pr_auc / std": 0.013601835144607194,
+        "roc_auc / mean": 0.9679403980399586,
+        "roc_auc / std": 0.005882855922387943,
+        "train_pr_auc / mean": 0.7061861396241885,
+        "train_pr_auc / std": 0.01814534910294924,
+        "train_roc_auc / mean": 0.9819422073007432,
+        "train_roc_auc / std": 0.003819923953215882
+      },
+      {
+        "pipeline / ": "Quantum AdaBoost B (amplitude)",
+        "fraction / ": 1.0,
+        "frauds_seen / mean": 284.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.767937435104758,
+        "pr_auc / std": 0.015663966744446013,
+        "roc_auc / mean": 0.9721825345705716,
+        "roc_auc / std": 0.0030909908348478936,
+        "train_pr_auc / mean": 0.7174434218489262,
+        "train_pr_auc / std": 0.022565042653675003,
+        "train_roc_auc / mean": 0.9818104046816108,
+        "train_roc_auc / std": 0.0020038004903936333
+      },
+      {
+        "pipeline / ": "SVM, 31 features",
+        "fraction / ": 0.25,
+        "frauds_seen / mean": 71.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.6936680350380277,
+        "pr_auc / std": 0.035400641110741454,
+        "roc_auc / mean": 0.9573394321408759,
+        "roc_auc / std": 0.005257780189419079,
+        "train_pr_auc / mean": 0.6803392069593472,
+        "train_pr_auc / std": 0.024561917480856208,
+        "train_roc_auc / mean": 0.9723070819281888,
+        "train_roc_auc / std": 0.009008639819589258
+      },
+      {
+        "pipeline / ": "SVM, 31 features",
+        "fraction / ": 0.5,
+        "frauds_seen / mean": 142.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7065072697639647,
+        "pr_auc / std": 0.017279677736555966,
+        "roc_auc / mean": 0.9676722763527488,
+        "roc_auc / std": 0.002874551851018447,
+        "train_pr_auc / mean": 0.7061975556250848,
+        "train_pr_auc / std": 0.06064392909782654,
+        "train_roc_auc / mean": 0.9780896647490577,
+        "train_roc_auc / std": 0.008580463856583218
+      },
+      {
+        "pipeline / ": "SVM, 31 features",
+        "fraction / ": 0.75,
+        "frauds_seen / mean": 213.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.721406712375894,
+        "pr_auc / std": 0.013307086333596197,
+        "roc_auc / mean": 0.9711757731267632,
+        "roc_auc / std": 0.0033534008175474857,
+        "train_pr_auc / mean": 0.7040554054873096,
+        "train_pr_auc / std": 0.03828457561844178,
+        "train_roc_auc / mean": 0.9812471070554784,
+        "train_roc_auc / std": 0.007704804910155612
+      },
+      {
+        "pipeline / ": "SVM, 31 features",
+        "fraction / ": 0.8,
+        "frauds_seen / mean": 227.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7186708602507578,
+        "pr_auc / std": 0.011017905393541142,
+        "roc_auc / mean": 0.9731922630424357,
+        "roc_auc / std": 0.0031008711350470268,
+        "train_pr_auc / mean": 0.6960668249203839,
+        "train_pr_auc / std": 0.021756164371252298,
+        "train_roc_auc / mean": 0.9817035067631819,
+        "train_roc_auc / std": 0.004288131325944058
+      },
+      {
+        "pipeline / ": "SVM, 31 features",
+        "fraction / ": 1.0,
+        "frauds_seen / mean": 284.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.723652041897348,
+        "pr_auc / std": 0.010443978675654985,
+        "roc_auc / mean": 0.9755266005332388,
+        "roc_auc / std": 0.0029165400964093475,
+        "train_pr_auc / mean": 0.7054951102394756,
+        "train_pr_auc / std": 0.013917662428086997,
+        "train_roc_auc / mean": 0.9800411624677643,
+        "train_roc_auc / std": 0.0014900042770379038
+      },
+      {
+        "pipeline / ": "SVM, componentes",
+        "fraction / ": 0.25,
+        "frauds_seen / mean": 71.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7511980855702551,
+        "pr_auc / std": 0.015966861918142287,
+        "roc_auc / mean": 0.9727250124596398,
+        "roc_auc / std": 0.007100973681166917,
+        "train_pr_auc / mean": 0.7175325484027405,
+        "train_pr_auc / std": 0.016643564646398296,
+        "train_roc_auc / mean": 0.971235865899623,
+        "train_roc_auc / std": 0.013560671422902335
+      },
+      {
+        "pipeline / ": "SVM, componentes",
+        "fraction / ": 0.5,
+        "frauds_seen / mean": 142.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.75623908330786,
+        "pr_auc / std": 0.011690835740440438,
+        "roc_auc / mean": 0.9729470137613767,
+        "roc_auc / std": 0.005305936073874031,
+        "train_pr_auc / mean": 0.7270905737091398,
+        "train_pr_auc / std": 0.04476778979347533,
+        "train_roc_auc / mean": 0.9762646300337234,
+        "train_roc_auc / std": 0.00466317135802335
+      },
+      {
+        "pipeline / ": "SVM, componentes",
+        "fraction / ": 0.75,
+        "frauds_seen / mean": 213.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7630827773385335,
+        "pr_auc / std": 0.004447387620514233,
+        "roc_auc / mean": 0.9757825912070057,
+        "roc_auc / std": 0.004117569822828222,
+        "train_pr_auc / mean": 0.716782499421964,
+        "train_pr_auc / std": 0.020898285777133194,
+        "train_roc_auc / mean": 0.9718045361370098,
+        "train_roc_auc / std": 0.009067510502366406
+      },
+      {
+        "pipeline / ": "SVM, componentes",
+        "fraction / ": 0.8,
+        "frauds_seen / mean": 227.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7609315922440695,
+        "pr_auc / std": 0.008481801640833158,
+        "roc_auc / mean": 0.9756592905347674,
+        "roc_auc / std": 0.004701373402333756,
+        "train_pr_auc / mean": 0.7120834999774853,
+        "train_pr_auc / std": 0.0186536261002654,
+        "train_roc_auc / mean": 0.97550117409614,
+        "train_roc_auc / std": 0.008516728819559446
+      },
+      {
+        "pipeline / ": "SVM, componentes",
+        "fraction / ": 1.0,
+        "frauds_seen / mean": 284.0,
+        "frauds_seen / std": 0.0,
+        "pr_auc / mean": 0.7654321625951914,
+        "pr_auc / std": 0.005696732741377875,
+        "roc_auc / mean": 0.9765884585613218,
+        "roc_auc / std": 0.005109801139497638,
+        "train_pr_auc / mean": 0.7195692137661933,
+        "train_pr_auc / std": 0.0023544495116718978,
+        "train_roc_auc / mean": 0.9805990874826425,
+        "train_roc_auc / std": 0.006854727988632434
+      }
+    ],
+    "decomposition_of_section_7_2_gap": [
+      {
+        "index": "SVM, 31 features",
+        "validação cruzada (6.7)": 0.7029815339861053,
+        "validação, 80% (média)": 0.7186708602507578,
+        "validação, 100% (média)": 0.723652041897348,
+        "validação, Seção 7 (semente 42)": 0.7363284575508516,
+        "diferença da 7.2 (Seção 7 − validação cruzada)": 0.033346923564746334,
+        "tamanho do treino (100% − 80%)": 0.004981181646590227,
+        "conjunto de avaliação (80% − validação cruzada)": 0.01568932626465247,
+        "sorteio (semente 42 − média de 100%)": 0.012676415653503637,
+        "sementes com 100% acima de 80% (de 5)": 3,
+        "desvio de 100% − 80% entre sementes": 0.017209712197993603,
+        "tamanho: mediana por semente de 100% − 80%": 0.013080143821659118,
+        "tamanho: média de 100% − 75%": 0.002245329521453887,
+        "sementes com 100% acima de 75% (de 5)": 4
+      },
+      {
+        "index": "SVM, componentes",
+        "validação cruzada (6.7)": 0.7241713287186891,
+        "validação, 80% (média)": 0.7609315922440695,
+        "validação, 100% (média)": 0.7654321625951914,
+        "validação, Seção 7 (semente 42)": 0.7688580877999239,
+        "diferença da 7.2 (Seção 7 − validação cruzada)": 0.04468675908123487,
+        "tamanho do treino (100% − 80%)": 0.004500570351121946,
+        "conjunto de avaliação (80% − validação cruzada)": 0.03676026352538042,
+        "sorteio (semente 42 − média de 100%)": 0.003425925204732505,
+        "sementes com 100% acima de 80% (de 5)": 3,
+        "desvio de 100% − 80% entre sementes": 0.012556977356440211,
+        "tamanho: mediana por semente de 100% − 80%": 0.0077702320471717545,
+        "tamanho: média de 100% − 75%": 0.0023493852566580874,
+        "sementes com 100% acima de 75% (de 5)": 4
+      },
+      {
+        "index": "AdaBoost, 31 features",
+        "validação cruzada (6.7)": 0.710217149412246,
+        "validação, 80% (média)": 0.7215125638372497,
+        "validação, 100% (média)": 0.7571234169581744,
+        "validação, Seção 7 (semente 42)": 0.7714987440044458,
+        "diferença da 7.2 (Seção 7 − validação cruzada)": 0.06128159459219984,
+        "tamanho do treino (100% − 80%)": 0.03561085312092471,
+        "conjunto de avaliação (80% − validação cruzada)": 0.011295414425003703,
+        "sorteio (semente 42 − média de 100%)": 0.014375327046271424,
+        "sementes com 100% acima de 80% (de 5)": 3,
+        "desvio de 100% − 80% entre sementes": 0.05628741710104649,
+        "tamanho: mediana por semente de 100% − 80%": 0.006687411513160213,
+        "tamanho: média de 100% − 75%": 0.028793311449085722,
+        "sementes com 100% acima de 75% (de 5)": 5
+      },
+      {
+        "index": "AdaBoost, componentes",
+        "validação cruzada (6.7)": 0.6901564080476946,
+        "validação, 80% (média)": 0.7072652422373569,
+        "validação, 100% (média)": 0.7660344146795424,
+        "validação, Seção 7 (semente 42)": 0.777375454167443,
+        "diferença da 7.2 (Seção 7 − validação cruzada)": 0.0872190461197484,
+        "tamanho do treino (100% − 80%)": 0.05876917244218549,
+        "conjunto de avaliação (80% − validação cruzada)": 0.017108834189662248,
+        "sorteio (semente 42 − média de 100%)": 0.011341039487900662,
+        "sementes com 100% acima de 80% (de 5)": 5,
+        "desvio de 100% − 80% entre sementes": 0.06953574298420573,
+        "tamanho: mediana por semente de 100% − 80%": 0.023652724125667546,
+        "tamanho: média de 100% − 75%": 0.023893652791581243,
+        "sementes com 100% acima de 75% (de 5)": 5
+      },
+      {
+        "index": "QSVM A (ângulo)",
+        "validação cruzada (6.7)": 0.7523653593134665,
+        "validação, 80% (média)": 0.7589861130204671,
+        "validação, 100% (média)": 0.7865224299308424,
+        "validação, Seção 7 (semente 42)": 0.7864810292113873,
+        "diferença da 7.2 (Seção 7 − validação cruzada)": 0.03411566989792081,
+        "tamanho do treino (100% − 80%)": 0.02753631691037528,
+        "conjunto de avaliação (80% − validação cruzada)": 0.0066207537070006595,
+        "sorteio (semente 42 − média de 100%)": -4.140071945513135e-05,
+        "sementes com 100% acima de 80% (de 5)": 4,
+        "desvio de 100% − 80% entre sementes": 0.038497180400638105,
+        "tamanho: mediana por semente de 100% − 80%": 0.02840392873972797,
+        "tamanho: média de 100% − 75%": 0.013733144998345192,
+        "sementes com 100% acima de 75% (de 5)": 4
+      },
+      {
+        "index": "QSVM B (amplitude)",
+        "validação cruzada (6.7)": 0.6858500639527231,
+        "validação, 80% (média)": 0.7295987635074337,
+        "validação, 100% (média)": 0.7357285371442555,
+        "validação, Seção 7 (semente 42)": 0.721993917120179,
+        "diferença da 7.2 (Seção 7 − validação cruzada)": 0.03614385316745594,
+        "tamanho do treino (100% − 80%)": 0.006129773636821767,
+        "conjunto de avaliação (80% − validação cruzada)": 0.04374869955471061,
+        "sorteio (semente 42 − média de 100%)": -0.013734620024076438,
+        "sementes com 100% acima de 80% (de 5)": 2,
+        "desvio de 100% − 80% entre sementes": 0.026274868271104104,
+        "tamanho: mediana por semente de 100% − 80%": -0.006336793291202736,
+        "tamanho: média de 100% − 75%": -0.0015683394531135874,
+        "sementes com 100% acima de 75% (de 5)": 3
+      },
+      {
+        "index": "Quantum AdaBoost A (ângulo)",
+        "validação cruzada (6.7)": 0.7454478145023582,
+        "validação, 80% (média)": 0.7455962612509898,
+        "validação, 100% (média)": 0.7616922602762313,
+        "validação, Seção 7 (semente 42)": 0.7785320141188885,
+        "diferença da 7.2 (Seção 7 − validação cruzada)": 0.03308419961653031,
+        "tamanho do treino (100% − 80%)": 0.016095999025241503,
+        "conjunto de avaliação (80% − validação cruzada)": 0.00014844674863156992,
+        "sorteio (semente 42 − média de 100%)": 0.016839753842657235,
+        "sementes com 100% acima de 80% (de 5)": 4,
+        "desvio de 100% − 80% entre sementes": 0.054955873981666944,
+        "tamanho: mediana por semente de 100% − 80%": 0.03489364522141203,
+        "tamanho: média de 100% − 75%": 0.015656244304746835,
+        "sementes com 100% acima de 75% (de 5)": 4
+      },
+      {
+        "index": "Quantum AdaBoost B (amplitude)",
+        "validação cruzada (6.7)": 0.7221781730660325,
+        "validação, 80% (média)": 0.7371689582631265,
+        "validação, 100% (média)": 0.767937435104758,
+        "validação, Seção 7 (semente 42)": 0.7940071567547671,
+        "diferença da 7.2 (Seção 7 − validação cruzada)": 0.07182898368873458,
+        "tamanho do treino (100% − 80%)": 0.03076847684163153,
+        "conjunto de avaliação (80% − validação cruzada)": 0.014990785197093959,
+        "sorteio (semente 42 − média de 100%)": 0.026069721650009092,
+        "sementes com 100% acima de 80% (de 5)": 5,
+        "desvio de 100% − 80% entre sementes": 0.02367318923481092,
+        "tamanho: mediana por semente de 100% − 80%": 0.03478228634825897,
+        "tamanho: média de 100% − 75%": 0.030773546749018867,
+        "sementes com 100% acima de 75% (de 5)": 5
+      }
+    ],
+    "train_vs_validation_at_whole_training": [
+      {
+        "pipeline": "SVM, 31 features",
+        "PR-AUC no conjunto de ajuste": 0.7054951102394756,
+        "PR-AUC na validação": 0.723652041897348,
+        "PR-AUC: treino − validação": -0.018156931657872355,
+        "ROC-AUC nas linhas vistas": 0.9800411624677643,
+        "ROC-AUC na validação": 0.9755266005332388,
+        "ROC-AUC: treino − validação": 0.004514561934525485,
+        "ROC-AUC: treino − validação, com 71 fraudes": 0.014967649787312909
+      },
+      {
+        "pipeline": "SVM, componentes",
+        "PR-AUC no conjunto de ajuste": 0.7195692137661933,
+        "PR-AUC na validação": 0.7654321625951914,
+        "PR-AUC: treino − validação": -0.04586294882899811,
+        "ROC-AUC nas linhas vistas": 0.9805990874826425,
+        "ROC-AUC na validação": 0.9765884585613218,
+        "ROC-AUC: treino − validação": 0.004010628921320647,
+        "ROC-AUC: treino − validação, com 71 fraudes": -0.001489146560016863
+      },
+      {
+        "pipeline": "AdaBoost, 31 features",
+        "PR-AUC no conjunto de ajuste": 0.7134737508459841,
+        "PR-AUC na validação": 0.7571234169581744,
+        "PR-AUC: treino − validação": -0.043649666112190344,
+        "ROC-AUC nas linhas vistas": 0.9924072604641936,
+        "ROC-AUC na validação": 0.9741869310301183,
+        "ROC-AUC: treino − validação": 0.018220329434075255,
+        "ROC-AUC: treino − validação, com 71 fraudes": 0.03097250382417227
+      },
+      {
+        "pipeline": "AdaBoost, componentes",
+        "PR-AUC no conjunto de ajuste": 0.7183075579252596,
+        "PR-AUC na validação": 0.7660344146795424,
+        "PR-AUC: treino − validação": -0.04772685675428279,
+        "ROC-AUC nas linhas vistas": 0.9871230906566157,
+        "ROC-AUC na validação": 0.9740903336103812,
+        "ROC-AUC: treino − validação": 0.013032757046234522,
+        "ROC-AUC: treino − validação, com 71 fraudes": 0.024045812350058204
+      },
+      {
+        "pipeline": "QSVM A (ângulo)",
+        "PR-AUC no conjunto de ajuste": 0.7625294622029484,
+        "PR-AUC na validação": 0.7865224299308424,
+        "PR-AUC: treino − validação": -0.023992967727894055,
+        "ROC-AUC nas linhas vistas": 0.9771771473913906,
+        "ROC-AUC na validação": 0.974215587263112,
+        "ROC-AUC: treino − validação": 0.0029615601282786397,
+        "ROC-AUC: treino − validação, com 71 fraudes": -0.002943167722975759
+      },
+      {
+        "pipeline": "QSVM B (amplitude)",
+        "PR-AUC no conjunto de ajuste": 0.6892856959876331,
+        "PR-AUC na validação": 0.7357285371442555,
+        "PR-AUC: treino − validação": -0.04644284115662234,
+        "ROC-AUC nas linhas vistas": 0.9926130728030153,
+        "ROC-AUC na validação": 0.9795012538510335,
+        "ROC-AUC: treino − validação": 0.013111818951981768,
+        "ROC-AUC: treino − validação, com 71 fraudes": 0.023108532691759387
+      },
+      {
+        "pipeline": "Quantum AdaBoost A (ângulo)",
+        "PR-AUC no conjunto de ajuste": 0.7298703130645856,
+        "PR-AUC na validação": 0.7616922602762313,
+        "PR-AUC: treino − validação": -0.03182194721164566,
+        "ROC-AUC nas linhas vistas": 0.9783822654235271,
+        "ROC-AUC na validação": 0.975083649534646,
+        "ROC-AUC: treino − validação": 0.00329861588888114,
+        "ROC-AUC: treino − validação, com 71 fraudes": 0.012541453140985093
+      },
+      {
+        "pipeline": "Quantum AdaBoost B (amplitude)",
+        "PR-AUC no conjunto de ajuste": 0.7174434218489262,
+        "PR-AUC na validação": 0.767937435104758,
+        "PR-AUC: treino − validação": -0.050494013255831804,
+        "ROC-AUC nas linhas vistas": 0.9818104046816108,
+        "ROC-AUC na validação": 0.9721825345705716,
+        "ROC-AUC: treino − validação": 0.009627870111039272,
+        "ROC-AUC: treino − validação, com 71 fraudes": 0.026433624162860547
+      }
+    ],
+    "input_type_reproducibility": [
+      {
+        "index": "SVM, 31 features",
+        "PR-AUC, tabela do pandas (7.2)": 0.7363284575508516,
+        "PR-AUC, array do NumPy": 0.7363284575508516,
+        "diferença de PR-AUC": 0.0,
+        "maior diferença de pontuação": 7.105427357601002e-14,
+        "classificadores mantidos (tabela / array)": "— / —"
+      },
+      {
+        "index": "SVM, componentes",
+        "PR-AUC, tabela do pandas (7.2)": 0.7688580877999239,
+        "PR-AUC, array do NumPy": 0.7688580877999239,
+        "diferença de PR-AUC": 0.0,
+        "maior diferença de pontuação": 2.2737367544323206e-13,
+        "classificadores mantidos (tabela / array)": "— / —"
+      },
+      {
+        "index": "AdaBoost, 31 features",
+        "PR-AUC, tabela do pandas (7.2)": 0.7714987440044458,
+        "PR-AUC, array do NumPy": 0.7714987440044458,
+        "diferença de PR-AUC": 0.0,
+        "maior diferença de pontuação": 0.0,
+        "classificadores mantidos (tabela / array)": "100 de 100 / 100 de 100"
+      },
+      {
+        "index": "AdaBoost, componentes",
+        "PR-AUC, tabela do pandas (7.2)": 0.777375454167443,
+        "PR-AUC, array do NumPy": 0.777375454167443,
+        "diferença de PR-AUC": 0.0,
+        "maior diferença de pontuação": 0.0,
+        "classificadores mantidos (tabela / array)": "100 de 100 / 100 de 100"
+      },
+      {
+        "index": "QSVM A (ângulo)",
+        "PR-AUC, tabela do pandas (7.2)": 0.7864810292113873,
+        "PR-AUC, array do NumPy": 0.7864810292113873,
+        "diferença de PR-AUC": 0.0,
+        "maior diferença de pontuação": 1.7763568394002505e-14,
+        "classificadores mantidos (tabela / array)": "— / —"
+      },
+      {
+        "index": "QSVM B (amplitude)",
+        "PR-AUC, tabela do pandas (7.2)": 0.721993917120179,
+        "PR-AUC, array do NumPy": 0.721993917120179,
+        "diferença de PR-AUC": 0.0,
+        "maior diferença de pontuação": 4.263256414560601e-14,
+        "classificadores mantidos (tabela / array)": "— / —"
+      },
+      {
+        "index": "Quantum AdaBoost A (ângulo)",
+        "PR-AUC, tabela do pandas (7.2)": 0.7785320141188885,
+        "PR-AUC, array do NumPy": 0.7652673067204878,
+        "diferença de PR-AUC": -0.013264707398400688,
+        "maior diferença de pontuação": 0.8217554902512323,
+        "classificadores mantidos (tabela / array)": "81 de 100 / 63 de 100"
+      },
+      {
+        "index": "Quantum AdaBoost B (amplitude)",
+        "PR-AUC, tabela do pandas (7.2)": 0.7940071567547671,
+        "PR-AUC, array do NumPy": 0.7992386139300186,
+        "diferença de PR-AUC": 0.00523145717525153,
+        "maior diferença de pontuação": 0.6231101699991315,
+        "classificadores mantidos (tabela / array)": "100 de 100 / 99 de 100"
+      }
+    ]
+  },
+  "validation_curves": {
+    "folds": 5,
+    "values": {
+      "C": [
+        0.01,
+        0.1,
+        1.0,
+        10.0,
+        100.0,
+        1000.0
+      ],
+      "gamma": [
+        0.0001,
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0
+      ],
+      "range_width": [
+        0.05,
+        0.1,
+        0.25,
+        0.5,
+        1.0,
+        1.5707963267948966
+      ],
+      "padding_value": [
+        0.5,
+        1.0,
+        3.0,
+        5.0,
+        10.0,
+        20.0
+      ],
+      "learning_rate": [
+        0.02,
+        0.05,
+        0.1,
+        0.5,
+        1.0,
+        2.0
+      ]
+    },
+    "ceiling_stages": [
+      1,
+      2,
+      3,
+      5,
+      7,
+      10,
+      15,
+      20,
+      25,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90,
+      100,
+      125,
+      150,
+      175,
+      200
+    ],
+    "summary": [
+      {
+        "pipeline": "SVM, 31 features",
+        "hiperparâmetro": "C",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "1",
+        "PR-AUC no escolhido": 0.7029815339861053,
+        "maior média da curva em": "1",
+        "PR-AUC nele": 0.7029815339861053,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.3911658507823964,
+        "treino − avaliação no escolhido": -0.002013709227219307,
+        "maior treino − avaliação na curva": 0.010323560984812264,
+        "em": "100",
+        "treino nesse valor": 0.5702956855321426,
+        "avaliação nesse valor": 0.5599721245473303
+      },
+      {
+        "pipeline": "SVM, 31 features",
+        "hiperparâmetro": "γ do RBF",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "0,001",
+        "PR-AUC no escolhido": 0.7029815339861053,
+        "maior média da curva em": "0,0001",
+        "PR-AUC nele": 0.7104367302267743,
+        "folds em que ele fica à frente do escolhido (de 5)": 4,
+        "menor média da curva": 0.11633657556433982,
+        "treino − avaliação no escolhido": -0.002013709227219307,
+        "maior treino − avaliação na curva": 0.8836634244356603,
+        "em": "10",
+        "treino nesse valor": 1.0,
+        "avaliação nesse valor": 0.11633657556433982
+      },
+      {
+        "pipeline": "SVM, componentes",
+        "hiperparâmetro": "C",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "10",
+        "PR-AUC no escolhido": 0.7241713287186891,
+        "maior média da curva em": "10",
+        "PR-AUC nele": 0.7241713287186891,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.6926079461061049,
+        "treino − avaliação no escolhido": -0.0009534694266054355,
+        "maior treino − avaliação na curva": 0.005067360871373383,
+        "em": "1000",
+        "treino nesse valor": 0.6976753069774784,
+        "avaliação nesse valor": 0.6926079461061049
+      },
+      {
+        "pipeline": "SVM, componentes",
+        "hiperparâmetro": "γ do RBF",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "0,01",
+        "PR-AUC no escolhido": 0.7241713287186891,
+        "maior média da curva em": "0,01",
+        "PR-AUC nele": 0.7241713287186891,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.12621732004659184,
+        "treino − avaliação no escolhido": -0.0009534694266054355,
+        "maior treino − avaliação na curva": 0.003209927822489728,
+        "em": "10",
+        "treino nesse valor": 0.12942724786908158,
+        "avaliação nesse valor": 0.12621732004659184
+      },
+      {
+        "pipeline": "AdaBoost, 31 features",
+        "hiperparâmetro": "taxa de aprendizado",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "0,1",
+        "PR-AUC no escolhido": 0.710217149412246,
+        "maior média da curva em": "0,1",
+        "PR-AUC nele": 0.710217149412246,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.1993381181740707,
+        "treino − avaliação no escolhido": -0.002139886728722207,
+        "maior treino − avaliação na curva": 0.0637234958492344,
+        "em": "1",
+        "treino nesse valor": 0.640570270220125,
+        "avaliação nesse valor": 0.5768467743708907
+      },
+      {
+        "pipeline": "AdaBoost, 31 features",
+        "hiperparâmetro": "teto de rodadas",
+        "valores na curva": 21,
+        "escolhido (Seção 6)": "100",
+        "PR-AUC no escolhido": 0.710217149412246,
+        "maior média da curva em": "100",
+        "PR-AUC nele": 0.710217149412246,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.04390893794881029,
+        "treino − avaliação no escolhido": -0.002139886728722207,
+        "maior treino − avaliação na curva": 0.02810986208995412,
+        "em": "5",
+        "treino nesse valor": 0.3066134892794132,
+        "avaliação nesse valor": 0.27850362718945904
+      },
+      {
+        "pipeline": "AdaBoost, componentes",
+        "hiperparâmetro": "taxa de aprendizado",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "0,05",
+        "PR-AUC no escolhido": 0.6901564080476946,
+        "maior média da curva em": "0,05",
+        "PR-AUC nele": 0.6901564080476946,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.2668467914156307,
+        "treino − avaliação no escolhido": 0.006596043122121187,
+        "maior treino − avaliação na curva": 0.0160411376599491,
+        "em": "2",
+        "treino nesse valor": 0.2828879290755798,
+        "avaliação nesse valor": 0.2668467914156307
+      },
+      {
+        "pipeline": "AdaBoost, componentes",
+        "hiperparâmetro": "teto de rodadas",
+        "valores na curva": 21,
+        "escolhido (Seção 6)": "100",
+        "PR-AUC no escolhido": 0.6901564080476946,
+        "maior média da curva em": "125",
+        "PR-AUC nele": 0.6927665681809989,
+        "folds em que ele fica à frente do escolhido (de 5)": 4,
+        "menor média da curva": 0.04390893794881029,
+        "treino − avaliação no escolhido": 0.006596043122121187,
+        "maior treino − avaliação na curva": 0.021246745079852785,
+        "em": "10",
+        "treino nesse valor": 0.4366344132976986,
+        "avaliação nesse valor": 0.4153876682178458
+      },
+      {
+        "pipeline": "QSVM A (ângulo)",
+        "hiperparâmetro": "C",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "0,1",
+        "PR-AUC no escolhido": 0.7523653593134665,
+        "maior média da curva em": "0,1",
+        "PR-AUC nele": 0.7523653593134665,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.41583266241307815,
+        "treino − avaliação no escolhido": 0.006549296776738189,
+        "maior treino − avaliação na curva": 0.039759528501558686,
+        "em": "100",
+        "treino nesse valor": 0.4555921909146369,
+        "avaliação nesse valor": 0.41583266241307815
+      },
+      {
+        "pipeline": "QSVM A (ângulo)",
+        "hiperparâmetro": "intervalo do MinMax (rad)",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "0,25",
+        "PR-AUC no escolhido": 0.7523653593134665,
+        "maior média da curva em": "0,25",
+        "PR-AUC nele": 0.7523653593134665,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.27959256533498406,
+        "treino − avaliação no escolhido": 0.006549296776738189,
+        "maior treino − avaliação na curva": 0.022300389405736164,
+        "em": "1",
+        "treino nesse valor": 0.47765019629534,
+        "avaliação nesse valor": 0.4553498068896039
+      },
+      {
+        "pipeline": "QSVM B (amplitude)",
+        "hiperparâmetro": "C",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "1",
+        "PR-AUC no escolhido": 0.6858500639527231,
+        "maior média da curva em": "1",
+        "PR-AUC nele": 0.6858500639527231,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.41853781798302103,
+        "treino − avaliação no escolhido": 0.0184321137197621,
+        "maior treino − avaliação na curva": 0.029842724136062038,
+        "em": "10",
+        "treino nesse valor": 0.5638965572106394,
+        "avaliação nesse valor": 0.5340538330745772
+      },
+      {
+        "pipeline": "QSVM B (amplitude)",
+        "hiperparâmetro": "constante da amplitude",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "5",
+        "PR-AUC no escolhido": 0.6858500639527231,
+        "maior média da curva em": "20",
+        "PR-AUC nele": 0.6899076371742278,
+        "folds em que ele fica à frente do escolhido (de 5)": 3,
+        "menor média da curva": 0.1710045428636135,
+        "treino − avaliação no escolhido": 0.0184321137197621,
+        "maior treino − avaliação na curva": 0.024219765604194598,
+        "em": "3",
+        "treino nesse valor": 0.6496659916229246,
+        "avaliação nesse valor": 0.62544622601873
+      },
+      {
+        "pipeline": "Quantum AdaBoost A (ângulo)",
+        "hiperparâmetro": "taxa de aprendizado",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "0,1",
+        "PR-AUC no escolhido": 0.7454478145023582,
+        "maior média da curva em": "0,1",
+        "PR-AUC nele": 0.7454478145023582,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.3312792630168149,
+        "treino − avaliação no escolhido": -0.004034514818310919,
+        "maior treino − avaliação na curva": 0.04587044815830542,
+        "em": "2",
+        "treino nesse valor": 0.37714971117512025,
+        "avaliação nesse valor": 0.3312792630168149
+      },
+      {
+        "pipeline": "Quantum AdaBoost A (ângulo)",
+        "hiperparâmetro": "teto de rodadas",
+        "valores na curva": 21,
+        "escolhido (Seção 6)": "100",
+        "PR-AUC no escolhido": 0.7454478145023582,
+        "maior média da curva em": "90",
+        "PR-AUC nele": 0.7454478145023582,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.11279547715346568,
+        "treino − avaliação no escolhido": -0.004034514818310919,
+        "maior treino − avaliação na curva": 0.013479013612139944,
+        "em": "7",
+        "treino nesse valor": 0.6668800192437626,
+        "avaliação nesse valor": 0.6534010056316226
+      },
+      {
+        "pipeline": "Quantum AdaBoost A (ângulo)",
+        "hiperparâmetro": "intervalo do MinMax (rad)",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "0,25",
+        "PR-AUC no escolhido": 0.7454478145023582,
+        "maior média da curva em": "0,25",
+        "PR-AUC nele": 0.7454478145023582,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.22652716958880892,
+        "treino − avaliação no escolhido": -0.004034514818310919,
+        "maior treino − avaliação na curva": 0.05610465960437255,
+        "em": "1",
+        "treino nesse valor": 0.48005016419974933,
+        "avaliação nesse valor": 0.4239455045953767
+      },
+      {
+        "pipeline": "Quantum AdaBoost B (amplitude)",
+        "hiperparâmetro": "taxa de aprendizado",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "0,05",
+        "PR-AUC no escolhido": 0.7221781730660325,
+        "maior média da curva em": "0,05",
+        "PR-AUC nele": 0.7221781730660325,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.15609182722691226,
+        "treino − avaliação no escolhido": 0.001916511006276278,
+        "maior treino − avaliação na curva": 0.008105897163029608,
+        "em": "0,5",
+        "treino nesse valor": 0.691905710291669,
+        "avaliação nesse valor": 0.6837998131286395
+      },
+      {
+        "pipeline": "Quantum AdaBoost B (amplitude)",
+        "hiperparâmetro": "teto de rodadas",
+        "valores na curva": 21,
+        "escolhido (Seção 6)": "100",
+        "PR-AUC no escolhido": 0.7221781730660325,
+        "maior média da curva em": "100",
+        "PR-AUC nele": 0.7221781730660325,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.19456842694092466,
+        "treino − avaliação no escolhido": 0.001916511006276278,
+        "maior treino − avaliação na curva": 0.008350756651033553,
+        "em": "175",
+        "treino nesse valor": 0.7239895416667163,
+        "avaliação nesse valor": 0.7156387850156828
+      },
+      {
+        "pipeline": "Quantum AdaBoost B (amplitude)",
+        "hiperparâmetro": "constante da amplitude",
+        "valores na curva": 6,
+        "escolhido (Seção 6)": "10",
+        "PR-AUC no escolhido": 0.7221781730660325,
+        "maior média da curva em": "10",
+        "PR-AUC nele": 0.7221781730660325,
+        "folds em que ele fica à frente do escolhido (de 5)": 0,
+        "menor média da curva": 0.08074113920087071,
+        "treino − avaliação no escolhido": 0.001916511006276278,
+        "maior treino − avaliação na curva": 0.027763376469263624,
+        "em": "1",
+        "treino nesse valor": 0.3017894774542742,
+        "avaliação nesse valor": 0.27402610098501057
+      }
+    ],
+    "remaining_borders": [
+      {
+        "pipeline": "SVM, 31 features",
+        "hiperparâmetro": "γ do RBF",
+        "escolhido": "0,001",
+        "PR-AUC no escolhido": 0.7029815339861053,
+        "um passo além": "0,0001",
+        "PR-AUC um passo além": 0.7104367302267743,
+        "diferença média": 0.007455196240668882,
+        "desvio da diferença entre folds": 0.007117900407772778,
+        "folds a favor do passo além (de 5)": 4,
+        "menor diferença num fold": -0.0015785884380844495,
+        "maior diferença num fold": 0.014744058396274351
+      },
+      {
+        "pipeline": "AdaBoost, componentes",
+        "hiperparâmetro": "taxa de aprendizado",
+        "escolhido": "0,05",
+        "PR-AUC no escolhido": 0.6901564080476946,
+        "um passo além": "0,02",
+        "PR-AUC um passo além": 0.6707206983096334,
+        "diferença média": -0.019435709738061212,
+        "desvio da diferença entre folds": 0.028194878032913553,
+        "folds a favor do passo além (de 5)": 2,
+        "menor diferença num fold": -0.06763163930380967,
+        "maior diferença num fold": 0.000767349638727044
+      },
+      {
+        "pipeline": "Quantum AdaBoost B (amplitude)",
+        "hiperparâmetro": "taxa de aprendizado",
+        "escolhido": "0,05",
+        "PR-AUC no escolhido": 0.7221781730660325,
+        "um passo além": "0,02",
+        "PR-AUC um passo além": 0.6895009178162561,
+        "diferença média": -0.03267725524977636,
+        "desvio da diferença entre folds": 0.02649193435579649,
+        "folds a favor do passo além (de 5)": 1,
+        "menor diferença num fold": -0.060641640684814035,
+        "maior diferença num fold": 0.0009694229094686646
+      },
+      {
+        "pipeline": "Quantum AdaBoost B (amplitude)",
+        "hiperparâmetro": "constante da amplitude",
+        "escolhido": "10",
+        "PR-AUC no escolhido": 0.7221781730660325,
+        "um passo além": "20",
+        "PR-AUC um passo além": 0.7053618364753004,
+        "diferença média": -0.016816336590732183,
+        "desvio da diferença entre folds": 0.03906999909163198,
+        "folds a favor do passo além (de 5)": 1,
+        "menor diferença num fold": -0.07267326079582304,
+        "maior diferença num fold": 0.03223894988838871
+      }
+    ],
+    "consistency_with_section_6": [
+      {
+        "modelo": "SVM",
+        "linhas das curvas (configuração × fold)": 110,
+        "também medidas na Seção 6": 65,
+        "maior diferença de PR-AUC": 0.0
+      },
+      {
+        "modelo": "QSVM",
+        "linhas das curvas (configuração × fold)": 110,
+        "também medidas na Seção 6": 80,
+        "maior diferença de PR-AUC": 0.0
+      },
+      {
+        "modelo": "AdaBoost",
+        "linhas das curvas (configuração × fold)": 270,
+        "também medidas na Seção 6": 90,
+        "maior diferença de PR-AUC": 0.0
+      },
+      {
+        "modelo": "Quantum AdaBoost",
+        "linhas das curvas (configuração × fold)": 320,
+        "também medidas na Seção 6": 105,
+        "maior diferença de PR-AUC": 0.0
+      }
+    ]
+  },
+  "barren_plateau": {
+    "qubits": [
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "ansatz_reps": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "samples": 200,
+    "derivative": "primeiro peso do ansatz, parameter-shift",
+    "encodings": {
+      "ZZ": "congelada: mapa ZZ, todos os pares, [0; 0,25]",
+      "ZZ estreito": "mapa ZZ, todos os pares, [0; 0,1]",
+      "RY": "rotação em Y, [0; 0,25] (sem emaranhamento)",
+      "Z": "mapa Z, [0; 0,25] (sem emaranhamento, com fase)"
+    },
+    "variances": [
+      {
+        "states": "ZZ, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.018299915255787468,
+        "cost": 0.017676010674619845
+      },
+      {
+        "states": "ZZ, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0055905513473218805,
+        "cost": 0.008240598902725419
+      },
+      {
+        "states": "ZZ, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.011978241230970453,
+        "cost": 0.011933749073455704
+      },
+      {
+        "states": "ZZ, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.004742213712248544,
+        "cost": 0.00931262377074334
+      },
+      {
+        "states": "ZZ, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.006272342869612477,
+        "cost": 0.010840707447843463
+      },
+      {
+        "states": "ZZ, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.00615265228622256,
+        "cost": 0.008920007739618757
+      },
+      {
+        "states": "ZZ, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.006566575411757857,
+        "cost": 0.009935890742473003
+      },
+      {
+        "states": "ZZ, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.006168474880392323,
+        "cost": 0.011649474129493381
+      },
+      {
+        "states": "ZZ, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.011859430296921524,
+        "cost": 0.005368510696481542
+      },
+      {
+        "states": "ZZ, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.001702626630195195,
+        "cost": 0.00330630164942142
+      },
+      {
+        "states": "ZZ, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.0038087083863024966,
+        "cost": 0.004055592175663385
+      },
+      {
+        "states": "ZZ, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.0017563787073710186,
+        "cost": 0.0032246846252690737
+      },
+      {
+        "states": "ZZ, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.0030053609740217746,
+        "cost": 0.003443447763020156
+      },
+      {
+        "states": "ZZ, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.0016324295477017489,
+        "cost": 0.003298473040088385
+      },
+      {
+        "states": "ZZ, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.0020495324021079305,
+        "cost": 0.00352814437600246
+      },
+      {
+        "states": "ZZ, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.0020274210034874887,
+        "cost": 0.0030628984292994156
+      },
+      {
+        "states": "ZZ, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.005810079720386892,
+        "cost": 0.004666492623576132
+      },
+      {
+        "states": "ZZ, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0011258657654223871,
+        "cost": 0.0017599608628897662
+      },
+      {
+        "states": "ZZ, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.003115540910876726,
+        "cost": 0.003454152873768496
+      },
+      {
+        "states": "ZZ, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.0010201278630978799,
+        "cost": 0.0024478475961452937
+      },
+      {
+        "states": "ZZ, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.0018221968809121062,
+        "cost": 0.002300291305212684
+      },
+      {
+        "states": "ZZ, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.0014873451222669701,
+        "cost": 0.0024545798147699127
+      },
+      {
+        "states": "ZZ, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.0011810340066379238,
+        "cost": 0.0020919393591501976
+      },
+      {
+        "states": "ZZ, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.0011067361395886318,
+        "cost": 0.0017880445752079528
+      },
+      {
+        "states": "ZZ, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.003672240536460956,
+        "cost": 0.003439260090915613
+      },
+      {
+        "states": "ZZ, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0006047022135749489,
+        "cost": 0.0010261218476039604
+      },
+      {
+        "states": "ZZ, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.0018970420287460642,
+        "cost": 0.001994838963670186
+      },
+      {
+        "states": "ZZ, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.0006706176389143227,
+        "cost": 0.0012102560895844842
+      },
+      {
+        "states": "ZZ, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.0008668860840694439,
+        "cost": 0.0015481525474263067
+      },
+      {
+        "states": "ZZ, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.000579107976331291,
+        "cost": 0.00113119413830533
+      },
+      {
+        "states": "ZZ, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.0005260456465995297,
+        "cost": 0.0011894840681965114
+      },
+      {
+        "states": "ZZ, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.0004409108596780152,
+        "cost": 0.0010615448789441477
+      },
+      {
+        "states": "ZZ, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.0017096434303974684,
+        "cost": 0.0013619821743757405
+      },
+      {
+        "states": "ZZ, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0002648444258689628,
+        "cost": 0.000495045476342829
+      },
+      {
+        "states": "ZZ, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.0008727660164781534,
+        "cost": 0.0010528402406799336
+      },
+      {
+        "states": "ZZ, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.00029752710877527146,
+        "cost": 0.0006339906152925631
+      },
+      {
+        "states": "ZZ, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.00038336901591201346,
+        "cost": 0.0006275304625402753
+      },
+      {
+        "states": "ZZ, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.00022959071548537776,
+        "cost": 0.0005166374042768382
+      },
+      {
+        "states": "ZZ, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.0002494434007419047,
+        "cost": 0.0004209391690044842
+      },
+      {
+        "states": "ZZ, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.0002972919488363076,
+        "cost": 0.0005214187514057564
+      },
+      {
+        "states": "ZZ estreito, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.32466083103646914,
+        "cost": 0.08262727904729095
+      },
+      {
+        "states": "ZZ estreito, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.003937107572121559,
+        "cost": 0.007340076732847894
+      },
+      {
+        "states": "ZZ estreito, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.07113649931952,
+        "cost": 0.0328377451952635
+      },
+      {
+        "states": "ZZ estreito, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.004728281191646634,
+        "cost": 0.004948975550909982
+      },
+      {
+        "states": "ZZ estreito, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.01299762708311842,
+        "cost": 0.006747129534694768
+      },
+      {
+        "states": "ZZ estreito, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.006490061989406199,
+        "cost": 0.006099628581154615
+      },
+      {
+        "states": "ZZ estreito, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.007806962489241843,
+        "cost": 0.006764055332095725
+      },
+      {
+        "states": "ZZ estreito, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.007129253582864593,
+        "cost": 0.006081231194325582
+      },
+      {
+        "states": "ZZ estreito, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.10813018955744985,
+        "cost": 0.04362386314805434
+      },
+      {
+        "states": "ZZ estreito, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0017023020718744098,
+        "cost": 0.0038863595589910187
+      },
+      {
+        "states": "ZZ estreito, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.035277595472315106,
+        "cost": 0.015852448979750564
+      },
+      {
+        "states": "ZZ estreito, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.0016581036458303109,
+        "cost": 0.0021553895805971066
+      },
+      {
+        "states": "ZZ estreito, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.005811486213253234,
+        "cost": 0.004349768681715783
+      },
+      {
+        "states": "ZZ estreito, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.0020076639375336096,
+        "cost": 0.0021099975655224255
+      },
+      {
+        "states": "ZZ estreito, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.0022970934208351836,
+        "cost": 0.0023319306867385743
+      },
+      {
+        "states": "ZZ estreito, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.0019140004302242337,
+        "cost": 0.002929407091851528
+      },
+      {
+        "states": "ZZ estreito, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.09347239835589914,
+        "cost": 0.03531040116860367
+      },
+      {
+        "states": "ZZ estreito, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0005644395135203232,
+        "cost": 0.0008979982467062301
+      },
+      {
+        "states": "ZZ estreito, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.02168145391453594,
+        "cost": 0.011723034023569622
+      },
+      {
+        "states": "ZZ estreito, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.0007090791068680154,
+        "cost": 0.0009809136978006536
+      },
+      {
+        "states": "ZZ estreito, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.005206193692939806,
+        "cost": 0.0029573392626014152
+      },
+      {
+        "states": "ZZ estreito, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.0005759768382446268,
+        "cost": 0.0007901870146325998
+      },
+      {
+        "states": "ZZ estreito, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.0007173626387012498,
+        "cost": 0.0008409500208427297
+      },
+      {
+        "states": "ZZ estreito, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.0004865921540384242,
+        "cost": 0.0008269293094198871
+      },
+      {
+        "states": "ZZ estreito, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.08349038986824377,
+        "cost": 0.04441602153394821
+      },
+      {
+        "states": "ZZ estreito, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0002735698481114575,
+        "cost": 0.0006858019321431477
+      },
+      {
+        "states": "ZZ estreito, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.02929550168860116,
+        "cost": 0.01223776173248697
+      },
+      {
+        "states": "ZZ estreito, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.00023019766161791968,
+        "cost": 0.0006056765712836686
+      },
+      {
+        "states": "ZZ estreito, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.0030996089636600127,
+        "cost": 0.0024013702771706856
+      },
+      {
+        "states": "ZZ estreito, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.0002650988676172049,
+        "cost": 0.0005517527780918166
+      },
+      {
+        "states": "ZZ estreito, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.000274716539425798,
+        "cost": 0.00045765196363857285
+      },
+      {
+        "states": "ZZ estreito, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.0001889257511607846,
+        "cost": 0.0003567810077466809
+      },
+      {
+        "states": "ZZ estreito, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.09027017758397318,
+        "cost": 0.030346033650203597
+      },
+      {
+        "states": "ZZ estreito, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.00010326654843487967,
+        "cost": 0.00042725336210062975
+      },
+      {
+        "states": "ZZ estreito, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.02661803641281604,
+        "cost": 0.012384761465828792
+      },
+      {
+        "states": "ZZ estreito, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.00013096714196063057,
+        "cost": 0.00023164995032699752
+      },
+      {
+        "states": "ZZ estreito, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.0012676814470162887,
+        "cost": 0.0008229557926995215
+      },
+      {
+        "states": "ZZ estreito, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 9.841971243795993e-05,
+        "cost": 0.00032486248075342083
+      },
+      {
+        "states": "ZZ estreito, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.00014958120319128214,
+        "cost": 0.0002660614874494179
+      },
+      {
+        "states": "ZZ estreito, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.00010278569484618138,
+        "cost": 0.0002066637220297112
+      },
+      {
+        "states": "RY, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.9183206255719024,
+        "cost": 0.14279452815049465
+      },
+      {
+        "states": "RY, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.01512729384024043,
+        "cost": 0.021766304857011413
+      },
+      {
+        "states": "RY, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.11271590263833917,
+        "cost": 0.03928017572606698
+      },
+      {
+        "states": "RY, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.012492546329417207,
+        "cost": 0.023907437189072064
+      },
+      {
+        "states": "RY, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.01943903010706665,
+        "cost": 0.014820453551778457
+      },
+      {
+        "states": "RY, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.009119201248710978,
+        "cost": 0.010242257979866467
+      },
+      {
+        "states": "RY, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.01172770166528459,
+        "cost": 0.011313297236246253
+      },
+      {
+        "states": "RY, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.01223796391167769,
+        "cost": 0.008081372444238934
+      },
+      {
+        "states": "RY, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.6004772282712464,
+        "cost": 0.13025902651275623
+      },
+      {
+        "states": "RY, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.002818921475695043,
+        "cost": 0.005069770775950061
+      },
+      {
+        "states": "RY, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.06621998157953736,
+        "cost": 0.03409838370580094
+      },
+      {
+        "states": "RY, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.00426655485805963,
+        "cost": 0.006546982861471293
+      },
+      {
+        "states": "RY, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.01768113687125416,
+        "cost": 0.006683220683215977
+      },
+      {
+        "states": "RY, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.0026719508028364715,
+        "cost": 0.0038805611512736753
+      },
+      {
+        "states": "RY, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.00361224658324835,
+        "cost": 0.004989112889538034
+      },
+      {
+        "states": "RY, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.0025831827780334517,
+        "cost": 0.002792078848260394
+      },
+      {
+        "states": "RY, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 1.1441910431526672,
+        "cost": 0.11590951701087861
+      },
+      {
+        "states": "RY, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0011461510927141172,
+        "cost": 0.0023816905810387663
+      },
+      {
+        "states": "RY, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.06982373302627824,
+        "cost": 0.027894560506400438
+      },
+      {
+        "states": "RY, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.0007072867783829144,
+        "cost": 0.0011777514926603011
+      },
+      {
+        "states": "RY, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.01038038091883452,
+        "cost": 0.004739209878802191
+      },
+      {
+        "states": "RY, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.0008097737309493813,
+        "cost": 0.0012002618008366227
+      },
+      {
+        "states": "RY, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.0009293602380071432,
+        "cost": 0.0012174160345120063
+      },
+      {
+        "states": "RY, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.0009028385517891035,
+        "cost": 0.000939671176179748
+      },
+      {
+        "states": "RY, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 1.2373776715188518,
+        "cost": 0.1755606639084712
+      },
+      {
+        "states": "RY, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0003026520391758293,
+        "cost": 0.0016022082362933444
+      },
+      {
+        "states": "RY, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.22262356229297747,
+        "cost": 0.041220169898085954
+      },
+      {
+        "states": "RY, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.0006489360078676189,
+        "cost": 0.0012387312940681646
+      },
+      {
+        "states": "RY, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.009139793813957459,
+        "cost": 0.003402892796715614
+      },
+      {
+        "states": "RY, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.00033337979026744347,
+        "cost": 0.0005436318649857164
+      },
+      {
+        "states": "RY, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.000410231189643103,
+        "cost": 0.0004804913622749112
+      },
+      {
+        "states": "RY, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.00027026534140896127,
+        "cost": 0.0003268237543575409
+      },
+      {
+        "states": "RY, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.5805511417995458,
+        "cost": 0.11229729749842843
+      },
+      {
+        "states": "RY, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0001177348767102711,
+        "cost": 0.00041857447092400325
+      },
+      {
+        "states": "RY, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.11985940223547276,
+        "cost": 0.037692474888000344
+      },
+      {
+        "states": "RY, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.00013356798852981512,
+        "cost": 0.000435317289576794
+      },
+      {
+        "states": "RY, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.012242436254850633,
+        "cost": 0.005578125129495391
+      },
+      {
+        "states": "RY, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.00012100737474713277,
+        "cost": 0.00034854497028225477
+      },
+      {
+        "states": "RY, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.00021837685277736193,
+        "cost": 0.00037919005385377995
+      },
+      {
+        "states": "RY, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 9.922620204895743e-05,
+        "cost": 0.0001733535216185432
+      },
+      {
+        "states": "Z, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.225577383923448,
+        "cost": 0.07024327889113713
+      },
+      {
+        "states": "Z, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0034539181239295886,
+        "cost": 0.0057442697186166555
+      },
+      {
+        "states": "Z, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.05494136067056713,
+        "cost": 0.019839769130032117
+      },
+      {
+        "states": "Z, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.004249539275345845,
+        "cost": 0.0044813389101500635
+      },
+      {
+        "states": "Z, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.009697352762461395,
+        "cost": 0.00621423194150057
+      },
+      {
+        "states": "Z, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.006052862191268318,
+        "cost": 0.006624881692641811
+      },
+      {
+        "states": "Z, 4 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.005281532548334066,
+        "cost": 0.0055358427593580626
+      },
+      {
+        "states": "Z, 4 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.004795098477804282,
+        "cost": 0.00404859350006651
+      },
+      {
+        "states": "Z, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.38235574546417345,
+        "cost": 0.10568199573089061
+      },
+      {
+        "states": "Z, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0007784657891695418,
+        "cost": 0.0021873460745737558
+      },
+      {
+        "states": "Z, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.08910835310836289,
+        "cost": 0.028782265672751068
+      },
+      {
+        "states": "Z, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.0012571085998948725,
+        "cost": 0.002397311283933554
+      },
+      {
+        "states": "Z, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.008749018658689853,
+        "cost": 0.004843338499248794
+      },
+      {
+        "states": "Z, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.0014228458450921302,
+        "cost": 0.0010670568012007737
+      },
+      {
+        "states": "Z, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.0019506652554980202,
+        "cost": 0.0020108008725890276
+      },
+      {
+        "states": "Z, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.0014196537301351194,
+        "cost": 0.00196369550799707
+      },
+      {
+        "states": "Z, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.09872131938988593,
+        "cost": 0.03569564575006499
+      },
+      {
+        "states": "Z, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0002858518562676332,
+        "cost": 0.0005439965677014364
+      },
+      {
+        "states": "Z, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.023911300711524766,
+        "cost": 0.01204911249023321
+      },
+      {
+        "states": "Z, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.0004276241539682064,
+        "cost": 0.000666801030186475
+      },
+      {
+        "states": "Z, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.004922922399615129,
+        "cost": 0.0024442311372920348
+      },
+      {
+        "states": "Z, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.00024051374562771436,
+        "cost": 0.0003800773579329546
+      },
+      {
+        "states": "Z, 6 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.0005302742825681517,
+        "cost": 0.0005232280914364255
+      },
+      {
+        "states": "Z, 6 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.00027493452343552155,
+        "cost": 0.0003521516505988354
+      },
+      {
+        "states": "Z, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.1176124499449897,
+        "cost": 0.06319029316850107
+      },
+      {
+        "states": "Z, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0002754843365075693,
+        "cost": 0.0004062295082276102
+      },
+      {
+        "states": "Z, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.03692225904692165,
+        "cost": 0.014631678130419252
+      },
+      {
+        "states": "Z, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.00016264263579020676,
+        "cost": 0.0003906680801218937
+      },
+      {
+        "states": "Z, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.004039278992238254,
+        "cost": 0.0023653305953273774
+      },
+      {
+        "states": "Z, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.00010554078305370624,
+        "cost": 0.0003733702804361953
+      },
+      {
+        "states": "Z, 7 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.00016129192575341749,
+        "cost": 0.00024513990641737054
+      },
+      {
+        "states": "Z, 7 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 7.843964376457257e-05,
+        "cost": 0.00018322375336223565
+      },
+      {
+        "states": "Z, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.12983958849402888,
+        "cost": 0.03916967690296196
+      },
+      {
+        "states": "Z, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 5.4607364799360656e-05,
+        "cost": 0.0005796352465389059
+      },
+      {
+        "states": "Z, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.038391395506842244,
+        "cost": 0.017265368009064006
+      },
+      {
+        "states": "Z, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 4.507428756119063e-05,
+        "cost": 6.829791454778836e-05
+      },
+      {
+        "states": "Z, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.0013961059743834718,
+        "cost": 0.0010603965117081805
+      },
+      {
+        "states": "Z, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 3.4068817322069514e-05,
+        "cost": 0.0002271642706410735
+      },
+      {
+        "states": "Z, 8 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 8.273443458413067e-05,
+        "cost": 0.00010098248082920031
+      },
+      {
+        "states": "Z, 8 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 3.3251982586105536e-05,
+        "cost": 5.047805832972198e-05
+      },
+      {
+        "states": "B, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 1,
+        "gradient": 0.05770182890859152,
+        "cost": 0.023726607774136856
+      },
+      {
+        "states": "B, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 1,
+        "gradient": 0.0029298886770243826,
+        "cost": 0.006655317499834567
+      },
+      {
+        "states": "B, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 2,
+        "gradient": 0.020877276212696035,
+        "cost": 0.01387083383564172
+      },
+      {
+        "states": "B, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 2,
+        "gradient": 0.0027494981075791573,
+        "cost": 0.005427249511206092
+      },
+      {
+        "states": "B, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 4,
+        "gradient": 0.005823872767204416,
+        "cost": 0.006136041829724193
+      },
+      {
+        "states": "B, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 4,
+        "gradient": 0.00286776234625709,
+        "cost": 0.006505140310768932
+      },
+      {
+        "states": "B, 5 qubits",
+        "observable": "local",
+        "ansatz_reps": 8,
+        "gradient": 0.002661526030594611,
+        "cost": 0.005529491377032971
+      },
+      {
+        "states": "B, 5 qubits",
+        "observable": "global",
+        "ansatz_reps": 8,
+        "gradient": 0.0023251373315052552,
+        "cost": 0.004434187510394835
+      }
+    ],
+    "factor_per_qubit": [
+      {
+        "codificação": "ZZ",
+        "leitura": "local",
+        "repetições do ansatz": 1,
+        "derivada: fator por qubit": 0.5535769798690607,
+        "derivada: IC 95% do fator, de": 0.5237339649046447,
+        "derivada: IC 95% do fator, até": 0.5866322577580624,
+        "derivada: 8 qubits ÷ 4 qubits": 0.09342357090188062,
+        "custo: fator por qubit": 0.5728205018350145
+      },
+      {
+        "codificação": "ZZ",
+        "leitura": "global",
+        "repetições do ansatz": 1,
+        "derivada: fator por qubit": 0.4899473949859712,
+        "derivada: IC 95% do fator, de": 0.4436322339537562,
+        "derivada: IC 95% do fator, até": 0.5407072562050595,
+        "derivada: 8 qubits ÷ 4 qubits": 0.04737357899339127,
+        "custo: fator por qubit": 0.5069007223614478
+      },
+      {
+        "codificação": "ZZ",
+        "leitura": "local",
+        "repetições do ansatz": 2,
+        "derivada: fator por qubit": 0.55237101003349,
+        "derivada: IC 95% do fator, de": 0.5156667045545983,
+        "derivada: IC 95% do fator, até": 0.5914469540204638,
+        "derivada: 8 qubits ÷ 4 qubits": 0.07286261811304695,
+        "custo: fator por qubit": 0.5731951029424218
+      },
+      {
+        "codificação": "ZZ",
+        "leitura": "global",
+        "repetições do ansatz": 2,
+        "derivada: fator por qubit": 0.5220291623725067,
+        "derivada: IC 95% do fator, de": 0.48775516021873644,
+        "derivada: IC 95% do fator, até": 0.5581161825399695,
+        "derivada: 8 qubits ÷ 4 qubits": 0.06274013083948456,
+        "custo: fator por qubit": 0.5297136414353807
+      },
+      {
+        "codificação": "ZZ",
+        "leitura": "local",
+        "repetições do ansatz": 4,
+        "derivada: fator por qubit": 0.5049448914615497,
+        "derivada: IC 95% do fator, de": 0.46966506045119544,
+        "derivada: IC 95% do fator, até": 0.5398561886553289,
+        "derivada: 8 qubits ÷ 4 qubits": 0.06112054520637185,
+        "custo: fator por qubit": 0.522152621712871
+      },
+      {
+        "codificação": "ZZ",
+        "leitura": "global",
+        "repetições do ansatz": 4,
+        "derivada: fator por qubit": 0.4670580909743617,
+        "derivada: IC 95% do fator, de": 0.43583715955940056,
+        "derivada: IC 95% do fator, até": 0.5018557216393443,
+        "derivada: 8 qubits ÷ 4 qubits": 0.037315730648308024,
+        "custo: fator por qubit": 0.5082607156397787
+      },
+      {
+        "codificação": "ZZ",
+        "leitura": "local",
+        "repetições do ansatz": 8,
+        "derivada: fator por qubit": 0.45379894379348196,
+        "derivada: IC 95% do fator, de": 0.4255522678124403,
+        "derivada: IC 95% do fator, até": 0.4838054226141991,
+        "derivada: 8 qubits ÷ 4 qubits": 0.03798683257261629,
+        "custo: fator por qubit": 0.47663259040748884
+      },
+      {
+        "codificação": "ZZ",
+        "leitura": "global",
+        "repetições do ansatz": 8,
+        "derivada: fator por qubit": 0.4681033561805884,
+        "derivada: IC 95% do fator, de": 0.4425246154166885,
+        "derivada: IC 95% do fator, até": 0.49857027471204446,
+        "derivada: 8 qubits ÷ 4 qubits": 0.04819537318394649,
+        "custo: fator por qubit": 0.48323306302829205
+      },
+      {
+        "codificação": "ZZ estreito",
+        "leitura": "local",
+        "repetições do ansatz": 1,
+        "derivada: fator por qubit": 0.7543828951089726,
+        "derivada: IC 95% do fator, de": 0.6815658681696988,
+        "derivada: IC 95% do fator, até": 0.8382753267799404,
+        "derivada: 8 qubits ÷ 4 qubits": 0.2780445589811022,
+        "custo: fator por qubit": 0.8199308932098194
+      },
+      {
+        "codificação": "ZZ estreito",
+        "leitura": "global",
+        "repetições do ansatz": 1,
+        "derivada: fator por qubit": 0.4021236688324036,
+        "derivada: IC 95% do fator, de": 0.35152692122740486,
+        "derivada: IC 95% do fator, até": 0.4590062211223594,
+        "derivada: 8 qubits ÷ 4 qubits": 0.0262290390961386,
+        "custo: fator por qubit": 0.4760609406347669
+      },
+      {
+        "codificação": "ZZ estreito",
+        "leitura": "local",
+        "repetições do ansatz": 2,
+        "derivada: fator por qubit": 0.8063932827926076,
+        "derivada: IC 95% do fator, de": 0.7110240770135832,
+        "derivada: IC 95% do fator, até": 0.9361764783122982,
+        "derivada: 8 qubits ÷ 4 qubits": 0.37418254577382587,
+        "custo: fator por qubit": 0.8017951528764827
+      },
+      {
+        "codificação": "ZZ estreito",
+        "leitura": "global",
+        "repetições do ansatz": 2,
+        "derivada: fator por qubit": 0.40062747895292034,
+        "derivada: IC 95% do fator, de": 0.3579406657504351,
+        "derivada: IC 95% do fator, até": 0.44920386673181395,
+        "derivada: 8 qubits ÷ 4 qubits": 0.027698678790933094,
+        "custo: fator por qubit": 0.4774576764093397
+      },
+      {
+        "codificação": "ZZ estreito",
+        "leitura": "local",
+        "repetições do ansatz": 4,
+        "derivada: fator por qubit": 0.5895643058127948,
+        "derivada: IC 95% do fator, de": 0.4934207602060095,
+        "derivada: IC 95% do fator, até": 0.6979945630142887,
+        "derivada: 8 qubits ÷ 4 qubits": 0.09753176013664666,
+        "custo: fator por qubit": 0.618658221270684
+      },
+      {
+        "codificação": "ZZ estreito",
+        "leitura": "global",
+        "repetições do ansatz": 4,
+        "derivada: fator por qubit": 0.35337704503510403,
+        "derivada: IC 95% do fator, de": 0.32219925165014474,
+        "derivada: IC 95% do fator, até": 0.38747761437564027,
+        "derivada: 8 qubits ÷ 4 qubits": 0.015164679874955195,
+        "custo: fator por qubit": 0.4864357558060603
+      },
+      {
+        "codificação": "ZZ estreito",
+        "leitura": "local",
+        "repetições do ansatz": 8,
+        "derivada: fator por qubit": 0.36664823680109143,
+        "derivada: IC 95% do fator, de": 0.33004902908419265,
+        "derivada: IC 95% do fator, até": 0.41174795758206006,
+        "derivada: 8 qubits ÷ 4 qubits": 0.019159974624882368,
+        "custo: fator por qubit": 0.4448739150728588
+      },
+      {
+        "codificação": "ZZ estreito",
+        "leitura": "global",
+        "repetições do ansatz": 8,
+        "derivada: fator por qubit": 0.3397915975848573,
+        "derivada: IC 95% do fator, de": 0.3152594761250674,
+        "derivada: IC 95% do fator, até": 0.3717920480057391,
+        "derivada: 8 qubits ÷ 4 qubits": 0.01441745529899937,
+        "custo: fator por qubit": 0.4119236683087983
+      },
+      {
+        "codificação": "RY",
+        "leitura": "local",
+        "repetições do ansatz": 1,
+        "derivada: fator por qubit": 0.9807759373922104,
+        "derivada: IC 95% do fator, de": 0.7966778239563139,
+        "derivada: IC 95% do fator, até": 1.2164252977508478,
+        "derivada: 8 qubits ÷ 4 qubits": 0.6321878499004601,
+        "custo: fator por qubit": 0.9819592973515852
+      },
+      {
+        "codificação": "RY",
+        "leitura": "global",
+        "repetições do ansatz": 1,
+        "derivada: fator por qubit": 0.3029108576997852,
+        "derivada: IC 95% do fator, de": 0.24913108462827185,
+        "derivada: IC 95% do fator, até": 0.3824541950483867,
+        "derivada: 8 qubits ÷ 4 qubits": 0.007782943727653531,
+        "custo: fator por qubit": 0.4043623105918544
+      },
+      {
+        "codificação": "RY",
+        "leitura": "local",
+        "repetições do ansatz": 2,
+        "derivada: fator por qubit": 1.142866729758177,
+        "derivada: IC 95% do fator, de": 0.9309120905503085,
+        "derivada: IC 95% do fator, até": 1.3582240010798567,
+        "derivada: 8 qubits ÷ 4 qubits": 1.0633761468428664,
+        "custo: fator por qubit": 1.0107734943343296
+      },
+      {
+        "codificação": "RY",
+        "leitura": "global",
+        "repetições do ansatz": 2,
+        "derivada: fator por qubit": 0.33421253710473714,
+        "derivada: IC 95% do fator, de": 0.2907082961890442,
+        "derivada: IC 95% do fator, até": 0.3928790417402477,
+        "derivada: 8 qubits ÷ 4 qubits": 0.010691814543468356,
+        "custo: fator por qubit": 0.37996900283815477
+      },
+      {
+        "codificação": "RY",
+        "leitura": "local",
+        "repetições do ansatz": 4,
+        "derivada: fator por qubit": 0.8534562694265636,
+        "derivada: IC 95% do fator, de": 0.5446446444786244,
+        "derivada: IC 95% do fator, até": 1.0669414236042134,
+        "derivada: 8 qubits ÷ 4 qubits": 0.6297863724384138,
+        "custo: fator por qubit": 0.7687968550410285
+      },
+      {
+        "codificação": "RY",
+        "leitura": "global",
+        "repetições do ansatz": 4,
+        "derivada: fator por qubit": 0.34212285610297316,
+        "derivada: IC 95% do fator, de": 0.30876384753386316,
+        "derivada: IC 95% do fator, até": 0.3765784409644644,
+        "derivada: 8 qubits ÷ 4 qubits": 0.013269514669855273,
+        "custo: fator por qubit": 0.41784350825571004
+      },
+      {
+        "codificação": "RY",
+        "leitura": "local",
+        "repetições do ansatz": 8,
+        "derivada: fator por qubit": 0.3626802173773499,
+        "derivada: IC 95% do fator, de": 0.3225269759451387,
+        "derivada: IC 95% do fator, até": 0.40755616561129754,
+        "derivada: 8 qubits ÷ 4 qubits": 0.018620600950634995,
+        "custo: fator por qubit": 0.4012543682078776
+      },
+      {
+        "codificação": "RY",
+        "leitura": "global",
+        "repetições do ansatz": 8,
+        "derivada: fator por qubit": 0.3046119676868896,
+        "derivada: IC 95% do fator, de": 0.27422891960033857,
+        "derivada: IC 95% do fator, até": 0.34447234704145197,
+        "derivada: 8 qubits ÷ 4 qubits": 0.008108064606586559,
+        "custo: fator por qubit": 0.3742209550814953
+      },
+      {
+        "codificação": "Z",
+        "leitura": "local",
+        "repetições do ansatz": 1,
+        "derivada: fator por qubit": 0.795831055604099,
+        "derivada: IC 95% do fator, de": 0.7146404886262265,
+        "derivada: IC 95% do fator, até": 0.8822517212665859,
+        "derivada: 8 qubits ÷ 4 qubits": 0.5755877926933105,
+        "custo: fator por qubit": 0.8451503567002885
+      },
+      {
+        "codificação": "Z",
+        "leitura": "global",
+        "repetições do ansatz": 1,
+        "derivada: fator por qubit": 0.3932543851402861,
+        "derivada: IC 95% do fator, de": 0.31951012686142855,
+        "derivada: IC 95% do fator, até": 0.4599215014694411,
+        "derivada: 8 qubits ÷ 4 qubits": 0.01581026614992043,
+        "custo: fator por qubit": 0.5341575719282755
+      },
+      {
+        "codificação": "Z",
+        "leitura": "local",
+        "repetições do ansatz": 2,
+        "derivada: fator por qubit": 0.8523223607779093,
+        "derivada: IC 95% do fator, de": 0.7459856429066368,
+        "derivada: IC 95% do fator, até": 0.9729947587110379,
+        "derivada: 8 qubits ÷ 4 qubits": 0.6987703806070658,
+        "custo: fator por qubit": 0.9089599776569094
+      },
+      {
+        "codificação": "Z",
+        "leitura": "global",
+        "repetições do ansatz": 2,
+        "derivada: fator por qubit": 0.3283247069967257,
+        "derivada: IC 95% do fator, de": 0.2655995741170941,
+        "derivada: IC 95% do fator, até": 0.39613045841548467,
+        "derivada: 8 qubits ÷ 4 qubits": 0.010606864565929285,
+        "custo: fator por qubit": 0.3612503533261416
+      },
+      {
+        "codificação": "Z",
+        "leitura": "local",
+        "repetições do ansatz": 4,
+        "derivada: fator por qubit": 0.6281848945533371,
+        "derivada: IC 95% do fator, de": 0.5122617043011408,
+        "derivada: IC 95% do fator, até": 0.7486606866639484,
+        "derivada: 8 qubits ÷ 4 qubits": 0.14396774136007717,
+        "custo: fator por qubit": 0.6535681336894725
+      },
+      {
+        "codificação": "Z",
+        "leitura": "global",
+        "repetições do ansatz": 4,
+        "derivada: fator por qubit": 0.2735933268963333,
+        "derivada: IC 95% do fator, de": 0.242425896828148,
+        "derivada: IC 95% do fator, até": 0.30794744200884583,
+        "derivada: 8 qubits ÷ 4 qubits": 0.005628546668585354,
+        "custo: fator por qubit": 0.4585931889867595
+      },
+      {
+        "codificação": "Z",
+        "leitura": "local",
+        "repetições do ansatz": 8,
+        "derivada: fator por qubit": 0.33941283119681376,
+        "derivada: IC 95% do fator, de": 0.29405388396680066,
+        "derivada: IC 95% do fator, até": 0.3882495261548143,
+        "derivada: 8 qubits ÷ 4 qubits": 0.015664853681575296,
+        "custo: fator por qubit": 0.36376168512813906
+      },
+      {
+        "codificação": "Z",
+        "leitura": "global",
+        "repetições do ansatz": 8,
+        "derivada: fator por qubit": 0.27697420290195035,
+        "derivada: IC 95% do fator, de": 0.2503488429623923,
+        "derivada: IC 95% do fator, até": 0.3085203010184218,
+        "derivada: 8 qubits ÷ 4 qubits": 0.006934577619213346,
+        "custo: fator por qubit": 0.32820897770368473
+      }
+    ],
+    "readout_bloch_length": [
+      {
+        "codificação": "B",
+        "4": null,
+        "5": 0.8182906369626377,
+        "6": null,
+        "7": null,
+        "8": null
+      },
+      {
+        "codificação": "RY",
+        "4": 1.0,
+        "5": 1.0,
+        "6": 1.0,
+        "7": 1.0,
+        "8": 1.0
+      },
+      {
+        "codificação": "Z",
+        "4": 1.0000000000000004,
+        "5": 1.0000000000000009,
+        "6": 1.0000000000000009,
+        "7": 1.0000000000000009,
+        "8": 1.000000000000001
+      },
+      {
+        "codificação": "ZZ",
+        "4": 0.1819527896837236,
+        "5": 0.28752857126456305,
+        "6": 0.0681888016506609,
+        "7": 0.05203419913037817,
+        "8": 0.050189770954609345
+      },
+      {
+        "codificação": "ZZ estreito",
+        "4": 0.9406522025524634,
+        "5": 0.8894683624082087,
+        "6": 0.9006613279203941,
+        "7": 0.8801587227753133,
+        "8": 0.8614495973952863
+      }
+    ],
+    "five_qubits_local": [
+      {
+        "variant": "ZZ",
+        "variância, ansatz com 1 repetição": 0.011859430296921524,
+        "variância, ansatz com 2 repetições": 0.0038087083863024966,
+        "variância, ansatz com 4 repetições": 0.0030053609740217746,
+        "variância, ansatz com 8 repetições": 0.0020495324021079305,
+        "mediana do |derivada|, ansatz com 1 repetição": 0.052213148388654665,
+        "mediana do |derivada|, ansatz com 2 repetições": 0.032505224397284926,
+        "mediana do |derivada|, ansatz com 4 repetições": 0.028644740434866405,
+        "mediana do |derivada|, ansatz com 8 repetições": 0.030270021647906542
+      },
+      {
+        "variant": "ZZ estreito",
+        "variância, ansatz com 1 repetição": 0.10813018955744985,
+        "variância, ansatz com 2 repetições": 0.035277595472315106,
+        "variância, ansatz com 4 repetições": 0.005811486213253234,
+        "variância, ansatz com 8 repetições": 0.0022970934208351836,
+        "mediana do |derivada|, ansatz com 1 repetição": 0.14609810298785922,
+        "mediana do |derivada|, ansatz com 2 repetições": 0.05664343233548745,
+        "mediana do |derivada|, ansatz com 4 repetições": 0.026336897770370855,
+        "mediana do |derivada|, ansatz com 8 repetições": 0.02479517336923554
+      },
+      {
+        "variant": "RY",
+        "variância, ansatz com 1 repetição": 0.6004772282712464,
+        "variância, ansatz com 2 repetições": 0.06621998157953736,
+        "variância, ansatz com 4 repetições": 0.01768113687125416,
+        "variância, ansatz com 8 repetições": 0.00361224658324835,
+        "mediana do |derivada|, ansatz com 1 repetição": 0.18649051468722425,
+        "mediana do |derivada|, ansatz com 2 repetições": 0.06813846014695858,
+        "mediana do |derivada|, ansatz com 4 repetições": 0.030841574452265243,
+        "mediana do |derivada|, ansatz com 8 repetições": 0.026087830481385983
+      },
+      {
+        "variant": "Z",
+        "variância, ansatz com 1 repetição": 0.38235574546417345,
+        "variância, ansatz com 2 repetições": 0.08910835310836289,
+        "variância, ansatz com 4 repetições": 0.008749018658689853,
+        "variância, ansatz com 8 repetições": 0.0019506652554980202,
+        "mediana do |derivada|, ansatz com 1 repetição": 0.13491178932759462,
+        "mediana do |derivada|, ansatz com 2 repetições": 0.047757592086671345,
+        "mediana do |derivada|, ansatz com 4 repetições": 0.017993933000827605,
+        "mediana do |derivada|, ansatz com 8 repetições": 0.017875282196754484
+      },
+      {
+        "variant": "B",
+        "variância, ansatz com 1 repetição": 0.05770182890859152,
+        "variância, ansatz com 2 repetições": 0.020877276212696035,
+        "variância, ansatz com 4 repetições": 0.005823872767204416,
+        "variância, ansatz com 8 repetições": 0.002661526030594611,
+        "mediana do |derivada|, ansatz com 1 repetição": 0.09759644201980122,
+        "mediana do |derivada|, ansatz com 2 repetições": 0.05435810774877537,
+        "mediana do |derivada|, ansatz com 4 repetições": 0.036513898502411046,
+        "mediana do |derivada|, ansatz com 8 repetições": 0.029210205107698912
+      }
+    ]
+  },
+  "caches": {
+    "learning_curve": "learning_curve_58bc86602d7de7137be7310385a37947.joblib",
+    "validation_curves": "validation_curves_7cf0a2084f499500ce5ea7a7bd9a965b.joblib",
+    "barren_plateau": "barren_plateau_b129f701d8f4c0dac877b346908cd827.joblib"
+  },
+  "curves_source_fingerprint": "c39f7f7688903c72b10552a630618043993f18c8e4ee133b31e4f80a4ba03fd9",
+  "diagnostics_source_fingerprint": "c4ecfab432afbc066a2a735cdde982216437368b72a768148ce9e0bb51ec2802",
+  "cv": {
+    "n_splits": 5,
+    "random_state": 42,
+    "undersampling": "dentro de cada fold"
+  },
+  "split_fingerprint": "04d958c0d5744326c9313324382483156d3238d0ba5548fdf133d28fc8d13ab3",
+  "commit": "2d7fe4afbd8160dfc093ba3de4e1fd1714ef69cb",
+  "uncommitted_changes": [
+    " M PLAN.md",
+    " M artifacts/results/grid_adaboost.json",
+    " M artifacts/results/grid_adaboost_all_features_round2.json",
+    " M artifacts/results/grid_adaboost_components_qubits.json",
+    " M artifacts/results/grid_adaboost_components_round2.json",
+    " M artifacts/results/grid_qsvm.json",
+    " M artifacts/results/grid_qsvm_amplitude_round2.json",
+    " M artifacts/results/grid_qsvm_angle_qubits.json",
+    " M artifacts/results/grid_qsvm_angle_qubits_narrow.json",
+    " M artifacts/results/grid_qsvm_angle_round2.json",
+    " M artifacts/results/grid_quantum_adaboost.json",
+    " M artifacts/results/grid_quantum_adaboost_amplitude_round2.json",
+    " M artifacts/results/grid_quantum_adaboost_angle_qubits.json",
+    " M artifacts/results/grid_quantum_adaboost_angle_qubits_narrow.json",
+    " M artifacts/results/grid_quantum_adaboost_angle_round2.json",
+    " M artifacts/results/grid_svm.json",
+    " M artifacts/results/grid_svm_all_features_round2.json",
+    " M artifacts/results/grid_svm_components_qubits.json",
+    " M artifacts/results/grid_svm_components_round2.json",
+    " M artifacts/results/validation_evaluation.json",
+    " M methodological_issues.md",
+    " M notebooks/tcc_ml_vs_qml.ipynb",
+    " M src/fraud_qml/quantum/diagnostics.py",
+    " M tests/test_notebook_protocol.py",
+    "?? artifacts/results/diagnostics.json",
+    "?? src/fraud_qml/caching.py",
+    "?? src/fraud_qml/curves.py",
+    "?? tests/test_barren_plateau.py",
+    "?? tests/test_caching.py",
+    "?? tests/test_curves.py"
+  ],
+  "package_source_fingerprint": "772dc4366d4a90e91b2915f9c8a8af88ed4c50744dab61190d630936b984ee57",
+  "versions": {
+    "python": "3.12.14",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "imbalanced-learn": "0.14.2",
+    "qiskit": "2.5.2",
+    "qiskit-aer": "0.17.2",
+    "qiskit-machine-learning": "0.9.1",
+    "matplotlib": "3.11.2"
+  }
+}

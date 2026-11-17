@@ -32,7 +32,8 @@
 | Ordem split x exploração | **Na base inteira, só o contrato dos dados e a remoção de duplicatas; depois o split; toda a exploração só no treino.** De validação e teste só se contam linhas e rótulos. Decidido em 2026-10-07: a versão anterior fazia a EDA antes do split (CC7), o que é vazamento por decisão, a forma sutil que os guias do scikit-learn e do imbalanced-learn mandam evitar. |
 | Mesmo pré-processamento ML e QML | Os 4 modelos treinam no **mesmo subconjunto balanceado**. Os clássicos rodam em duas configurações: (a) **entrada idêntica** à do quântico, *like-for-like*; (b) **referência com todas as features**. |
 | Limiar | Escolhido **na validação, maximizando o F1**. *(O modelo de custo complementar saiu em 2026-11-04: veio de outro trabalho, como analogia, e o Eric decidiu que não entra na Seção 7.)* |
-| Robustez | **5 sementes de undersampling** + IC por bootstrap + teste pareado (McNemar). |
+| Modelo final (Seção 9) | **Sem retreino em treino + validação** (decisão do Eric, 2026-11-16, CC20). O modelo avaliado no teste é o da Seção 7 (treino inteiro, semente do experimento), com o limiar de F1 máximo escolhido na validação, exatamente como foi validado. Motivos: (1) o limiar é um valor na escala da pontuação de cada modelo, e um modelo retreinado tem outra escala: numa medida só com treino e validação, levar o mesmo valor a um modelo com mais linhas mudou os alertas em até +31 e tirou até 0,062 de F1; (2) as 5 sementes de robustez põem à prova as configurações escolhidas (as mais otimistas da busca), e cada semente escolhe o próprio limiar na validação, como manda o protocolo; (3) o custo, treinar sem as 94 fraudes da validação, já faz parte da limitação conhecida da base (poucas fraudes, e features anonimizadas por PCA, que não dizem nada sobre elas). Diverge do passo 5 do Raschka 2018 (seção 3.3), que recomenda o reajuste: o TCC declara isso. |
+| Robustez | **5 sementes de undersampling** + IC por bootstrap + teste pareado (McNemar). Em cada semente, o modelo é treinado no treino e o limiar é escolhido na validação, por F1 máximo (2026-11-16). |
 | Ruído | **Seção extra** com simulação ruidosa (Qiskit Aer) dos modelos quânticos finais. |
 | Ambiente | **Local**: `.venv` via `uv` (Python 3.12), infraestrutura num pacote `src/` com `pytest` e experimentos no notebook. |
 
@@ -340,8 +341,8 @@ As versões são fixadas depois de um `uv pip install --dry-run` que confirma a 
 | **5. Treinamento** | Dummy, SVM, AdaBoost (os dois clássicos com 31 features e com os 5 componentes da variação A), QSVM (A e B), Quantum AdaBoost (A e B) com hiperparâmetros padrão, avaliados na validação (PR-AUC com bootstrap pareado), com custo computacional. Curva de custo do classificador fraco, diagnóstico fase × RY com largura e scaler (CC14), variação entre sementes num conjunto interno do treino, e o boosting por dentro (ε e α por rodada, classificador descartado, parada por semente). |
 | **6. GridSearchCV** | `StratifiedKFold(5)` no treino inteiro, com o undersampling sorteado em cada fold e escolha pela PR-AUC (decisão de arquitetura 3; volta ao treino balanceado se a projeção passar de 2 h). Blocos: abertura; opções do pré-processamento e da codificação com a matriz dimensão × algoritmo, o piloto de custo e por que um grid próprio e não o `GridSearchCV`/`RandomizedSearchCV` (6.1.2, com demonstração); grid SVM × QSVM; grid AdaBoost × Quantum AdaBoost (grid próprio, com codificação e largura juntas e RY); o que a primeira rodada escolheu (6.4); **segunda rodada**, um passo além de cada borda em torno de cada escolhida (6.5); **de 4 a 8 qubits** na variação A, com os clássicos nos mesmos componentes (6.6); as configurações que seguem, congeladas (6.7); conclusão (6.8). A segunda rodada e o teste de qubits foram decididos com o Eric em 2026-11-02, depois da primeira rodada e antes da validação. O grid é dimensionado pelo custo medido na Seção 5.4, e não pelo benchmark da Seção 1 (ver "Nota para a Seção 6" na decisão de arquitetura 4). |
 | **7. Avaliação** | Na validação: PR-AUC (principal), ROC-AUC, precisão, recall, F1, **MCC** (usado por Randhawa), acurácia, matriz de confusão, curvas PR/ROC, limiar por F1-máx (o limiar padrão de cada modelo contra o escolhido). Tabela comparativa dos pares e custo computacional. Sem modelo de custo (decisão de 2026-11-04). |
-| **8. Diagnóstico** | `learning_curve` (score de treino x validação conforme cresce o nº de amostras) e `validation_curve`: C/γ no SVM, C e range/largura de banda no QSVM, n_estimators nos dois AdaBoost via `staged_decision_function`, sem refazer fits. **As curvas de validação descrevem o que há além das bordas do grid** que a Seção 6 deixou registradas (CC19: depois da segunda rodada, três escolhidas ficaram no passo além da borda: γ = 0,001 no SVM com 31 features, taxa 0,05 no AdaBoost com componentes, taxa 0,05 e constante 10 no Quantum AdaBoost B; leitura da 6.5), **sem mudar a escolha**: as configurações da Seção 6 ficam congeladas, porque a Seção 8 vem depois da validação. A segunda rodada da Seção 6.5 (decidida em 2026-11-02) já estendeu cada borda um passo; a Seção 8 descreve o que houver além dela. A curva de 4 a 8 qubits saiu daqui e foi para a Seção 6.6, onde pode mudar o modelo antes da validação; o que ela não cobre (várias sementes do boosting, CC17) fica para a robustez da Seção 9. |
-| **9. Modelo final** | Retreino em treino+validação (undersampling de novo) e **avaliação única no teste** com o limiar escolhido. Bootstrap pareado para as diferenças SVM−QSVM e AdaBoost−QAdaBoost e McNemar. **Robustez:** o pipeline final repetido com as 5 sementes de undersampling (média ± desvio), sem nenhuma decisão tomada a partir disso. Ficha do modelo em JSON. |
+| **8. Diagnóstico** | `learning_curve` (score de treino x validação conforme cresce o nº de amostras) e `validation_curve`: C/γ no SVM, C e range/largura de banda no QSVM, n_estimators nos dois AdaBoost via `staged_decision_function`, sem refazer fits. **As curvas de validação descrevem o que há além das bordas do grid** que a Seção 6 deixou registradas (CC19: depois da segunda rodada, três escolhidas ficaram no passo além da borda: γ = 0,001 no SVM com 31 features, taxa 0,05 no AdaBoost com componentes, taxa 0,05 e constante 10 no Quantum AdaBoost B; leitura da 6.5), **sem mudar a escolha**: as configurações da Seção 6 ficam congeladas, porque a Seção 8 vem depois da validação. A segunda rodada da Seção 6.5 (decidida em 2026-11-02) já estendeu cada borda um passo; a Seção 8 descreve o que houver além dela. A curva de 4 a 8 qubits saiu daqui e foi para a Seção 6.6, onde pode mudar o modelo antes da validação; o que ela não cobre (várias sementes do boosting, CC17) fica para a robustez da Seção 9. **Decisões de 2026-11-16 (com o Eric, antes de codificar):** (1) a curva de aprendizado treina com 25%, 50%, 75%, 80% e 100% das fraudes do treino e avalia na **validação** (só descreve; a validação cruzada não passa de 456 linhas, e 80% × 100% no mesmo conjunto isola o efeito do tamanho do treino, a hipótese da 7.2); o ponto de 100% com a semente 42 tem de reproduzir a 7.2; (2) 5 sorteios do undersampling por tamanho (`SUBSAMPLE_SEEDS`, e não as sementes de robustez); (3) nota no treino pela ROC-AUC nas linhas vistas e por uma PR-AUC na proporção real. A versão aprovada era a PR-AUC nas linhas vistas com as legítimas ponderadas de volta à proporção real, "a conferir antes de usar"; conferida na Fase 7, ela não serve (cada legítima vista pesa 169.951 ÷ 284 ≈ 598, e uma única legítima acima das fraudes derruba a nota: de 0,215 a 0,691 nos clássicos, contra 0,736 a 0,777 na validação). Ficou a PR-AUC em **todas as linhas passadas ao `fit`** (a nota de treino do scikit-learn: fraudes todas vistas, legítimas quase todas novas, proporção real sem peso); (4) curvas de validação nos mesmos 5 folds da Seção 6, com a nota de treino e um passo além das bordas que sobraram (γ = 0,0001 no SVM com 31 features; taxa 0,02 no AdaBoost com componentes; taxa 0,02 e constante 20 no Quantum AdaBoost B); (5) código novo fora dos módulos que a chave do cache da Seção 6 cobre, com cache em disco próprio. (6) medida de *barren plateau* no classificador fraco (aprovada pelo Eric em 2026-11-16): variância da derivada e do custo entre 200 pesos sorteados, de 4 a 8 qubits, ansatz de 1, 2, 4 e 8 repetições, leitura local (a do classificador) e global (controle), com a codificação congelada da variação A e a da B; os controles (a mesma entrada com o mapa ZZ e a largura [0; 0,1], com a rotação em Y e com o mapa Z) e o comprimento de Bloch do qubit medido entraram depois da primeira medida (o RY) e da auditoria (os outros), declarados. A auditoria da fase reprovou a primeira forma (NC22): o sinal do otimismo na decomposição da 7.2, a parte do tamanho pela média de 80%, a largura não variada no platô e as bordas julgadas sem pareamento, todos corrigidos. **Entregue em 2026-11-16 (Fase 7):** 8.1 a 8.4, resultados em `artifacts/results/diagnostics.json`; achados em CC21 (reprodutibilidade do Quantum AdaBoost) e CC22 (platô induzido pela codificação ZZ). |
+| **9. Modelo final** | **Sem retreino** (decisão de 2026-11-16, CC20): o modelo da Seção 7, treinado no treino, e o limiar escolhido para ele na validação, na **avaliação única no teste**. Bootstrap pareado para as diferenças SVM−QSVM e AdaBoost−QAdaBoost e McNemar. **Robustez:** o pipeline final repetido com as 5 sementes de undersampling (média ± desvio): cada semente treina no treino, escolhe o próprio limiar na validação por F1 máximo e é avaliada no teste, sem nenhuma decisão tomada a partir disso. Ficha do modelo em JSON. |
 | **10. Ruído (extra)** | Os modelos quânticos finais reavaliados com ruído de despolarização (p ∈ {0; 0,001; 0,005; 0,01; 0,03}, o último igual ao do Wang), erro de leitura e shots finitos. Roda num subconjunto fixo do teste (todas as fraudes + amostra das legítimas), porque simular ruído em 56 mil linhas é inviável. A comparação ideal x ruidoso é feita **no mesmo subconjunto**. |
 
 ---
@@ -529,7 +530,8 @@ seção 4.14). Undersampling dentro de cada fold: leitura da Fase 2 (imbalanced-
   concentração (CC5).
 - Raschka 2018, [arXiv:1811.12808](https://arxiv.org/abs/1811.12808): seção 3.3, *The Three-Way Holdout Method for
   Hyperparameter Tuning* (a divisão treino/validação/teste e o reajuste em treino + validação depois da escolha,
-  passos 4 e 5 da Figura 12). *(Passou de leitura de estudo a citação em 2026-10-31.)*
+  passos 4 e 5 da Figura 12). *(Passou de leitura de estudo a citação em 2026-10-31. O passo 5, o reajuste, não é
+  seguido desde 2026-11-16: o TCC cita a recomendação e explica por que não a segue, CC20.)*
 - Cawley e Talbot 2010, *On Over-fitting in Model Selection and Subsequent Selection Bias in Performance Evaluation*,
   JMLR 11(70):2079–2107 ([PDF](https://www.jmlr.org/papers/volume11/cawley10a/cawley10a.pdf)): a referência clássica
   do viés de seleção, a que o exemplo do scikit-learn cita (CC18).
@@ -550,14 +552,27 @@ O bootstrap pareado da Seção 7 é o da Seção 5.4; a leitura dele é a da Fas
 a subseção da curva PR cuja linha de base muda com a proporção de classes. Para o MCC, o Randhawa et al. (2018), que
 já está na Base de Conhecimento.
 
-### Fase 7 — Diagnóstico
+### Fase 7 — Diagnóstico (entregue em 2026-11-16; materiais conferidos na mesma data)
 
 | Conceito | Ler só isto |
 |---|---|
 | Viés × variância, curvas de validação e de aprendizado | sklearn, [3.5 *Validation curves: plotting scores to evaluate models*](https://scikit-learn.org/stable/modules/learning_curve.html): 3.5.1 *Validation curve* e 3.5.2 *Learning curve* (conferido em 2026-11-04) |
-| *Barren plateau* | QML-IBM, lição *QVCs and QNNs*: em *Qiskit patterns step 1: Map the problem to a quantum circuit*, o item *Number of parameters*, que trata do *barren plateau* (conferido em 2026-11-04) |
+| *Barren plateau* | QML-IBM, lição *QVCs and QNNs*: em *Qiskit patterns step 1: Map the problem to a quantum circuit*, o item *Number of parameters*, que trata do *barren plateau* (conferido em 2026-11-04 e de novo em 2026-11-16: o item cita também *"global cost functions and random parameter initialization"*) |
+| A medida do *barren plateau*: variância da derivada contra o número de qubits *(acrescentado na conferência da Fase 7)* | PennyLane, demo [*Barren plateaus in quantum neural networks*](https://pennylane.ai/qml/demos/tutorial_barren_plateaus) (Shahnawaz Ahmed): só a seção *Exploring the barren plateau problem with PennyLane*, até o gráfico da subseção *Evaluate the gradient for more qubits* (conferido em 2026-11-16). A demo usa circuitos aleatórios e mede a derivada de um peso só, como a Seção 8.3; não trata de custo local × global nem de codificação, que a 8.3 explica |
 
-**Para citar no TCC:** nenhum artigo novo.
+**Coberto pelo notebook, sem material:** a nota de treino com o undersampling (as duas notas e por que a ponderada saiu,
+abertura da Seção 8), a decomposição da diferença da 7.2 (8.1), a regra do *parameter-shift* (8.3, com exemplo
+calculado na aula; a página de glossário do PennyLane não carregou o texto na conferência) e a reprodutibilidade numérica
+do Quantum AdaBoost (8.1, CC21).
+
+**Para citar no TCC** (resumos conferidos em 2026-11-16):
+- McClean, Boixo, Smelyanskiy, Babbush e Neven 2018, *Barren plateaus in quantum neural network training landscapes*,
+  Nature Communications 9, 4812 ([arXiv:1803.11173](https://arxiv.org/abs/1803.11173)): a origem do termo.
+- Cerezo, Sone, Volkoff, Cincio e Coles 2021, *Cost Function Dependent Barren Plateaus in Shallow Parametrized Quantum
+  Circuits*, Nature Communications 12, 1791 ([arXiv:2001.00550](https://arxiv.org/abs/2001.00550)): custo global ×
+  local (CC22).
+- Arrasmith, Cerezo, Czarnik, Cincio e Coles 2021, *Effect of barren plateaus on gradient-free optimization*, Quantum 5,
+  558 ([arXiv:2011.12245](https://arxiv.org/abs/2011.12245)): o COBYLA também é afetado.
 
 ### Fase 8 — Modelo final
 
@@ -589,9 +604,12 @@ era unfolds*.
 | Cortes, Mohri & Rostamizadeh 2012 | Definição do alinhamento kernel-alvo centrado (KTA) | 3b |
 | Wang et al. 2024 | Quantum AdaBoost: entropia cruzada ponderada, os dois α e a regra de parada (WA2, WA3) | 4 |
 | Thanasilp et al. 2024 | Concentração exponencial do kernel (CC5) | 5 |
-| Raschka 2018 (seção 3.3) | Divisão treino/validação/teste e reajuste em treino + validação depois da escolha | 5 |
+| Raschka 2018 (seção 3.3) | Divisão treino/validação/teste; o reajuste em treino + validação que ele recomenda e o TCC não segue (CC20) | 5 |
 | Cawley e Talbot 2010 | Viés de seleção: a nota do vencedor do grid é otimista (CC18) | 5 |
 | Saito & Rehmsmeier 2015 | PR-AUC como métrica principal | 6 |
+| McClean et al. 2018 | Origem do termo *barren plateau* | 7 |
+| Cerezo et al. 2021 | Custo global × local no *barren plateau* (CC22) | 7 |
+| Arrasmith et al. 2021 | O *barren plateau* também afeta otimizadores sem gradiente, como o COBYLA | 7 |
 | Preskill 2018 | Definição de NISQ | 9 |
 
 ## Pendências no texto do TCC (não vou alterar sem sua aprovação)
