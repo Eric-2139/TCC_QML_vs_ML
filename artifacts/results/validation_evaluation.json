@@ -52,14 +52,14 @@
         "VN (legítima sem alerta)": 0
       },
       "fit_cost": {
-        "wall_seconds": 0.030402600000115854,
+        "wall_seconds": 0.031157600000369712,
         "python_peak_mib": null,
         "rss_peak_increase_mib": 1.31640625
       },
       "predict_cost": {
-        "wall_seconds": 0.0008789000000888336,
+        "wall_seconds": 0.0008818999995128252,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 0.00390625
+        "rss_peak_increase_mib": 0.0078125
       },
       "kept_estimators": "—"
     },
@@ -125,14 +125,14 @@
         "VN (legítima sem alerta)": 56640
       },
       "fit_cost": {
-        "wall_seconds": 0.04031899999995403,
+        "wall_seconds": 0.0398561999991216,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 1.3125
+        "rss_peak_increase_mib": 1.31640625
       },
       "predict_cost": {
-        "wall_seconds": 1.4940929000001688,
+        "wall_seconds": 1.5243777999985468,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 26.8515625
+        "rss_peak_increase_mib": 27.27734375
       },
       "kept_estimators": "—"
     },
@@ -198,14 +198,14 @@
         "VN (legítima sem alerta)": 56627
       },
       "fit_cost": {
-        "wall_seconds": 0.11808889999997518,
+        "wall_seconds": 0.11524330000065675,
         "python_peak_mib": null,
         "rss_peak_increase_mib": 1.31640625
       },
       "predict_cost": {
-        "wall_seconds": 0.6512199999999666,
+        "wall_seconds": 0.6539756000001944,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 4.34375
+        "rss_peak_increase_mib": 5.40625
       },
       "kept_estimators": "—"
     },
@@ -271,12 +271,12 @@
         "VN (legítima sem alerta)": 56642
       },
       "fit_cost": {
-        "wall_seconds": 0.28029019999985394,
+        "wall_seconds": 0.2801622999995743,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 1.3203125
+        "rss_peak_increase_mib": 1.31640625
       },
       "predict_cost": {
-        "wall_seconds": 0.5003139000000374,
+        "wall_seconds": 0.4958278000012797,
         "python_peak_mib": null,
         "rss_peak_increase_mib": 21.00390625
       },
@@ -344,14 +344,14 @@
         "VN (legítima sem alerta)": 56637
       },
       "fit_cost": {
-        "wall_seconds": 0.26398169999993115,
+        "wall_seconds": 0.25494310000067344,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 0.01953125
+        "rss_peak_increase_mib": 1.31640625
       },
       "predict_cost": {
-        "wall_seconds": 0.244154399999843,
+        "wall_seconds": 0.23458670000036363,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 4.33984375
+        "rss_peak_increase_mib": 3.2578125
       },
       "kept_estimators": "100 de 100"
     },
@@ -417,14 +417,14 @@
         "VN (legítima sem alerta)": 56633
       },
       "fit_cost": {
-        "wall_seconds": 0.40604529999995975,
+        "wall_seconds": 0.4143906000008428,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 1.75390625
+        "rss_peak_increase_mib": 13.27734375
       },
       "predict_cost": {
-        "wall_seconds": 30.317791599999964,
+        "wall_seconds": 30.868497999999818,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 42.37109375
+        "rss_peak_increase_mib": 74.921875
       },
       "kept_estimators": "—"
     },
@@ -490,14 +490,14 @@
         "VN (legítima sem alerta)": 56627
       },
       "fit_cost": {
-        "wall_seconds": 0.03743540000004941,
+        "wall_seconds": 0.036668299999291776,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 2.11328125
+        "rss_peak_increase_mib": 4.48046875
       },
       "predict_cost": {
-        "wall_seconds": 0.43223440000019764,
+        "wall_seconds": 0.42854090000037104,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 107.61328125
+        "rss_peak_increase_mib": 100.66015625
       },
       "kept_estimators": "—"
     },
@@ -563,14 +563,14 @@
         "VN (legítima sem alerta)": 56634
       },
       "fit_cost": {
-        "wall_seconds": 16.57268289999979,
+        "wall_seconds": 16.283244100000957,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 8.1953125
+        "rss_peak_increase_mib": 4.06640625
       },
       "predict_cost": {
-        "wall_seconds": 21.132097899999735,
+        "wall_seconds": 20.89310309999928,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 101.51953125
+        "rss_peak_increase_mib": 97.76171875
       },
       "kept_estimators": "81 de 100"
     },
@@ -636,14 +636,14 @@
         "VN (legítima sem alerta)": 56641
       },
       "fit_cost": {
-        "wall_seconds": 19.75349290000031,
+        "wall_seconds": 19.470001199999388,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 2.53125
+        "rss_peak_increase_mib": 2.375
       },
       "predict_cost": {
-        "wall_seconds": 4.396742599999925,
+        "wall_seconds": 4.398741699998936,
         "python_peak_mib": null,
-        "rss_peak_increase_mib": 103.81640625
+        "rss_peak_increase_mib": 104.3515625
       },
       "kept_estimators": "100 de 100"
     }
@@ -845,9 +845,10 @@
     "undersampling": "dentro de cada fold"
   },
   "split_fingerprint": "04d958c0d5744326c9313324382483156d3238d0ba5548fdf133d28fc8d13ab3",
-  "commit": "2d7fe4afbd8160dfc093ba3de4e1fd1714ef69cb",
+  "commit": "e995f73f80b7217460ff538ff293c5c47543b68f",
   "uncommitted_changes": [
     " M PLAN.md",
+    " M artifacts/results/diagnostics.json",
     " M artifacts/results/grid_adaboost.json",
     " M artifacts/results/grid_adaboost_all_features_round2.json",
     " M artifacts/results/grid_adaboost_components_qubits.json",
@@ -869,14 +870,13 @@
     " M artifacts/results/validation_evaluation.json",
     " M methodological_issues.md",
     " M notebooks/tcc_ml_vs_qml.ipynb",
-    " M src/fraud_qml/quantum/diagnostics.py",
+    " M study_notes.md",
     " M tests/test_notebook_protocol.py",
-    "?? artifacts/results/diagnostics.json",
-    "?? src/fraud_qml/caching.py",
-    "?? src/fraud_qml/curves.py",
-    "?? tests/test_barren_plateau.py",
-    "?? tests/test_caching.py",
-    "?? tests/test_curves.py"
+    "?? artifacts/results/final_evaluation.json",
+    "?? src/fraud_qml/final_evaluation.py",
+    "?? src/fraud_qml/significance.py",
+    "?? tests/test_final_evaluation.py",
+    "?? tests/test_significance.py"
   ],
   "package_source_fingerprint": "772dc4366d4a90e91b2915f9c8a8af88ed4c50744dab61190d630936b984ee57",
   "versions": {

@@ -1,6 +1,6 @@
 {
   "model": "svm_components_round2",
-  "date": "2026-11-17",
+  "date": "2026-11-18",
   "combinations": 2,
   "folds": 5,
   "wall_seconds": 1.5348803000015323,
@@ -67,9 +67,10 @@
   },
   "n_components_rule": "maior média entre os números a partir de 5; empate (até 1 desvio) fica o menor",
   "split_fingerprint": "04d958c0d5744326c9313324382483156d3238d0ba5548fdf133d28fc8d13ab3",
-  "commit": "2d7fe4afbd8160dfc093ba3de4e1fd1714ef69cb",
+  "commit": "e995f73f80b7217460ff538ff293c5c47543b68f",
   "uncommitted_changes": [
     " M PLAN.md",
+    " M artifacts/results/diagnostics.json",
     " M artifacts/results/grid_adaboost.json",
     " M artifacts/results/grid_adaboost_all_features_round2.json",
     " M artifacts/results/grid_adaboost_components_qubits.json",
@@ -91,14 +92,13 @@
     " M artifacts/results/validation_evaluation.json",
     " M methodological_issues.md",
     " M notebooks/tcc_ml_vs_qml.ipynb",
-    " M src/fraud_qml/quantum/diagnostics.py",
+    " M study_notes.md",
     " M tests/test_notebook_protocol.py",
-    "?? artifacts/results/diagnostics.json",
-    "?? src/fraud_qml/caching.py",
-    "?? src/fraud_qml/curves.py",
-    "?? tests/test_barren_plateau.py",
-    "?? tests/test_caching.py",
-    "?? tests/test_curves.py"
+    "?? artifacts/results/final_evaluation.json",
+    "?? src/fraud_qml/final_evaluation.py",
+    "?? src/fraud_qml/significance.py",
+    "?? tests/test_final_evaluation.py",
+    "?? tests/test_significance.py"
   ],
   "package_source_fingerprint": "772dc4366d4a90e91b2915f9c8a8af88ed4c50744dab61190d630936b984ee57",
   "versions": {

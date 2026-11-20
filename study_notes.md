@@ -803,10 +803,87 @@ mapa ZZ com a largura 0,25, e não do mapa ZZ em geral; as bordas são julgadas 
 
 ---
 
+## Fase 8 — Modelo final: o teste (Seção 9)
+
+**Arquivos:**
+- `src/fraud_qml/significance.py` (McNemar exato pelo binomial, com as discordantes separadas por classe; correção de Holm)
+- `src/fraud_qml/final_evaluation.py` (pontuar com um pipeline já ajustado; robustez
+  nas 5 sementes, cada uma com o próprio limiar escolhido na validação)
+- `tests/test_significance.py`, `tests/test_final_evaluation.py`, `tests/test_notebook_protocol.py` (o pré-registro vem
+  antes da primeira leitura do teste; a Seção 9 não reajusta, não volta a escolher e não escolhe limiar com o teste)
+- Seção 9 do notebook; resultados em `artifacts/results/final_evaluation.json`
+
+**Resumo da aula** (os números estão nas leituras da Seção 9):
+- **Pré-registro:** antes de ler o teste, a lista fixa das 8 comparações, os critérios e as expectativas. A expectativa 3
+  (nenhum intervalo de PR-AUC excluindo o zero) falhou e ficou reportada como falhou; a análise feita depois de ver o
+  resultado (9.4.1) vem declarada como posterior.
+- **McNemar exato:** só as discordantes contam (b: só o primeiro acerta; c: só o segundo); sob a hipótese de erros iguais,
+  b ~ Binomial(b + c, 1/2). Com b = 3 e c = 11, o p exato é 0,057, e a aproximação qui-quadrado sem correção daria 0,033.
+  O Raschka (2018, 4.3) só confia na aproximação com B e C "say > 25"; no teste foram de 8 a 28 discordantes.
+- **Holm:** com p = 0,012; 0,03; 0,2, os ajustados são 0,036; 0,06; 0,2. Com 8 comparações sem diferença real, a chance
+  de algum p < 0,05 por acaso é 0,34.
+- **PR-AUC × McNemar:** a PR-AUC pesa o topo da ordenação (uma legítima acima de 4 fraudes leva a PR-AUC de 1,0 a 0,679; a
+  mesma legítima entre a 3ª e a 4ª, a 0,95); o McNemar conta erros no limiar. No teste, 4 diferenças de PR-AUC excluíram o
+  zero e nenhum McNemar deu diferença.
+- **O grupo de 89,99:** legítimas desse valor (405 no treino, 125 na validação, 125 no teste, nenhuma fraude) ocupam parte
+  do topo da maioria dos modelos, nos dois conjuntos (em 5 dos 8, 3 ou mais acima da 40ª fraude). No teste, os SVM clássicos põem 6 no topo e o QSVM A,
+  nenhuma; na validação, os dois põem 3. Sem o grupo, QSVM A − SVM com a mesma entrada cai de +0,092 para +0,016, mas
+  Quantum AdaBoost B − AdaBoost com 31 features sobe de +0,067 para +0,090: a comparação é **frágil** a um tipo de
+  transação, nos dois sentidos (CC23). A primeira versão desta análise tratou o grupo como um evento só do teste e estendeu
+  a conclusão às quatro diferenças; a auditoria corrigiu (NC23).
+- **Sementes × bootstrap:** as sementes mudam o modelo e não o teste; o bootstrap muda as linhas do teste e não o modelo.
+  Com o split aleatório, o bootstrap mede bem outro sorteio desta base; não mede outro período, em que um tipo de transação
+  pode aparecer em outra proporção.
+- **A semente da escolha:** nos dois Quantum AdaBoost, a 42 é a maior das 5 na validação e no teste, acima da variação
+  entre as outras (CC24); nos AdaBoost clássicos, só na validação; nos SVM e QSVM, fica na variação entre sementes. Nos Quantum AdaBoost, a média das 5 é a estimativa menos
+  dependente da escolha.
+- **Os sinais estáveis:** QSVM A − QSVM B (variação A × B, que junta entrada e codificação), positiva na validação, no teste,
+  nas 5 sementes e sem o grupo; e QSVM B − SVM com 31 features, negativa em todas as medidas (a favor do clássico). A
+  conclusão do TCC: não há vantagem geral do quântico sobre o clássico nesta base.
+
+### Perguntas
+
+1. 🟢 Por que o pré-registro precisa ser escrito antes de qualquer célula ler o teste? O que aconteceria com as conclusões
+   se as comparações fossem escolhidas depois?
+2. 🟡 No McNemar, com b = 3 e c = 11, o p exato é 0,057 e a aproximação qui-quadrado sem correção dá 0,033. Por que a
+   versão exata é a certa aqui, e por que o McNemar não enxerga a diferença que a PR-AUC enxergou entre o QSVM A e o SVM
+   com componentes?
+3. 🟡 Na correção de Holm, com p = 0,012; 0,03 e 0,2, por que o 0,03 deixa de ser significativo a 0,05, se sozinho ele
+   seria?
+4. 🔴 A diferença QSVM A − SVM com componentes ficou entre +0,084 e +0,104 nas 5 sementes, com intervalo do bootstrap
+   excluindo o zero, e sem as legítimas de valor 89,99 ela cai para +0,016. Já Quantum AdaBoost B − AdaBoost com 31 features
+   sobe sem elas. Use o que cada medida muda e o que ela deixa fixo (sementes, bootstrap) para explicar por que a
+   estabilidade entre sementes não garante que a diferença seja geral, e por que o resultado da sensibilidade leva a chamar
+   a comparação de "frágil", e não de "nula".
+---
+
 ## Perguntas prováveis da banca
 
 Seção viva: cada pergunta que aparecer nas fases entra aqui, com a resposta curta (para falar) e os números que a
 sustentam.
+
+### "No teste, o QSVM ficou à frente do SVM com a mesma entrada, com intervalo excluindo o zero. Isso não é vantagem quântica?"
+
+**Resposta para falar:**
+> "No teste, sim: +0,092 de PR-AUC, estável nas cinco sementes. Mas a diferença não apareceu na validação (+0,018), não
+> aparece nas decisões de alerta (o McNemar não vê diferença) e, olhando onde ela está, vem de um tipo de transação
+> legítima, as de valor 89,99, que o SVM clássico pôs no topo do teste e o QSVM não. Sem esse grupo, ela cai para +0,016.
+> E o mesmo grupo mexe nas outras comparações nos dois sentidos: sem ele, uma delas passa a favorecer o clássico com
+> intervalo que exclui o zero. Com 95 fraudes,
+> a comparação entre os modelos é frágil, e o TCC não sustenta uma vantagem geral."
+
+**Por trás da resposta:**
+- O pré-registro (9.0) previa nenhuma diferença; a previsão falhou, e o TCC reporta isso. A verificação do grupo (9.4.1)
+  foi feita depois de ver o resultado e está declarada assim: é uma sensibilidade descritiva, não uma correção.
+- O grupo não é um acaso do teste: há 405 dessas legítimas no treino e 125 na validação, sem nenhuma fraude, e na
+  validação ele também está no topo (3 de 5 legítimas no QSVM A e no SVM com componentes).
+- As sementes mudam o modelo, e não o teste: a estabilidade entre sementes mostra que não é sorte do undersampling, mas o
+  grupo está no teste em todas elas (CC23).
+- Quantum AdaBoost A − AdaBoost com a mesma entrada aparece na validação cruzada e no teste (5 de 5 sementes), cai à metade
+  sem o grupo (limite inferior +0,000) e é zero na validação; e a semente da escolha favorece o Quantum AdaBoost (CC24).
+- QSVM B − SVM com 31 features mantém o sinal a favor do clássico em todas as medidas.
+- A diferença de sinal mais estável é QSVM A − QSVM B: mantém o sinal na validação cruzada (5 de 5 folds), na validação, no
+  teste, nas 5 sementes e sem o grupo; mas junta entrada e codificação, e o McNemar não a detecta.
 
 ### "A conversão de `Time` em hora foi aplicada à base inteira. Isso não é vazamento?"
 

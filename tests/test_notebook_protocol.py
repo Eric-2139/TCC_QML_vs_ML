@@ -213,3 +213,75 @@ def test_diagnostics_section_does_not_replace_frozen_choices(name: str) -> None:
     pattern = re.compile(rf"^\s*{re.escape(name)}\s*(\[[^\]]*\]\s*)?=[^=]", re.MULTILINE)
     offenders = [source.splitlines()[0] for source in _diagnostics_code_cells() if pattern.search(source)]
     assert offenders == [], f"células da Seção 8 que reatribuem {name}: {offenders}"
+
+
+FINAL_SECTION_MARKER: Final[str] = "## 9. Modelo final"
+PREREGISTRATION_MARKER: Final[str] = "### 9.0 Pré-registro"
+AFTER_FINAL_PATTERN: Final[re.Pattern[str]] = re.compile(r"^## 10\. ", re.MULTILINE)
+# O teste avalia os modelos da Seção 7 como foram validados (CC20): nada é reajustado, e os modelos e limiares ficam
+REFIT_CALLS: Final[tuple[str, ...]] = ("fit_and_score", ".fit(", ".fit_transform(", ".fit_resample(")
+FINAL_FROZEN_ASSIGNMENTS: Final[tuple[str, ...]] = (*FROZEN_ASSIGNMENTS, "evaluation_pipelines", "final_runs")
+
+
+def _final_cells() -> list[tuple[str, str]]:
+    """As células da Seção 9, como (tipo, código), na ordem."""
+    notebook = nbt.load()
+    start = nbt.find_cell_index(notebook, FINAL_SECTION_MARKER)
+    cells: list[tuple[str, str]] = []
+    for cell in notebook.cells[start + 1 :]:
+        if cell.cell_type == "markdown" and AFTER_FINAL_PATTERN.search(cell.source):
+            break
+        cells.append((cell.cell_type, cell.source))
+    return cells
+
+
+def _final_code_cells() -> list[str]:
+    return [source for kind, source in _final_cells() if kind == "code"]
+
+
+def _reads_the_test_set(source: str) -> bool:
+    return any(re.search(rf"\b{re.escape(name)}\b", source) for name in TEST_SET_NAMES)
+
+
+def test_final_section_has_code_to_check() -> None:
+    assert len(_final_code_cells()) >= 5
+
+
+def test_preregistration_comes_before_any_cell_that_reads_the_test_set() -> None:
+    # Escolher o que comparar depois de ver o teste seria seleção nas mesmas linhas: o pré-registro vem antes
+    cells = _final_cells()
+    preregistration = [index for index, (kind, source) in enumerate(cells) if kind == "markdown" and PREREGISTRATION_MARKER in source]
+    assert len(preregistration) == 1, "a Seção 9 precisa de exatamente um pré-registro"
+    readers = [index for index, (kind, source) in enumerate(cells) if kind == "code" and _reads_the_test_set(source)]
+    assert readers, "a Seção 9 não lê o teste"
+    assert preregistration[0] < min(readers)
+
+
+@pytest.mark.parametrize("call", RESELECTION_CALLS)
+def test_final_section_does_not_choose_configurations_again(call: str) -> None:
+    pattern = re.compile(rf"\b{re.escape(call)}\b")
+    offenders = [source.splitlines()[0] for source in _final_code_cells() if pattern.search(source)]
+    assert offenders == [], f"células da Seção 9 que chamam {call}: {offenders}"
+
+
+@pytest.mark.parametrize("call", REFIT_CALLS)
+def test_final_section_does_not_refit_the_section_7_models(call: str) -> None:
+    # A robustez ajusta modelos novos dentro de fraud_qml.final_evaluation; o notebook não reajusta nada
+    offenders = [source.splitlines()[0] for source in _final_code_cells() if call in source]
+    assert offenders == [], f"células da Seção 9 que chamam {call}: {offenders}"
+
+
+@pytest.mark.parametrize("name", FINAL_FROZEN_ASSIGNMENTS)
+def test_final_section_does_not_replace_frozen_choices(name: str) -> None:
+    pattern = re.compile(rf"^\s*{re.escape(name)}\s*(\[[^\]]*\]\s*)?=[^=]", re.MULTILINE)
+    offenders = [source.splitlines()[0] for source in _final_code_cells() if pattern.search(source)]
+    assert offenders == [], f"células da Seção 9 que reatribuem {name}: {offenders}"
+
+
+def test_final_section_never_chooses_a_threshold_with_the_test_labels() -> None:
+    # O limiar é escolhido na validação (7.3); no teste, o F1 máximo seria seleção nas linhas que medem
+    calls = re.compile(r"best_f1_threshold\(([^)]*)\)")
+    offenders = [
+        arguments for source in _final_code_cells() for arguments in calls.findall(source) if "test" in arguments.lower()
+    ]
+    assert offenders == [], f"best_f1_threshold chamado com o teste: {offenders}"
